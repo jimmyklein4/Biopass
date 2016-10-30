@@ -7,14 +7,26 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioPass", "BioPass\BioPass.
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug (x32)|Any CPU = Debug (x32)|Any CPU
+		Debug (x32)|x86 = Debug (x32)|x86
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FF24B0AE-9D77-4848-9242-C549B0C56F5F}.Debug (x32)|Any CPU.ActiveCfg = Debug (x32)|Any CPU
+		{FF24B0AE-9D77-4848-9242-C549B0C56F5F}.Debug (x32)|Any CPU.Build.0 = Debug (x32)|Any CPU
+		{FF24B0AE-9D77-4848-9242-C549B0C56F5F}.Debug (x32)|x86.ActiveCfg = Debug|x86
+		{FF24B0AE-9D77-4848-9242-C549B0C56F5F}.Debug (x32)|x86.Build.0 = Debug|x86
 		{FF24B0AE-9D77-4848-9242-C549B0C56F5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FF24B0AE-9D77-4848-9242-C549B0C56F5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF24B0AE-9D77-4848-9242-C549B0C56F5F}.Debug|x86.ActiveCfg = Debug|x86
+		{FF24B0AE-9D77-4848-9242-C549B0C56F5F}.Debug|x86.Build.0 = Debug|x86
 		{FF24B0AE-9D77-4848-9242-C549B0C56F5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF24B0AE-9D77-4848-9242-C549B0C56F5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF24B0AE-9D77-4848-9242-C549B0C56F5F}.Release|x86.ActiveCfg = Release|x86
+		{FF24B0AE-9D77-4848-9242-C549B0C56F5F}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

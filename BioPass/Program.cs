@@ -1,13 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Drawing;
 using System.Windows.Forms;
+using System.IO;
+using System.Diagnostics;
 
-namespace BioPass
-{
-    static class Program
+
+namespace BioPass {
+    public static class Program
     {
+        //appmode = -1 is no mode
+        //appmode = 0 is login
+        //appmode = 1 is record
+        public static int appmode = -1;
+        public static String tempFacePath = System.Environment.CurrentDirectory + "/face.jpg";
+        public static String tempFingerPath = System.Environment.CurrentDirectory + "/finger.jpg";
+        public static String PIN;
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -16,7 +24,12 @@ namespace BioPass
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new FaceForm());
+        }
+
+        public static void recieveCapture(Bitmap finger, Bitmap face, String pin) {
+            face.Save(tempFacePath);
+            face.Save(tempFingerPath);
         }
     }
 }
