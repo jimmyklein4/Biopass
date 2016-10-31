@@ -29,7 +29,7 @@ namespace BioPass {
 
         public static void recieveCapture(Bitmap finger, Bitmap face, String pin) {
             face.Save(tempFacePath);
-            finger.Save(tempFingerPath);
+          //  finger.Save(tempFingerPath);
         }
     }
 }
