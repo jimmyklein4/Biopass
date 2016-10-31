@@ -97,6 +97,9 @@
       <DependentUpon>FaceForm.cs</DependentUpon>
     </Compile>
     <Compile Include="authMethod.cs" />
+    <Compile Include="FacialRecognition.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
     <Compile Include="pinAuth.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
