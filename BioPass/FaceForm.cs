@@ -49,6 +49,7 @@ namespace BioPass
 
         private CameraFrameSource _frameSource;
         private static Bitmap _latestFrame;
+        private Boolean detectFaces = false;
         private Camera CurrentCamera
         {
            get
@@ -75,7 +76,7 @@ namespace BioPass
                 setFrameSource(new CameraFrameSource(c));
                 _frameSource.Camera.CaptureWidth = 640;
                 _frameSource.Camera.CaptureHeight = 480;
-                _frameSource.Camera.Fps = 50;
+                _frameSource.Camera.Fps = 10;
                 _frameSource.NewFrame += OnImageCaptured;
 
                 pictureBoxDisplay.Paint += new PaintEventHandler(drawLatestImage);
@@ -92,6 +93,9 @@ namespace BioPass
         {
             if (_latestFrame != null)
             {
+                if (detectFaces) {
+                    _latestFrame = FacialRecognition.DetectFace(_latestFrame);
+                }
                 // Draw the latest image from the active camera
                 e.Graphics.DrawImage(_latestFrame, 0, 0, _latestFrame.Width, _latestFrame.Height);
             }
@@ -182,6 +186,10 @@ namespace BioPass
             String pin = collectPin();
 
             Program.recieveCapture(finger,face, pin);
+        }
+
+        private void detect_Click(object sender, EventArgs e) {
+            detectFaces = !detectFaces;
         }
     }
 }

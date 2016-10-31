@@ -34,6 +34,7 @@
             this.btnStart = new System.Windows.Forms.Button();
             this.btnAddAccount = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
+            this.detect = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxDisplay)).BeginInit();
             this.SuspendLayout();
             // 
@@ -89,11 +90,22 @@
             this.label3.Size = new System.Drawing.Size(100, 23);
             this.label3.TabIndex = 0;
             // 
+            // detect
+            // 
+            this.detect.Location = new System.Drawing.Point(172, 513);
+            this.detect.Name = "detect";
+            this.detect.Size = new System.Drawing.Size(75, 23);
+            this.detect.TabIndex = 14;
+            this.detect.Text = "Detect Faces";
+            this.detect.UseVisualStyleBackColor = true;
+            this.detect.Click += new System.EventHandler(this.detect_Click);
+            // 
             // FaceForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(622, 566);
+            this.Controls.Add(this.detect);
             this.Controls.Add(this.pictureBoxDisplay);
             this.Controls.Add(this.comboBoxCameras);
             this.Controls.Add(this.btnStop);
@@ -117,6 +129,7 @@
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Button btnAddAccount;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button detect;
     }
 }
 
