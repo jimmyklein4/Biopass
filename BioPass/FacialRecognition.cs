@@ -130,23 +130,41 @@ namespace BioPass {
         /**
          * Method to create initial Eigenface recoginizer. Uses faces given to it through faces with the labels being in labels
          */
-        public void CreateInitialRecognizer(Image<Gray, Byte>[] faces, int[] labels) {
-            rec = new EigenFaceRecognizer();
-            rec.Train(faces, labels);
+        public void CreateInitialRecognizer(Image[] faces) {
+            Image<Gray, Byte>[] grayFaces = new Image<Gray, byte>[faces.Length];
+            int[] labels = new int[faces.Length];
+            for(int i = 0; i < faces.Length; i++) {
+                grayFaces[i] = new Image<Gray, byte>((Bitmap)faces[i]);
+                grayFaces[i] = grayFaces[i].Resize(100, 100, 0);
+                labels[i] = 40;
+            }
+
+            if (rec == null) { rec = new EigenFaceRecognizer(); }
+            rec.Train(grayFaces, labels);
         }
         /**
          * Save the EigenFaceRecognizer to filename
          */
+        public int FakeRec(String filename) {
+            Image<Gray, Byte> fake = new Image<Gray, Byte>(filename);
+            fake = fake.Resize(100, 100, 0);
+            return rec.Predict(fake).Label;
+        }
         public void SaveRecognizer(String filename) {
             rec.Save(filename);
         }
         //TODO: Implement
-        int authMethod.IdentifyUser(object A) {
-            return 0;
+        public int IdentifyUser(object A) {
+            if (rec != null) {
+                Image<Gray, Byte> recFace = new Image<Gray, byte>((Bitmap)(Image)A);
+                recFace = recFace.Resize(100, 100, 0);
+                return rec.Predict(recFace).Label;
+            }
+            return -1;
         }
 
         //TODO: Implement
-        Boolean authMethod.VerifyUser(object A, int user_id) {
+        public Boolean VerifyUser(object A, int user_id) {
             return false;
         }
     }
