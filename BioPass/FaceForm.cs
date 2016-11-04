@@ -190,15 +190,16 @@ namespace BioPass
 
             Program.recieveCapture(finger,face, pin);
         }
-
+        // Detects face and stores it in a list for later rec
         private void detect_Click(object sender, EventArgs e) {
             if (_faces == null) {
                 _faces = new List<Image>();
             }
             _faces.Add(FacialRecognition.DetectFace(_latestFrame));
         }
-
+        // Starts the recognition process
         private void create_rec_Click(object sender, EventArgs e) {
+            //rec = new FacialRecognition(@"C:\Users\james\Desktop\out.xml");
             if (_faces.Count >= 10) {
                 if (rec == null) {
                     rec = new FacialRecognition();
@@ -207,14 +208,15 @@ namespace BioPass
                 _faces = null;
             }
         }
-
+        // Checks the face it detects against the recognizer 
         private void check_Click(object sender, EventArgs e) {
             if (rec != null) {
                 
                 Console.WriteLine(rec.IdentifyUser(FacialRecognition.DetectFace(_latestFrame)));
+                Console.WriteLine(rec.GetDistance(FacialRecognition.DetectFace(_latestFrame)));
             }
         }
-
+        //Sanity check. Checks a face included in the rec database against itself
         private void fake_check_Click(object sender, EventArgs e) {
             Console.WriteLine(rec.FakeRec(@"C:\at\s1\1.pgm"));
             rec.SaveRecognizer(@"C:\Users\james\Desktop\out.xml");

@@ -11,30 +11,18 @@ namespace BioPass {
     class FacialRecognition : authMethod {
         private EigenFaceRecognizer rec;
         private Capture cap;
-
+        private const double EIGEN_THRESHOLD = 2000.0;
         /**
          * Constructor if you already have a training set that you want to load in
          */
         public FacialRecognition(String filename) {
-            rec = new EigenFaceRecognizer();
+            rec = new EigenFaceRecognizer(80, double.PositiveInfinity);
             rec.Load(filename);
-            Console.WriteLine(rec.ToString());
         }
         /**
          * Default constructor
          */
         public FacialRecognition() { }
-
-        /**
-         * Private method used to take the photos 
-         */
-        private Image<Gray, Byte> takePhotos() {
-            if (cap == null) {
-                cap = new Capture();
-            }
-            cap.Start();
-            return cap.QueryFrame().ToImage<Gray, Byte>();
-        }
         /**
          * Reads images and labels in from a CSV file 
          */
@@ -51,46 +39,12 @@ namespace BioPass {
                 }
             }
         }
-        /**
-         * Facial detection method. Calling this will take a photo of the person, detect their face,
-         * cut out and return only the facial detection area. 
-         * Note: Because the EigenFaceRecognizer requires you to have all the images the same size, 300x300 is hard coded
-         */
-        public Image<Gray, Byte> DetectFace() {
-            CascadeClassifier cascadeClassifier = new CascadeClassifier(@"C:\Emgu\emgucv-windesktop 3.1.0.2282\opencv\data\haarcascades\haarcascade_frontalface_default.xml");
-            Image<Gray, Byte> face = this.takePhotos();
-            if (face != null) {
-                Rectangle[] detected = cascadeClassifier.DetectMultiScale(face, 1.1, 10, Size.Empty);
-                while (detected.Length == 0) {
-                    face = this.takePhotos();
-                    detected = cascadeClassifier.DetectMultiScale(face, 1.1, 10, Size.Empty);
-                }
-                Rectangle fixedFace = new Rectangle(detected[0].X, detected[0].Y, 300, 300);
-                Image<Gray, Byte> cutFace = face.Copy(fixedFace);
-                return cutFace;
-            }
-            return null;
-        }
+
         /**
         * Facial detection method. Calling this will take the photo given to it, detect a face,
         * cut out and return only the facial detection area. 
         * Note: Because the EigenFaceRecognizer requires you to have all the images the same size, 300x300 is hard coded
         */
-        public static Image<Gray, Byte> DetectFace(Image<Gray, Byte> face) {
-            CascadeClassifier cascadeClassifier = new CascadeClassifier(@"C:\Emgu\emgucv-windesktop 3.1.0.2282\opencv\data\haarcascades\haarcascade_frontalface_default.xml");
-            if (face != null) {
-                Rectangle[] detected = cascadeClassifier.DetectMultiScale(face, 1.1, 10, Size.Empty);
-                if (detected.Length == 0) {
-                    return null;
-                }
-                Rectangle fixedFace = new Rectangle(detected[0].X, detected[0].Y, 300, 300);
-                Image<Gray, Byte> cutFace = face.Copy(fixedFace);
-                cutFace = cutFace.Resize(92, 112, 0);
-                return cutFace;
-            }
-            return null;
-        }
-
         public static Bitmap DetectFace(Image image) {
             CascadeClassifier cascadeClassifier = new CascadeClassifier(@"C:\Emgu\emgucv-windesktop 3.1.0.2282\opencv\data\haarcascades\haarcascade_frontalface_default.xml");
             Image<Bgr, Byte> faces = new Image<Bgr, byte>((Bitmap)image);
@@ -105,32 +59,6 @@ namespace BioPass {
             return null;
         }
         /**
-         * Method to create initial Eigenface recoginizer. Default uses 10 values
-         */
-        public void CreateInitialRecognizer() {
-            Image<Gray, Byte>[] faces = new Image<Gray, byte>[10];
-            int[] labels = new int[10];
-            for (int i = 0; i < 10; i++) {
-                faces[i] = this.DetectFace();
-                labels[i] = 0;
-            }
-            rec = new EigenFaceRecognizer();
-            rec.Train<Gray, Byte>(faces, labels);
-        }
-        /**
-         * Method to create initial Eigenface recoginizer. Takes trainingSamles amount of samles
-         */
-        public void CreateInitialRecognizer(int trainingSamles) {
-            Image<Gray, Byte>[] faces = new Image<Gray, byte>[10];
-            int[] labels = new int[trainingSamles];
-            for (int i = 0; i < trainingSamles; i++) {
-                faces[i] = this.DetectFace();
-                labels[i] = 0;
-            }
-            rec = new EigenFaceRecognizer();
-            rec.Train<Gray, Byte>(faces, labels);
-        }
-        /**
          * Method to create initial Eigenface recoginizer. Uses faces given to it through faces with the labels being in labels
          */
         public void CreateInitialRecognizer(Image[] faces) {
@@ -142,30 +70,38 @@ namespace BioPass {
                 labels.Add(40);
             }
 
-            if (rec == null) { rec = new EigenFaceRecognizer(); }
+            if (rec == null) { rec = new EigenFaceRecognizer(80, double.PositiveInfinity); }
             rec.Train(grayFaces.ToArray(), labels.ToArray());
         }
-        /**
-         * Save the EigenFaceRecognizer to filename
-         */
+        //TODO: DELETE
         public int FakeRec(String filename) {
             Image<Gray, Byte> fake = new Image<Gray, Byte>(filename);
             fake = fake.Resize(92, 112, 0);
             return rec.Predict(fake).Label;
         }
+        /**
+         * Save the EigenFaceRecognizer to filename
+         */
         public void SaveRecognizer(String filename) {
             rec.Save(filename);
         }
-        //TODO: Implement
+        //Prints out the label of the user to be identifed
+        //2000 is currently set as the eigen threshold. The lower the better
         public int IdentifyUser(object A) {
             if (rec != null) {
                 Image<Gray, Byte> recFace = new Image<Gray, byte>((Bitmap)(Image)A);
                 recFace = recFace.Resize(92, 112, 0);
-                return rec.Predict(recFace).Label;
+                var results = rec.Predict(recFace);
+                if(results.Distance < EIGEN_THRESHOLD) {
+                    return results.Label;
+                }
             }
             return -1;
         }
-
+        //TODO: DELETE
+        public double GetDistance(Image a) {
+            return rec.Predict(new Image<Gray, Byte>((Bitmap)a)).Distance;
+        }
         //TODO: Implement
         public Boolean VerifyUser(object A, int user_id) {
             return false;
