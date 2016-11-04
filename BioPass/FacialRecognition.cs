@@ -18,6 +18,7 @@ namespace BioPass {
         public FacialRecognition(String filename) {
             rec = new EigenFaceRecognizer();
             rec.Load(filename);
+            Console.WriteLine(rec.ToString());
         }
         /**
          * Default constructor
@@ -84,6 +85,7 @@ namespace BioPass {
                 }
                 Rectangle fixedFace = new Rectangle(detected[0].X, detected[0].Y, 300, 300);
                 Image<Gray, Byte> cutFace = face.Copy(fixedFace);
+                cutFace = cutFace.Resize(92, 112, 0);
                 return cutFace;
             }
             return null;
@@ -97,6 +99,7 @@ namespace BioPass {
                 foreach (var face in detected) {
                     faces.Draw(face, new Bgr(0, double.MaxValue, 0), 3);
                 }
+                faces = faces.Resize(92, 112, 0);
                 return faces.ToBitmap();
             }
             return null;
@@ -131,23 +134,23 @@ namespace BioPass {
          * Method to create initial Eigenface recoginizer. Uses faces given to it through faces with the labels being in labels
          */
         public void CreateInitialRecognizer(Image[] faces) {
-            Image<Gray, Byte>[] grayFaces = new Image<Gray, byte>[faces.Length];
-            int[] labels = new int[faces.Length];
+            List<Image<Gray, Byte>> grayFaces = new List<Image<Gray, byte>>();
+            List<int> labels = new List<int>();
+            readCSV(@"C:\Users\james\Documents\Capstone\out.txt", ref grayFaces, ref labels);
             for(int i = 0; i < faces.Length; i++) {
-                grayFaces[i] = new Image<Gray, byte>((Bitmap)faces[i]);
-                grayFaces[i] = grayFaces[i].Resize(100, 100, 0);
-                labels[i] = 40;
+                grayFaces.Add(new Image<Gray, byte>((Bitmap)faces[i]));
+                labels.Add(40);
             }
 
             if (rec == null) { rec = new EigenFaceRecognizer(); }
-            rec.Train(grayFaces, labels);
+            rec.Train(grayFaces.ToArray(), labels.ToArray());
         }
         /**
          * Save the EigenFaceRecognizer to filename
          */
         public int FakeRec(String filename) {
             Image<Gray, Byte> fake = new Image<Gray, Byte>(filename);
-            fake = fake.Resize(100, 100, 0);
+            fake = fake.Resize(92, 112, 0);
             return rec.Predict(fake).Label;
         }
         public void SaveRecognizer(String filename) {
@@ -157,7 +160,7 @@ namespace BioPass {
         public int IdentifyUser(object A) {
             if (rec != null) {
                 Image<Gray, Byte> recFace = new Image<Gray, byte>((Bitmap)(Image)A);
-                recFace = recFace.Resize(100, 100, 0);
+                recFace = recFace.Resize(92, 112, 0);
                 return rec.Predict(recFace).Label;
             }
             return -1;

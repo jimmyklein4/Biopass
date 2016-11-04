@@ -52,6 +52,7 @@ namespace BioPass
         private Boolean detectFaces = false;
         private List<Image> _faces;
         private FacialRecognition rec;
+        private List<int> labels;
         private Camera CurrentCamera
         {
            get
@@ -199,7 +200,9 @@ namespace BioPass
 
         private void create_rec_Click(object sender, EventArgs e) {
             if (_faces.Count >= 10) {
-                rec = new FacialRecognition(@"C:\Users\james\Documents\Capstone\biopass\test.xml");
+                if (rec == null) {
+                    rec = new FacialRecognition();
+                }
                 rec.CreateInitialRecognizer(_faces.ToArray());
                 _faces = null;
             }
@@ -214,6 +217,7 @@ namespace BioPass
 
         private void fake_check_Click(object sender, EventArgs e) {
             Console.WriteLine(rec.FakeRec(@"C:\at\s1\1.pgm"));
+            rec.SaveRecognizer(@"C:\Users\james\Desktop\out.xml");
         }
     }
 }
