@@ -211,15 +211,9 @@ namespace BioPass
         // Checks the face it detects against the recognizer 
         private void check_Click(object sender, EventArgs e) {
             if (rec != null) {
-                
                 Console.WriteLine(rec.IdentifyUser(FacialRecognition.DetectFace(_latestFrame)));
                 Console.WriteLine(rec.GetDistance(FacialRecognition.DetectFace(_latestFrame)));
             }
-        }
-        //Sanity check. Checks a face included in the rec database against itself
-        private void fake_check_Click(object sender, EventArgs e) {
-            Console.WriteLine(rec.FakeRec(@"C:\at\s1\1.pgm"));
-            rec.SaveRecognizer(@"C:\Users\james\Desktop\out.xml");
         }
     }
 }
