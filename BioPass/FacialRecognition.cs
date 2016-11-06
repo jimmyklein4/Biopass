@@ -47,7 +47,7 @@ namespace BioPass {
         */
         public static Bitmap DetectFace(Image image) {
             //idk if this is the right way to reference the file 
-            CascadeClassifier cascadeClassifier = new CascadeClassifier(@"haarcascade_frontalface_default.xml");
+            CascadeClassifier cascadeClassifier = new CascadeClassifier(@"Support\haarcascade_frontalface_default.xml");
             Image<Bgr, Byte> faces = new Image<Bgr, byte>((Bitmap)image);
             if (faces != null) {
                 var detected = cascadeClassifier.DetectMultiScale(faces, 1.1, 10, Size.Empty);
@@ -66,7 +66,7 @@ namespace BioPass {
             List<Image<Gray, Byte>> grayFaces = new List<Image<Gray, byte>>();
             List<int> labels = new List<int>();
             //This was a csv with training set of faces. Modifications may be needed
-            //readCSV(@"C:\Users\james\Documents\Capstone\out.txt", ref grayFaces, ref labels);
+            readCSV(@"Support\face_directory.txt", ref grayFaces, ref labels);
             for(int i = 0; i < faces.Length; i++) {
                 grayFaces.Add(new Image<Gray, byte>((Bitmap)faces[i]));
                 labels.Add(40);
