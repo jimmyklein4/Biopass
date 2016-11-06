@@ -122,6 +122,7 @@
       <DependentUpon>FaceForm.cs</DependentUpon>
     </Compile>
     <Compile Include="authMethod.cs" />
+    <Compile Include="FacialRecognition.cs" />
     <Compile Include="IrisAuth.cs" />
     <Compile Include="pinAuth.cs" />
     <Compile Include="Program.cs" />
