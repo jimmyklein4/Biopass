@@ -46,7 +46,8 @@ namespace BioPass {
         * Note: Because the EigenFaceRecognizer requires you to have all the images the same size, 300x300 is hard coded
         */
         public static Bitmap DetectFace(Image image) {
-            CascadeClassifier cascadeClassifier = new CascadeClassifier(@"C:\Emgu\emgucv-windesktop 3.1.0.2282\opencv\data\haarcascades\haarcascade_frontalface_default.xml");
+            //idk if this is the right way to reference the file 
+            CascadeClassifier cascadeClassifier = new CascadeClassifier(@"haarcascade_frontalface_default.xml");
             Image<Bgr, Byte> faces = new Image<Bgr, byte>((Bitmap)image);
             if (faces != null) {
                 var detected = cascadeClassifier.DetectMultiScale(faces, 1.1, 10, Size.Empty);
@@ -64,7 +65,7 @@ namespace BioPass {
         public void CreateInitialRecognizer(Image[] faces) {
             List<Image<Gray, Byte>> grayFaces = new List<Image<Gray, byte>>();
             List<int> labels = new List<int>();
-            readCSV(@"C:\Users\james\Documents\Capstone\out.txt", ref grayFaces, ref labels);
+            //readCSV(@"C:\Users\james\Documents\Capstone\out.txt", ref grayFaces, ref labels);
             for(int i = 0; i < faces.Length; i++) {
                 grayFaces.Add(new Image<Gray, byte>((Bitmap)faces[i]));
                 labels.Add(40);
@@ -72,12 +73,6 @@ namespace BioPass {
 
             if (rec == null) { rec = new EigenFaceRecognizer(80, double.PositiveInfinity); }
             rec.Train(grayFaces.ToArray(), labels.ToArray());
-        }
-        //TODO: DELETE
-        public int FakeRec(String filename) {
-            Image<Gray, Byte> fake = new Image<Gray, Byte>(filename);
-            fake = fake.Resize(92, 112, 0);
-            return rec.Predict(fake).Label;
         }
         /**
          * Save the EigenFaceRecognizer to filename
