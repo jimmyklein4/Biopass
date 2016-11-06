@@ -158,6 +158,9 @@
     <Content Include="cvextern.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="haarcascade_frontalface_default.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="msvcp120.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -65,6 +65,7 @@ namespace BioPass {
         public void CreateInitialRecognizer(Image[] faces) {
             List<Image<Gray, Byte>> grayFaces = new List<Image<Gray, byte>>();
             List<int> labels = new List<int>();
+            //This was a csv with training set of faces. Modifications may be needed
             //readCSV(@"C:\Users\james\Documents\Capstone\out.txt", ref grayFaces, ref labels);
             for(int i = 0; i < faces.Length; i++) {
                 grayFaces.Add(new Image<Gray, byte>((Bitmap)faces[i]));
