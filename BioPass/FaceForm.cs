@@ -49,6 +49,10 @@ namespace BioPass
 
         private CameraFrameSource _frameSource;
         private static Bitmap _latestFrame;
+        private Boolean detectFaces = false;
+        private List<Image> _faces;
+        private FacialRecognition rec;
+        private List<int> labels;
         private Camera CurrentCamera
         {
            get
@@ -75,7 +79,7 @@ namespace BioPass
                 setFrameSource(new CameraFrameSource(c));
                 _frameSource.Camera.CaptureWidth = 640;
                 _frameSource.Camera.CaptureHeight = 480;
-                _frameSource.Camera.Fps = 50;
+                _frameSource.Camera.Fps = 10;
                 _frameSource.NewFrame += OnImageCaptured;
 
                 pictureBoxDisplay.Paint += new PaintEventHandler(drawLatestImage);
@@ -92,6 +96,9 @@ namespace BioPass
         {
             if (_latestFrame != null)
             {
+                if (detectFaces) {
+                    _latestFrame = FacialRecognition.DetectFace(_latestFrame);
+                }
                 // Draw the latest image from the active camera
                 e.Graphics.DrawImage(_latestFrame, 0, 0, _latestFrame.Width, _latestFrame.Height);
             }
@@ -182,6 +189,37 @@ namespace BioPass
             String pin = collectPin();
 
             Program.recieveCapture(finger,face, pin);
+        }
+        // Detects face and stores it in a list for later rec
+        private void detect_Click(object sender, EventArgs e) {
+            if (_faces == null) {
+                _faces = new List<Image>();
+            }
+            _faces.Add(FacialRecognition.DetectFace(_latestFrame));
+        }
+        // Starts the recognition process
+        private void create_rec_Click(object sender, EventArgs e) {
+            //rec = new FacialRecognition(@"C:\Users\james\Desktop\out.xml");
+            if (_faces.Count >= 10) {
+                if (rec == null) {
+                    rec = new FacialRecognition();
+                }
+                rec.CreateInitialRecognizer(_faces.ToArray());
+                _faces = null;
+            }
+        }
+        // Checks the face it detects against the recognizer 
+        private void check_Click(object sender, EventArgs e) {
+            if (rec != null) {
+                
+                Console.WriteLine(rec.IdentifyUser(FacialRecognition.DetectFace(_latestFrame)));
+                Console.WriteLine(rec.GetDistance(FacialRecognition.DetectFace(_latestFrame)));
+            }
+        }
+        //Sanity check. Checks a face included in the rec database against itself
+        private void fake_check_Click(object sender, EventArgs e) {
+            Console.WriteLine(rec.FakeRec(@"C:\at\s1\1.pgm"));
+            rec.SaveRecognizer(@"C:\Users\james\Desktop\out.xml");
         }
     }
 }
