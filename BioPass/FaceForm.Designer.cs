@@ -129,7 +129,7 @@
             this.axZKFPEngX1.Location = new System.Drawing.Point(582, 10);
             this.axZKFPEngX1.Name = "axZKFPEngX1";
             this.axZKFPEngX1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axZKFPEngX1.OcxState")));
-            this.axZKFPEngX1.Size = new System.Drawing.Size(32, 23);
+            this.axZKFPEngX1.Size = new System.Drawing.Size(24, 24);
             this.axZKFPEngX1.TabIndex = 16;
             this.axZKFPEngX1.OnFeatureInfo += new AxZKFPEngXControl.IZKFPEngXEvents_OnFeatureInfoEventHandler(this.axZKFPEngX1_OnFeatureInfo);
             this.axZKFPEngX1.OnImageReceived += new AxZKFPEngXControl.IZKFPEngXEvents_OnImageReceivedEventHandler(this.axZKFPEngX1_OnImageReceived);
@@ -163,7 +163,7 @@
             this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(638, 515);
             this.Name = "FaceForm";
-            this.Text = "FacePass";
+            this.Text = "BioPass";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FaceForm_FormClosing);
             this.Load += new System.EventHandler(this.FaceForm_Load);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.FaceForm_KeyUp);
@@ -186,8 +186,8 @@
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripStatusLabel statusBar;
         private System.Windows.Forms.Button registerBtn;
-        private AxZKFPEngXControl.AxZKFPEngX axZKFPEngX1;
         private System.Windows.Forms.Label appmodeLabel;
+        public AxZKFPEngXControl.AxZKFPEngX axZKFPEngX1;
         //test
     }
 }

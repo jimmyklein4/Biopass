@@ -158,7 +158,7 @@ namespace BioPass
             }
 
             if(e.KeyCode==Keys.Enter) {
-                compileUserData();
+                //compileUserData();
             }
             e.Handled = true;
         }

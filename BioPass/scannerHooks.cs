@@ -21,11 +21,15 @@ namespace BioPass {
                 axZKFPEngX1.FPEngineVersion = "10";
                 fpcHandle = axZKFPEngX1.CreateFPCacheDB();
                 DataTable fingerprints = Program.db.getAllUsersFP();
-                foreach (DataRow dr in fingerprints.Rows) { 
-                  Debug.WriteLine(int.Parse(dr["user_id"].ToString()));
-                  String fp = System.Text.Encoding.UTF8.GetString( (byte[]) dr["fingerprint"]);
-                  Debug.WriteLine(fp);
-                  axZKFPEngX1.AddRegTemplateStrToFPCacheDB(fpcHandle, int.Parse(dr["user_id"].ToString()), fp);
+                if (fingerprints != null) { 
+                    foreach (DataRow dr in fingerprints.Rows) {
+                        if (!dr.IsNull("fingerprint")) {
+                            Debug.WriteLine(int.Parse(dr["user_id"].ToString()));
+                            String fp = System.Text.Encoding.UTF8.GetString((byte[])dr["fingerprint"]);
+                            Debug.WriteLine(fp);
+                            axZKFPEngX1.AddRegTemplateStrToFPCacheDB(fpcHandle, int.Parse(dr["user_id"].ToString()), fp);
+                        }
+                    }
                 }
                 statusBar.Text = "Sensor Connected!";
                 Debug.Write("FP init success!", "Information");                
@@ -70,7 +74,17 @@ namespace BioPass {
                 sRegTemplate = axZKFPEngX1.GetTemplateAsStringEx("9");
 		        sRegTemplate10 = axZKFPEngX1.GetTemplateAsStringEx("10");
 
+                int score = 8;
+                int processedNum = 1;
+                int ID = axZKFPEngX1.IdentificationInFPCacheDB(fpcHandle, e.aTemplate, ref score, ref processedNum);
+                if (ID != -1) {
+                    MessageBox.Show("You're already registered as: " + Program.db.getUserName(ID));
+                    Reset();
+                    return;
+                }
+
 		        if(sRegTemplate.Length > 0) {
+
                     if (sRegTemplate10.Length > 0) { 
                         Debug.WriteLine("Adding FP to DB");
                         axZKFPEngX1.AddRegTemplateStrToFPCacheDBEx(fpcHandle, (int) Program.target, sRegTemplate, sRegTemplate10);
