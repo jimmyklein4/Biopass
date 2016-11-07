@@ -146,6 +146,7 @@
             // 
             this.checkedListBox1.BackColor = System.Drawing.SystemColors.ButtonShadow;
             this.checkedListBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.checkedListBox1.CheckOnClick = true;
             this.checkedListBox1.Font = new System.Drawing.Font("Franklin Gothic Book", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkedListBox1.FormattingEnabled = true;
             this.checkedListBox1.Items.AddRange(new object[] {
@@ -194,7 +195,6 @@
             this.appList.TabIndex = 21;
             this.appList.Text = "Show Apps";
             this.appList.UseVisualStyleBackColor = true;
-            this.appList.Visible = false;
             this.appList.Click += new System.EventHandler(this.button2_Click);
             // 
             // listBox1
@@ -215,6 +215,7 @@
             // 
             // label2
             // 
+            this.label2.AutoEllipsis = true;
             this.label2.BackColor = System.Drawing.SystemColors.ButtonShadow;
             this.label2.Font = new System.Drawing.Font("Franklin Gothic Book", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(504, 323);
@@ -226,6 +227,7 @@
             // 
             // label4
             // 
+            this.label4.AutoEllipsis = true;
             this.label4.BackColor = System.Drawing.SystemColors.ButtonShadow;
             this.label4.Font = new System.Drawing.Font("Franklin Gothic Book", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.Location = new System.Drawing.Point(304, 323);

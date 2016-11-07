@@ -109,22 +109,5 @@ namespace BioPass
             System.Diagnostics.Debug.WriteLine(path);
             return (System.IO.File.Exists(path + "/UsrInfo.sqlite"));
         }
-
-        /*
-         * Will check if the specified user credentials for the selected app stored in database
-         * @Mike Hoffman 10/19/2016
-         * */
-        public Boolean appExistsForUser(String app, String person_id)
-        {
-            Boolean state = false;
-            String sql = "SELECT ActName FROM Accounts WHERE ActName = '" + app + "' AND PersonId='" + person_id + "'";
-
-            SQLiteCommand command = new SQLiteCommand(sql, dbConn);
-            SQLiteDataReader reader = command.ExecuteReader();
-            String appExist4User = (String)(reader["ActName"] != System.DBNull.Value ? reader["ActName"] : "");
-
-            if (appExist4User.Length > 0) { state = true; }
-            return state;
-        }
     }
 }

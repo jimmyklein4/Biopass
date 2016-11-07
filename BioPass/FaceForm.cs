@@ -51,7 +51,7 @@ namespace BioPass
         private static Bitmap _latestFrame;
         private Boolean detectFaces = false;
         private List<Image> _faces;
-        private FacialRecognition rec;
+        //private FacialRecognition rec;
         private List<int> labels;
         private Camera CurrentCamera
         {
@@ -97,7 +97,7 @@ namespace BioPass
             if (_latestFrame != null)
             {
                 if (detectFaces) {
-                    _latestFrame = FacialRecognition.DetectFace(_latestFrame);
+                   // _latestFrame = FacialRecognition.DetectFace(_latestFrame);
                 }
                 // Draw the latest image from the active camera
                 e.Graphics.DrawImage(_latestFrame, 0, 0, _latestFrame.Width, _latestFrame.Height);
@@ -195,25 +195,25 @@ namespace BioPass
             if (_faces == null) {
                 _faces = new List<Image>();
             }
-            _faces.Add(FacialRecognition.DetectFace(_latestFrame));
+            //_faces.Add(FacialRecognition.DetectFace(_latestFrame));
         }
         // Starts the recognition process
         private void create_rec_Click(object sender, EventArgs e) {
             //rec = new FacialRecognition(@"C:\Users\james\Desktop\out.xml");
             if (_faces.Count >= 10) {
-                if (rec == null) {
+                /*if (rec == null) {
                     rec = new FacialRecognition();
                 }
                 rec.CreateInitialRecognizer(_faces.ToArray());
-                _faces = null;
+                _faces = null;*/
             }
         }
         // Checks the face it detects against the recognizer 
         private void check_Click(object sender, EventArgs e) {
-            if (rec != null) {
+            /*if (rec != null) {
                 Console.WriteLine(rec.IdentifyUser(FacialRecognition.DetectFace(_latestFrame)));
                 Console.WriteLine(rec.GetDistance(FacialRecognition.DetectFace(_latestFrame)));
-            }
+            }*/
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -260,20 +260,20 @@ namespace BioPass
              String user = "";
              int i = 0;
              int k = 0;
-             string[] app = new string[] { "tumail", "blackboard.temple.edu", "facebook.com", "en.wikipedia.org" };
+             string[] app = new string[] { "tumail", "blackboard", "facebook.com", "wikipedia.org" };
              string[] appCata = new string[4];
              string[] appUn = new string[4];
              String cata = "";
              String uncata = "";
              DBhandler db = new DBhandler();
-             db.connectToDatabase();*/
+             db.connectToDatabase();
 
 
 
              for (int j = 0; j < app.Length; j++)
              {
-                //Boolean isCatlgd = false; //remove once db class back in repo
-                 Boolean isCatlgd = db.appExistsForUser(app[j], user);
+                Boolean isCatlgd = false; //remove once db class back in repo
+                 //Boolean isCatlgd = db.appExistsForUser(app[j], user);
                  if (isCatlgd == true) { appCata[i] = app[j]; i++; }
                  else { appUn[k] = app[j]; k++; }
              }
@@ -302,12 +302,12 @@ namespace BioPass
              if (clickedButton.Text == "Show Apps")
              {
                  clickedButton.Text = "Hide Apps"; label4.Visible = true;   //load list
-                 label2.Visible = true; label6.Visible = true; label5.Visible = true; appList.Visible = true;
+                 label2.Visible = true; label6.Visible = true; label5.Visible = true; listBox1.Visible = true;
              }
              else
              {
                  clickedButton.Text = "Show Apps";
-                 appList.Visible = false; label4.Visible = false; label5.Visible = false; //hide list 
+                 listBox1.Visible = false; label4.Visible = false; label5.Visible = false; //hide list 
                  label2.Visible = false; label6.Visible = false; 
              }
         }
