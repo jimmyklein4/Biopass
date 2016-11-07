@@ -265,15 +265,15 @@ namespace BioPass
              string[] appUn = new string[4];
              String cata = "";
              String uncata = "";
-             /*DBhandler db = new DBhandler();
+             DBhandler db = new DBhandler();
              db.connectToDatabase();*/
 
 
 
              for (int j = 0; j < app.Length; j++)
              {
-                Boolean isCatlgd = false; //remove once db class back in repo
-                 //Boolean isCatlgd = db.appExistsForUser(app[j], user);
+                //Boolean isCatlgd = false; //remove once db class back in repo
+                 Boolean isCatlgd = db.appExistsForUser(app[j], user);
                  if (isCatlgd == true) { appCata[i] = app[j]; i++; }
                  else { appUn[k] = app[j]; k++; }
              }
