@@ -14,6 +14,8 @@ namespace BioPass
 {
     public partial class FaceForm : Form
     {
+        Boolean verified = false;
+        String user = "";
         public FaceForm()
         {
             InitializeComponent();
@@ -249,8 +251,17 @@ namespace BioPass
                 checkedListBox1.SetItemChecked(1, false); //reset checkbox
                 checkedListBox1.SetItemChecked(2, false); //reset checkbox
                 checkedListBox1.SetItemChecked(3, false); //reset checkbox
+
+
+                Boolean bioSuccess = false;
+                int[] verfiTest = new int[2];
                 //Launch BioMetrics
-                //BioMetrics(selections[0],selections[1]);
+                //user=BioMetrics(selections[0],selections[1]); //if anyone is identified set the user
+                //if (BioMetrics(selections[0])==true){veritest[0]=1; } else {veritest[0]=0; } //1=pass, 0=fail
+                //if (BioMetrics(selections[1])==true){veritest[1]=1 } else {veritest[1]=0; } //1=pass, 0=fail
+                //if ((veritest[0] == 1)  && (veritest[1] == 1)) { bioSuccess = true; } else { bioSuccess = false; user="";}
+                if (bioSuccess == true) { verified = true; appList.Visible = true; }
+                else { verified = false; appList.Visible = false; }
             }
         }
 
@@ -272,8 +283,8 @@ namespace BioPass
 
              for (int j = 0; j < app.Length; j++)
              {
-                Boolean isCatlgd = false; //remove once db class back in repo
-                 //Boolean isCatlgd = db.appExistsForUser(app[j], user);
+                //Boolean isCatlgd = false; //remove once db class back in repo
+                 Boolean isCatlgd = db.appExistsForUser(app[j], user);
                  if (isCatlgd == true) { appCata[i] = app[j]; i++; }
                  else { appUn[k] = app[j]; k++; }
              }
@@ -292,29 +303,37 @@ namespace BioPass
 
 
 
-                 //Will load list of all applications
+            //Will load list of all applications
 
 
 
 
-             Button clickedButton = (Button)sender;
-
-             if (clickedButton.Text == "Show Apps")
-             {
-                 clickedButton.Text = "Hide Apps"; label4.Visible = true;   //load list
-                 label2.Visible = true; label6.Visible = true; label5.Visible = true; listBox1.Visible = true;
-             }
-             else
-             {
-                 clickedButton.Text = "Show Apps";
-                 listBox1.Visible = false; label4.Visible = false; label5.Visible = false; //hide list 
-                 label2.Visible = false; label6.Visible = false; 
-             }
+            Button clickedButton = (Button)sender;
+            toggleList(clickedButton, e);
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
+        }
+
+        /*
+        * Toggles view of the sorted app list
+        */
+        private void toggleList(Button clickedButton, EventArgs e)
+        {
+
+            if (clickedButton.Text == "Show Apps")
+            {
+                clickedButton.Text = "Hide Apps"; label4.Visible = true;   //load list
+                label2.Visible = true; label6.Visible = true; label5.Visible = true; listBox1.Visible = true;
+            }
+            else
+            {
+                clickedButton.Text = "Show Apps";
+                listBox1.Visible = false; label4.Visible = false; label5.Visible = false; //hide list 
+                label2.Visible = false; label6.Visible = false;
+            }
         }
     }
         }
