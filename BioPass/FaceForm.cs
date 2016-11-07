@@ -173,7 +173,7 @@ namespace BioPass
         private Bitmap getFingerprint() {
             return null;
         }
-
+         
         private String collectPin() {
             return last4Ints;
         }
