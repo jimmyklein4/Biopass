@@ -198,5 +198,10 @@ namespace BioPass
                 beginFPRegistration();
             }
         }
+        private void Reset() {
+            Program.appmode = 0;
+            appmodeLabel.Visible = false;
+            Program.target = 0;
+        }
     }
 }

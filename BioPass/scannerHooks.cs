@@ -12,7 +12,6 @@ namespace BioPass {
 
         int FMatchType;
         int fpcHandle;
-        int FPID = 0;
         string sRegTemplate, sRegTemplate10;
 
         private void init_fingerprint() {
@@ -49,15 +48,18 @@ namespace BioPass {
             statusBar.Text = "Place your finger on the scanner. (0/3)";
         }
  
-        private void axZKFPEngX1_OnCapture(object sender, AxZKFPEngXControl.IZKFPEngXEvents_OnCaptureEvent e) {                                     
+        private void axZKFPEngX1_OnCapture(object sender, AxZKFPEngXControl.IZKFPEngXEvents_OnCaptureEvent e) {
+            // In the future, call FaceForm.recieveCapture() with array of data for Identification method below                                     
             if (FMatchType == 2) {
                 int score = 8;
                 int processedNum = 1;
                 int ID = axZKFPEngX1.IdentificationInFPCacheDB(fpcHandle, e.aTemplate, ref score, ref processedNum);
-                if (ID == -1)
+                if (ID == -1) { 
                     statusBar.Text = "Identify Failed";
-                else
+                } else { 
+                    MessageBox.Show("User identified as: "+ Program.db.getUserName(ID));
                     statusBar.Text = string.Format("Identify Succeed ID = {0} Score = {1}  Processed Number = {2}", ID, score, processedNum);
+                }
             }
         }
 
@@ -71,7 +73,7 @@ namespace BioPass {
 		        if(sRegTemplate.Length > 0) {
                     if (sRegTemplate10.Length > 0) { 
                         Debug.WriteLine("Adding FP to DB");
-                        axZKFPEngX1.AddRegTemplateStrToFPCacheDBEx(fpcHandle, FPID, sRegTemplate, sRegTemplate10);
+                        axZKFPEngX1.AddRegTemplateStrToFPCacheDBEx(fpcHandle, (int) Program.target, sRegTemplate, sRegTemplate10);
                     } else { 
                         MessageBox.Show("Register 10.0 failed, template length is zero", "error!");
                     }
@@ -85,9 +87,8 @@ namespace BioPass {
                     Program.db.registerUserFP(Program.target, encodedTemplate);
                   
                     //axZKFPEngX1.SaveTemplate("fingerprint.tpl", pTemplate);
-
-			        FPID++;
 			        MessageBox.Show("Register Succeed", "Information!");
+                    Reset();
                 } else {
                     MessageBox.Show("Register Failed, template length is zero", "error!");
 		        };

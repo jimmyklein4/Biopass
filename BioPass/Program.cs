@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
-
+using System.Collections.Specialized;
 
 namespace BioPass {
     public static class Program
@@ -18,6 +18,7 @@ namespace BioPass {
         public static String PIN;
         public static DBhandler db = new DBhandler();
         public static long target = -1;
+        public static Object lastFingerprint;
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -34,7 +35,7 @@ namespace BioPass {
             Application.Run(new FaceForm());
         }
 
-        public static void recieveCapture(Bitmap finger, Bitmap face, String pin) {
+        public static void recieveCapture(Object finger, Bitmap face, String pin) {
             face.Save(tempFacePath);
           //finger.Save(tempFingerPath);
         }

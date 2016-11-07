@@ -46,8 +46,8 @@ password_field varchar(255) NOT NULL);
 CREATE TABLE user(
 user_id INTEGER PRIMARY KEY,
 name varchar(255) NOT NULL,
-fingerprint BLOB);
-";
+fingerprint BLOB,
+pin INTEGER);";
             SQLiteCommand cmd = new SQLiteCommand(sql, dbConn);
             cmd.ExecuteNonQuery();
         }
@@ -137,6 +137,13 @@ fingerprint BLOB);
 
             return row;
 
+        }
+        public String getUserName(long uid) {
+            String sql = "SELECT name FROM user WHERE user_id='" + uid + "'";
+            SQLiteCommand command = new SQLiteCommand(sql, dbConn);
+            SQLiteDataReader reader = command.ExecuteReader();
+            String name = (String)(reader["name"] != System.DBNull.Value ? reader["name"] : "");
+            return name;
         }
         public void registerUserFP(long uid, String fp) {
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
