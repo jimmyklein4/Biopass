@@ -210,6 +210,8 @@
             this.listBox1.Name = "listBox1";
             this.listBox1.Size = new System.Drawing.Size(348, 214);
             this.listBox1.TabIndex = 22;
+            this.listBox1.Visible = false;
+            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             // 
             // label2
             // 
@@ -220,6 +222,7 @@
             this.label2.Size = new System.Drawing.Size(95, 140);
             this.label2.TabIndex = 23;
             this.label2.Text = "label2";
+            this.label2.Visible = false;
             // 
             // label4
             // 
@@ -230,6 +233,7 @@
             this.label4.Size = new System.Drawing.Size(95, 140);
             this.label4.TabIndex = 24;
             this.label4.Text = "label4";
+            this.label4.Visible = false;
             // 
             // label5
             // 
@@ -241,6 +245,7 @@
             this.label5.Size = new System.Drawing.Size(68, 16);
             this.label5.TabIndex = 25;
             this.label5.Text = "Catalogued:";
+            this.label5.Visible = false;
             // 
             // label6
             // 
@@ -252,6 +257,7 @@
             this.label6.Size = new System.Drawing.Size(81, 16);
             this.label6.TabIndex = 26;
             this.label6.Text = "Uncatalogued:";
+            this.label6.Visible = false;
             // 
             // FaceForm
             // 

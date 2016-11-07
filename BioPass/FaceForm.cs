@@ -311,5 +311,10 @@ namespace BioPass
                  label2.Visible = false; label6.Visible = false; 
              }
         }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
         }
