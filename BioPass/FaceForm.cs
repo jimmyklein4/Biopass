@@ -107,6 +107,7 @@ namespace BioPass
         public void OnImageCaptured(Touchless.Vision.Contracts.IFrameSource frameSource, Touchless.Vision.Contracts.Frame frame, double fps)
         {
             _latestFrame = frame.Image;
+            _latestFrame.RotateFlip(RotateFlipType.RotateNoneFlipX);
             pictureBoxDisplay.Invalidate();
         }
 
