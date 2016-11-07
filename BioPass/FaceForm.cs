@@ -215,5 +215,99 @@ namespace BioPass
                 Console.WriteLine(rec.GetDistance(FacialRecognition.DetectFace(_latestFrame)));
             }
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (label1.Visible == true)
+            {
+                label1.Visible = false; textBox1.Visible = false; checkedListBox1.Visible = false;// button3.Visible = false;
+            }
+            else
+            {
+                textBox1.Visible = true; checkedListBox1.Visible = true; label1.Visible = true;//button3.Visible = true; 
+            }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkedListBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            String[] selections = new string[2]; //Stores checklist Selections
+            for (int i = 0; i < checkedListBox1.CheckedItems.Count; i++)
+            {
+                selections[i] = checkedListBox1.CheckedItems[i].ToString();
+            }
+            if (checkedListBox1.CheckedItems.Count == 2)
+            {
+                textBox1.Visible = false;
+                label1.Visible = false;
+                checkedListBox1.Visible = false;
+                checkedListBox1.SetItemChecked(0, false); //reset checkbox
+                checkedListBox1.SetItemChecked(1, false); //reset checkbox
+                checkedListBox1.SetItemChecked(2, false); //reset checkbox
+                checkedListBox1.SetItemChecked(3, false); //reset checkbox
+                //Launch BioMetrics
+                //BioMetrics(selections[0],selections[1]);
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            /* String user = "";
+             int i = 0;
+             int k = 0;
+             string[] app = new string[] { "tumail", "blackboard.temple.edu", "facebook.com", "en.wikipedia.org" };
+             string[] appCata = new string[4];
+             string[] appUn = new string[4];
+             String cata = "";
+             String uncata = "";
+             DBhandler db = new DBhandler();
+             db.connectToDatabase();
+
+
+
+             for (int j = 0; j < app.Length; j++)
+             {
+                 Boolean isCatlgd = db.appExistsForUser(app[j], user);
+                 if (isCatlgd == true) { appCata[i] = app[j]; i++; }
+                 else { appUn[k] = app[j]; k++; }
+             }
+             // /* test filler
+             appCata[0] = "test";
+             appCata[1] = "test1";
+             appCata[2] = " test2";
+             //appUn[0] = "test2";
+             //appUn[1] = "test3";
+             // 
+             for (i = 0; i < appCata.Length; i++) { cata = cata + appCata[i] + Environment.NewLine; }
+             for (i = 0; i < appUn.Length; i++) { uncata = uncata + appUn[i] + Environment.NewLine; }
+
+             label4.Text = cata;
+             label7.Text = uncata;
+
+
+
+                 //Will load list of all applications
+
+
+
+
+             Button clickedButton = (Button)sender;
+
+             if (clickedButton.Text == "Show Apps")
+             {
+                 clickedButton.Text = "Hide Apps"; label4.Visible = true;   //load list
+                 label7.Visible = true; label6.Visible = true; label5.Visible = true; appList.Visible = true;
+             }
+             else
+             {
+                 clickedButton.Text = "Show Apps";
+                 appList.Visible = false; label4.Visible = false; label5.Visible = false; //hide list 
+                 label7.Visible = false; label6.Visible = false; 
+             }*/
+        }
     }
-}
+        }
