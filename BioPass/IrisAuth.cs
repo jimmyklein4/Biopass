@@ -23,7 +23,7 @@ namespace BioPass
             SQLiteCommand cmd = new SQLiteCommand(select, conn);
             SQLiteDataReader reader = cmd.ExecuteReader();
             int id = -1;
-            double min = -1;
+            double min = 1.0;
             while (reader.Read())
             {
                 int[] template1 = ToArray(reader["iris_data"]);
@@ -44,7 +44,7 @@ namespace BioPass
             while (reader.Read())
             {
                 int[] template1 = ToArray(reader["iris_data"]);
-                return (HammingDistance(template1, GetTemplate(image), null, null) > .3);
+                return (HammingDistance(template1, GetTemplate(image), null, null) < .3);
             }
             return false;
         }
