@@ -49,6 +49,10 @@ namespace BioPass
 
         private CameraFrameSource _frameSource;
         private static Bitmap _latestFrame;
+        private Boolean detectFaces = false;
+        private List<Image> _faces;
+        private FacialRecognition rec;
+        private List<int> labels;
         private Camera CurrentCamera
         {
            get
@@ -75,7 +79,7 @@ namespace BioPass
                 setFrameSource(new CameraFrameSource(c));
                 _frameSource.Camera.CaptureWidth = 640;
                 _frameSource.Camera.CaptureHeight = 480;
-                _frameSource.Camera.Fps = 50;
+                _frameSource.Camera.Fps = 10;
                 _frameSource.NewFrame += OnImageCaptured;
 
                 pictureBoxDisplay.Paint += new PaintEventHandler(drawLatestImage);
@@ -92,6 +96,9 @@ namespace BioPass
         {
             if (_latestFrame != null)
             {
+                if (detectFaces) {
+                    _latestFrame = FacialRecognition.DetectFace(_latestFrame);
+                }
                 // Draw the latest image from the active camera
                 e.Graphics.DrawImage(_latestFrame, 0, 0, _latestFrame.Width, _latestFrame.Height);
             }
@@ -183,5 +190,131 @@ namespace BioPass
 
             Program.recieveCapture(finger,face, pin);
         }
+        // Detects face and stores it in a list for later rec
+        private void detect_Click(object sender, EventArgs e) {
+            if (_faces == null) {
+                _faces = new List<Image>();
+            }
+            _faces.Add(FacialRecognition.DetectFace(_latestFrame));
+        }
+        // Starts the recognition process
+        private void create_rec_Click(object sender, EventArgs e) {
+            //rec = new FacialRecognition(@"C:\Users\james\Desktop\out.xml");
+            if (_faces.Count >= 10) {
+                if (rec == null) {
+                    rec = new FacialRecognition();
+                }
+                rec.CreateInitialRecognizer(_faces.ToArray());
+                _faces = null;
+            }
+        }
+        // Checks the face it detects against the recognizer 
+        private void check_Click(object sender, EventArgs e) {
+            if (rec != null) {
+                Console.WriteLine(rec.IdentifyUser(FacialRecognition.DetectFace(_latestFrame)));
+                Console.WriteLine(rec.GetDistance(FacialRecognition.DetectFace(_latestFrame)));
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (label1.Visible == true)
+            {
+                label1.Visible = false; textBox1.Visible = false; checkedListBox1.Visible = false;// button3.Visible = false;
+            }
+            else
+            {
+                textBox1.Visible = true; checkedListBox1.Visible = true; label1.Visible = true;//button3.Visible = true; 
+            }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkedListBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            String[] selections = new string[2]; //Stores checklist Selections
+            for (int i = 0; i < checkedListBox1.CheckedItems.Count; i++)
+            {
+                selections[i] = checkedListBox1.CheckedItems[i].ToString();
+            }
+            if (checkedListBox1.CheckedItems.Count == 2)
+            {
+                textBox1.Visible = false;
+                label1.Visible = false;
+                checkedListBox1.Visible = false;
+                checkedListBox1.SetItemChecked(0, false); //reset checkbox
+                checkedListBox1.SetItemChecked(1, false); //reset checkbox
+                checkedListBox1.SetItemChecked(2, false); //reset checkbox
+                checkedListBox1.SetItemChecked(3, false); //reset checkbox
+                //Launch BioMetrics
+                //BioMetrics(selections[0],selections[1]);
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            //db class not on this repo yet
+             String user = "";
+             int i = 0;
+             int k = 0;
+             string[] app = new string[] { "tumail", "blackboard.temple.edu", "facebook.com", "en.wikipedia.org" };
+             string[] appCata = new string[4];
+             string[] appUn = new string[4];
+             String cata = "";
+             String uncata = "";
+             DBhandler db = new DBhandler();
+             db.connectToDatabase();*/
+
+
+
+             for (int j = 0; j < app.Length; j++)
+             {
+                //Boolean isCatlgd = false; //remove once db class back in repo
+                 Boolean isCatlgd = db.appExistsForUser(app[j], user);
+                 if (isCatlgd == true) { appCata[i] = app[j]; i++; }
+                 else { appUn[k] = app[j]; k++; }
+             }
+             //  test filler
+             appCata[0] = "test";
+             appCata[1] = "test1";
+             appCata[2] = " test2";
+             //appUn[0] = "test2";
+             //appUn[1] = "test3";
+             // */
+             for (i = 0; i < appCata.Length; i++) { cata = cata + appCata[i] + Environment.NewLine; }
+             for (i = 0; i < appUn.Length; i++) { uncata = uncata + appUn[i] + Environment.NewLine; }
+
+             label4.Text = cata;
+             label2.Text = uncata;
+
+
+
+                 //Will load list of all applications
+
+
+
+
+             Button clickedButton = (Button)sender;
+
+             if (clickedButton.Text == "Show Apps")
+             {
+                 clickedButton.Text = "Hide Apps"; label4.Visible = true;   //load list
+                 label2.Visible = true; label6.Visible = true; label5.Visible = true; appList.Visible = true;
+             }
+             else
+             {
+                 clickedButton.Text = "Show Apps";
+                 appList.Visible = false; label4.Visible = false; label5.Visible = false; //hide list 
+                 label2.Visible = false; label6.Visible = false; 
+             }
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
-}
+        }
