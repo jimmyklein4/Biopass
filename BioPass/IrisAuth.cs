@@ -10,23 +10,61 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using System.Drawing;
 using Emgu.CV.CvEnum;
+using System.Data.SQLite;
 
 namespace BioPass
 {
     class IrisAuth : authMethod
     {
         public int IdentifyUser(object image){
-            return 0;
+            SQLiteConnection.CreateFile("test.db");
+            SQLiteConnection conn = new SQLiteConnection("Data Source=MyDatabase.sqlite;Version=3");
+            String select = "select iris_data, user_id from biometricProperties;";
+            SQLiteCommand cmd = new SQLiteCommand(select, conn);
+            SQLiteDataReader reader = cmd.ExecuteReader();
+            int id = -1;
+            double min = 1.0;
+            while (reader.Read())
+            {
+                int[] template1 = ToArray(reader["iris_data"]);
+                double dist = HammingDistance(template1, GetTemplate(image), null, null);
+                id  = dist < min ? (int) reader["user_id"] : id;
+                min = dist < min ? dist : min;
+            }
+            return id;
         }
 
         public Boolean VerifyUser(object image, int userId){
+            SQLiteConnection.CreateFile("test.db");
+            SQLiteConnection conn = new SQLiteConnection("Data Source=MyDatabase.sqlite;Version=3");
+            String select = "select iris_data from biometricProperties where user_id = "
+                + userId + ";";
+            SQLiteCommand cmd = new SQLiteCommand(select, conn);
+            SQLiteDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                int[] template1 = ToArray(reader["iris_data"]);
+                return (HammingDistance(template1, GetTemplate(image), null, null) < .3);
+            }
             return false;
         }
 
-
-        private int[] GetTemplate(Image<Gray, byte> image)
+        private int[] ToArray(object v)
         {
+            String text = (String) v;
+            int[] result = new int[text.Length];
+            int i = 0;
+            foreach(char c in text)
+            {
+                result[i] = c - '0';
+                i++;
+            }
+            return result;
+        }
 
+        private int[] GetTemplate(object img)
+        {
+            Image<Gray, byte> image = (Image<Gray, byte>) img;
             var circles = FindCircles(image);
             Image<Gray, byte> unraveled = Unravel(image, circles);
             Complex[][][] convolved = LogGabor(unraveled);
