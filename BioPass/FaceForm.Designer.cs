@@ -41,7 +41,12 @@
             this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             this.label1 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.applicationsList = new System.Windows.Forms.Button();
+            this.appList = new System.Windows.Forms.Button();
+            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxDisplay)).BeginInit();
             this.SuspendLayout();
             // 
@@ -164,7 +169,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(202, 26);
             this.label1.TabIndex = 19;
-            this.label1.Text = "Select 2 Forms of Authentication";
+            this.label1.Text = "  Select 2 Forms of Authentication";
             this.label1.Visible = false;
             // 
             // textBox1
@@ -181,23 +186,84 @@
             this.textBox1.Visible = false;
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
-            // applicationsList
+            // appList
             // 
-            this.applicationsList.Location = new System.Drawing.Point(539, 539);
-            this.applicationsList.Name = "applicationsList";
-            this.applicationsList.Size = new System.Drawing.Size(75, 23);
-            this.applicationsList.TabIndex = 21;
-            this.applicationsList.Text = "Show Apps";
-            this.applicationsList.UseVisualStyleBackColor = true;
-            this.applicationsList.Visible = false;
-            this.applicationsList.Click += new System.EventHandler(this.button2_Click);
+            this.appList.Location = new System.Drawing.Point(539, 539);
+            this.appList.Name = "appList";
+            this.appList.Size = new System.Drawing.Size(75, 23);
+            this.appList.TabIndex = 21;
+            this.appList.Text = "Show Apps";
+            this.appList.UseVisualStyleBackColor = true;
+            this.appList.Visible = false;
+            this.appList.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // listBox1
+            // 
+            this.listBox1.BackColor = System.Drawing.SystemColors.ButtonShadow;
+            this.listBox1.Font = new System.Drawing.Font("Franklin Gothic Book", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.listBox1.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.ItemHeight = 21;
+            this.listBox1.Items.AddRange(new object[] {
+            "                                 Applications"});
+            this.listBox1.Location = new System.Drawing.Point(262, 265);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.Size = new System.Drawing.Size(348, 214);
+            this.listBox1.TabIndex = 22;
+            // 
+            // label2
+            // 
+            this.label2.BackColor = System.Drawing.SystemColors.ButtonShadow;
+            this.label2.Font = new System.Drawing.Font("Franklin Gothic Book", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(504, 323);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(95, 140);
+            this.label2.TabIndex = 23;
+            this.label2.Text = "label2";
+            // 
+            // label4
+            // 
+            this.label4.BackColor = System.Drawing.SystemColors.ButtonShadow;
+            this.label4.Font = new System.Drawing.Font("Franklin Gothic Book", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(304, 323);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(95, 140);
+            this.label4.TabIndex = 24;
+            this.label4.Text = "label4";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.BackColor = System.Drawing.SystemColors.ButtonShadow;
+            this.label5.Font = new System.Drawing.Font("Franklin Gothic Book", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(304, 289);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(68, 16);
+            this.label5.TabIndex = 25;
+            this.label5.Text = "Catalogued:";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.BackColor = System.Drawing.SystemColors.ButtonShadow;
+            this.label6.Font = new System.Drawing.Font("Franklin Gothic Book", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(504, 289);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(81, 16);
+            this.label6.TabIndex = 26;
+            this.label6.Text = "Uncatalogued:";
             // 
             // FaceForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(622, 566);
-            this.Controls.Add(this.applicationsList);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.listBox1);
+            this.Controls.Add(this.appList);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.checkedListBox1);
@@ -236,7 +302,12 @@
         private System.Windows.Forms.CheckedListBox checkedListBox1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.Button applicationsList;
+        private System.Windows.Forms.Button appList;
+        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
     }
 }
 

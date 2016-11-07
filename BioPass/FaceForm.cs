@@ -256,7 +256,8 @@ namespace BioPass
 
         private void button2_Click(object sender, EventArgs e)
         {
-            /* String user = "";
+            //db class not on this repo yet
+             String user = "";
              int i = 0;
              int k = 0;
              string[] app = new string[] { "tumail", "blackboard.temple.edu", "facebook.com", "en.wikipedia.org" };
@@ -264,29 +265,30 @@ namespace BioPass
              string[] appUn = new string[4];
              String cata = "";
              String uncata = "";
-             DBhandler db = new DBhandler();
-             db.connectToDatabase();
+             /*DBhandler db = new DBhandler();
+             db.connectToDatabase();*/
 
 
 
              for (int j = 0; j < app.Length; j++)
              {
-                 Boolean isCatlgd = db.appExistsForUser(app[j], user);
+                Boolean isCatlgd = false; //remove once db class back in repo
+                 //Boolean isCatlgd = db.appExistsForUser(app[j], user);
                  if (isCatlgd == true) { appCata[i] = app[j]; i++; }
                  else { appUn[k] = app[j]; k++; }
              }
-             // /* test filler
+             //  test filler
              appCata[0] = "test";
              appCata[1] = "test1";
              appCata[2] = " test2";
              //appUn[0] = "test2";
              //appUn[1] = "test3";
-             // 
+             // */
              for (i = 0; i < appCata.Length; i++) { cata = cata + appCata[i] + Environment.NewLine; }
              for (i = 0; i < appUn.Length; i++) { uncata = uncata + appUn[i] + Environment.NewLine; }
 
              label4.Text = cata;
-             label7.Text = uncata;
+             label2.Text = uncata;
 
 
 
@@ -300,14 +302,14 @@ namespace BioPass
              if (clickedButton.Text == "Show Apps")
              {
                  clickedButton.Text = "Hide Apps"; label4.Visible = true;   //load list
-                 label7.Visible = true; label6.Visible = true; label5.Visible = true; appList.Visible = true;
+                 label2.Visible = true; label6.Visible = true; label5.Visible = true; appList.Visible = true;
              }
              else
              {
                  clickedButton.Text = "Show Apps";
                  appList.Visible = false; label4.Visible = false; label5.Visible = false; //hide list 
-                 label7.Visible = false; label6.Visible = false; 
-             }*/
+                 label2.Visible = false; label6.Visible = false; 
+             }
         }
     }
         }
