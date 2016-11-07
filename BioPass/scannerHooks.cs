@@ -63,6 +63,7 @@ namespace BioPass {
                 } else { 
                     MessageBox.Show("User identified as: "+ Program.db.getUserName(ID));
                     statusBar.Text = string.Format("Identify Succeed ID = {0} Score = {1}  Processed Number = {2}", ID, score, processedNum);
+                    postAuth();
                 }
             }
         }

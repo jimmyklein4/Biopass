@@ -24,8 +24,8 @@ namespace BioPass
             if (website == "tumail")
             {
                 driver.Navigate().GoToUrl("http://tumail.temple.edu");
-                string u = Program.db.getUsername("tumail", person_id);
-                string p = Program.db.getPassword("tumail", person_id);
+                string u = "test"; //Program.db.getUsername("tumail", person_id);
+                string p = "blah"; //Program.db.getPassword("tumail", person_id);
 
                 Debug.WriteLine(u + " " + p);
 

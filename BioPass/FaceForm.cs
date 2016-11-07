@@ -203,5 +203,10 @@ namespace BioPass
             appmodeLabel.Visible = false;
             Program.target = 0;
         }
+        private void postAuth()
+        {
+            automateWeb web = new automateWeb("tumail", "1");
+
+        }
     }
 }
