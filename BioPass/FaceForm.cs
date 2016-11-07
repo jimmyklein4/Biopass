@@ -158,7 +158,7 @@ namespace BioPass
             }
 
             if(e.KeyCode==Keys.Enter) {
-                //compileUserData();
+                compileUserData();
             }
             e.Handled = true;
         }
@@ -205,7 +205,10 @@ namespace BioPass
         }
         private void postAuth()
         {
-            automateWeb web = new automateWeb("tumail", "1");
+            Login LoginWin = new Login();
+            DialogResult login_res = LoginWin.ShowDialog();
+            Debug.Write(LoginWin.application);
+            automateWeb web = new automateWeb(LoginWin.application, "1");
 
         }
     }

@@ -47,8 +47,8 @@ namespace BioPass
             else if (website == "blackboard.temple.edu")
             {
                 driver.Navigate().GoToUrl("http://blackboard.temple.edu");
-                string u = Program.db.getUsername("blackboard.temple.edu", person_id);
-                string p = Program.db.getPassword("blackboard.temple.edu", person_id);
+                string u = "test"; // Program.db.getUsername("blackboard.temple.edu", person_id);
+                string p = "test"; // Program.db.getPassword("blackboard.temple.edu", person_id);
 
                 Debug.WriteLine(u + " " + p);
 
@@ -70,8 +70,8 @@ namespace BioPass
             else if (website == "facebook.com")
             {
                 driver.Navigate().GoToUrl("http://facebook.com");
-                string u = Program.db.getUsername("facebook.com", person_id);
-                string p = Program.db.getPassword("facebook.com", person_id);
+                string u = "test";// Program.db.getUsername("facebook.com", person_id);
+                string p = "test"; //Program.db.getPassword("facebook.com", person_id);
 
                 Debug.WriteLine(u + " " + p);
 
@@ -93,8 +93,8 @@ namespace BioPass
             else if (website == "en.wikipedia.org")
             {
                 driver.Navigate().GoToUrl("http://en.wikipedia.org/w/index.php?title=Special:UserLogin");
-                string u = Program.db.getUsername("en.wikipedia.org", person_id);
-                string p = Program.db.getPassword("en.wikipedia.org", person_id);
+                string u = "test"; //Program.db.getUsername("en.wikipedia.org", person_id);
+                string p = "test"; //Program.db.getPassword("en.wikipedia.org", person_id);
 
                 Debug.WriteLine(u + " " + p);
 
