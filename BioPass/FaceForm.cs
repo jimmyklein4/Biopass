@@ -33,7 +33,6 @@ namespace BioPass
 
                 thrashOldCamera();
                 startCapturing();
-                init_fingerprint();
             }
 
         }
@@ -173,7 +172,6 @@ namespace BioPass
         private Bitmap getFingerprint() {
             return null;
         }
-
         private String collectPin() {
             return last4Ints;
         }
@@ -183,20 +181,7 @@ namespace BioPass
             Bitmap finger = getFingerprint();
             String pin = collectPin();
 
-            Program.recieveCapture(finger, face, pin);
-        }
-
-        private void registerBtn_Click(object sender, EventArgs e) {
-            String name = "";
-            Program.appmode = 1;
-            newReg nameDialog = new newReg(); 
-            if(nameDialog.ShowDialog() == DialogResult.OK) {
-                name = nameDialog.textBox1.Text;
-                long user_id = Program.db.addUser(name);
-                appmodeLabel.Visible = true;
-                Program.target = user_id;
-                beginFPRegistration();
-            }
+            Program.recieveCapture(finger,face, pin);
         }
     }
 }
