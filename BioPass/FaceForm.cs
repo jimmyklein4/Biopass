@@ -53,6 +53,7 @@ namespace BioPass
         private List<Image> _faces;
         private FacialRecognition rec;
         private List<int> labels;
+        BackgroundWorker bw;
         private Camera CurrentCamera
         {
            get
@@ -205,13 +206,15 @@ namespace BioPass
                 if (rec == null) {
                     rec = new FacialRecognition();
                 }
-                rec.CreateInitialRecognizer(_faces.ToArray());
+                bw = new BackgroundWorker();
+                bw.DoWork += rec.CreateInitialRecognizer;
+                bw.RunWorkerAsync(_faces);
                 _faces = null;
             }
         }
         // Checks the face it detects against the recognizer 
         private void check_Click(object sender, EventArgs e) {
-            if (rec != null) {
+            if (rec != null && (bw!=null && !bw.IsBusy)) {
                 Console.WriteLine(rec.IdentifyUser(FacialRecognition.DetectFace(_latestFrame)));
                 Console.WriteLine(rec.GetDistance(FacialRecognition.DetectFace(_latestFrame)));
             }

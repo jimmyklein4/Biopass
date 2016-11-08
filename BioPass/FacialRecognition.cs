@@ -6,6 +6,7 @@ using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using Emgu.CV.Face;
 using System.Drawing;
+using System.ComponentModel;
 
 namespace BioPass {
     class FacialRecognition : authMethod {
@@ -62,17 +63,20 @@ namespace BioPass {
         /**
          * Method to create initial Eigenface recoginizer. Uses faces given to it through faces with the labels being in labels
          */
-        public void CreateInitialRecognizer(Image[] faces) {
+        public void CreateInitialRecognizer(object Sender, DoWorkEventArgs args) {
             List<Image<Gray, Byte>> grayFaces = new List<Image<Gray, byte>>();
             List<int> labels = new List<int>();
+            List<Image> faces = (List<Image>)args.Argument;
+            Image[] facesArray = faces.ToArray();
             //This was a csv with training set of faces. Modifications may be needed
             readCSV(@"Support\face_directory.txt", ref grayFaces, ref labels);
-            for(int i = 0; i < faces.Length; i++) {
-                grayFaces.Add(new Image<Gray, byte>((Bitmap)faces[i]));
+            for(int i = 0; i < facesArray.Length; i++) {
+                grayFaces.Add(new Image<Gray, byte>((Bitmap)facesArray[i]));
                 labels.Add(40);
             }
 
             if (rec == null) { rec = new EigenFaceRecognizer(80, double.PositiveInfinity); }
+            
             rec.Train(grayFaces.ToArray(), labels.ToArray());
         }
         /**
