@@ -7,11 +7,24 @@ using Emgu.CV.Util;
 using Emgu.CV.Face;
 using System.Drawing;
 using System.ComponentModel;
+using System.Threading;
 
+//TODO: change rec so that it creates a new thread inside of this class 
+// instead of having to call the thread outside of the class
+
+//TODO: Save all face data so that it can be loaded in again. 
+
+//TODO: Go through and delete methods that are no longer needed
+
+//TODO: Write csv for file structure?
 namespace BioPass {
     class FacialRecognition : authMethod {
         private EigenFaceRecognizer rec;
         private Capture cap;
+        private BackgroundWorker _recTrainerWorker;
+        private BackgroundWorker _detectFaceWorker;
+        private CascadeClassifier cascadeClassifier;
+        private List<Image<Gray, Byte>> _detectedFaces;
         private const double EIGEN_THRESHOLD = 2000.0;
         /**
          * Constructor if you already have a training set that you want to load in
@@ -23,7 +36,11 @@ namespace BioPass {
         /**
          * Default constructor
          */
-        public FacialRecognition() { }
+        public FacialRecognition() {
+            cascadeClassifier = new CascadeClassifier(@"Support\haarcascade_frontalface_default.xml");
+            _detectedFaces = new List<Image<Gray, Byte>>();
+
+        }
         /**
          * Reads images and labels in from a CSV file 
          */
@@ -46,39 +63,78 @@ namespace BioPass {
         * cut out and return only the facial detection area. 
         * Note: Because the EigenFaceRecognizer requires you to have all the images the same size, 300x300 is hard coded
         */
-        public static Bitmap DetectFace(Image image) {
+        public void DetectFace(Image image) {
             //idk if this is the right way to reference the file 
-            CascadeClassifier cascadeClassifier = new CascadeClassifier(@"Support\haarcascade_frontalface_default.xml");
-            Image<Bgr, Byte> faces = new Image<Bgr, byte>((Bitmap)image);
-            if (faces != null) {
-                var detected = cascadeClassifier.DetectMultiScale(faces, 1.1, 10, Size.Empty);
-                foreach (var face in detected) {
-                    faces.Draw(face, new Bgr(0, double.MaxValue, 0), 3);
-                }
-                faces = faces.Resize(92, 112, 0);
-                return faces.ToBitmap();
-            }
-            return null;
+                _detectFaceWorker = new BackgroundWorker();
+                _detectFaceWorker.DoWork += detectFace_DoWork;
+                _detectFaceWorker.RunWorkerCompleted += detectFace_RunWorkerCompleted;
+                _detectFaceWorker.RunWorkerAsync(image);
+
         }
+
+        private void detectFace_DoWork(Object sender, DoWorkEventArgs args) {
+            Image<Gray, Byte> faces = new Image<Gray, byte>((Bitmap)args.Argument);
+            Rectangle[] detected = cascadeClassifier.DetectMultiScale(faces, 1.1, 10, Size.Empty);
+            if (detected.Length > 0) {
+                //Array.Sort(detected, detected.Length);
+                //TODO sort array
+
+                faces = faces.Copy(detected[0]);
+                faces = faces.Resize(92, 112, 0);
+                faces.Save(_detectedFaces.Count + ".jpg");
+                args.Result = faces;
+            }
+        }
+
+        private void detectFace_RunWorkerCompleted(object Sender, RunWorkerCompletedEventArgs args) {
+            _detectedFaces.Add((Image<Gray, Byte>)args.Result);
+            Console.WriteLine("Detected Face Thread Completed. Number of faces:" + _detectedFaces.Count);
+        }
+
         /**
          * Method to create initial Eigenface recoginizer. Uses faces given to it through faces with the labels being in labels
          */
-        public void CreateInitialRecognizer(object Sender, DoWorkEventArgs args) {
+        public void CreateInitialRecognizer() {
+           if (rec == null) { rec = new EigenFaceRecognizer(80, double.PositiveInfinity); }
+            if (_detectedFaces.Count >= 10) {
+                _recTrainerWorker = new BackgroundWorker();
+                _recTrainerWorker.DoWork += recTrainer_DoWork;
+                _recTrainerWorker.RunWorkerAsync(_detectedFaces);
+                //_detectedFaces.Clear();
+            } else {
+                Console.WriteLine("Not enough faces");
+            }
+         
+        }
+
+        private void recTrainer_DoWork(object Sender, DoWorkEventArgs args) {
+            // Look into how arguments work
+            // may need to pack everything into a multi-dimensional array?
+            // How to ensure safety? 
             List<Image<Gray, Byte>> grayFaces = new List<Image<Gray, byte>>();
             List<int> labels = new List<int>();
-            List<Image> faces = (List<Image>)args.Argument;
-            Image[] facesArray = faces.ToArray();
-            //This was a csv with training set of faces. Modifications may be needed
+            Console.WriteLine("Detected faces length: " + _detectedFaces.ToArray());
+            Image<Gray,Byte>[] facesArray = _detectedFaces.ToArray();
+
             readCSV(@"Support\face_directory.txt", ref grayFaces, ref labels);
-            for(int i = 0; i < facesArray.Length; i++) {
-                grayFaces.Add(new Image<Gray, byte>((Bitmap)facesArray[i]));
+            Console.WriteLine("Gray faces count: " + grayFaces.Count);
+            Console.WriteLine("Labels count: " + labels.Count);
+            Console.WriteLine(facesArray.Length);
+            for (int i = 0; i < facesArray.Length; i++) {
+                grayFaces.Add(facesArray[i]);
                 labels.Add(40);
             }
-
-            if (rec == null) { rec = new EigenFaceRecognizer(80, double.PositiveInfinity); }
-            
+            Console.WriteLine("Gray faces count: " + grayFaces.ToArray().Length);
+            Console.WriteLine("Labels count: " + labels.ToArray().Length);
             rec.Train(grayFaces.ToArray(), labels.ToArray());
+            Console.WriteLine("Rec is trained");
+            _detectedFaces.Clear();
         }
+
+        public Boolean IsRecognizerCreated() {
+            return (rec != null && (_recTrainerWorker != null && !_recTrainerWorker.IsBusy));
+        }
+
         /**
          * Save the EigenFaceRecognizer to filename
          */
@@ -89,18 +145,19 @@ namespace BioPass {
         //2000 is currently set as the eigen threshold. The lower the better
         public int IdentifyUser(object A) {
             if (rec != null) {
-                Image<Gray, Byte> recFace = new Image<Gray, byte>((Bitmap)(Image)A);
-                recFace = recFace.Resize(92, 112, 0);
-                var results = rec.Predict(recFace);
+                //DetectFace((Bitmap)A);
+                //This is breaking because detect face is now async. need to wait somehow. 
+                //create some form of callback?
+                var results = rec.Predict(_detectedFaces[0]);
+                Console.WriteLine(results.Distance);
                 if(results.Distance < EIGEN_THRESHOLD) {
+                    _detectedFaces.Clear();
                     return results.Label;
                 }
+                //TODO: DELETE. DANGEROUS CALL
+                _detectedFaces.Clear();
             }
             return -1;
-        }
-        //TODO: DELETE
-        public double GetDistance(Image a) {
-            return rec.Predict(new Image<Gray, Byte>((Bitmap)a)).Distance;
         }
         //TODO: Implement
         public Boolean VerifyUser(object A, int user_id) {
