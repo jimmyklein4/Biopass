@@ -17,7 +17,8 @@ namespace BioPass
         public FaceForm()
         {
             InitializeComponent();
-            rec = new FacialRecognition();
+            rec = new FacialRecognition("test.xml");
+            //rec = new FacialRecognition();
         }
 
         private void FaceForm_Load(object sender, EventArgs e)
@@ -216,10 +217,12 @@ namespace BioPass
         }
         // Checks the face it detects against the recognizer 
         private void check_Click(object sender, EventArgs e) {
-            Boolean test = rec.IsRecognizerCreated();
-            if (test) {
-                Console.WriteLine(rec.IdentifyUser(null));
-            }
+            //Boolean test = rec.IsRecognizerCreated();
+            //if (test) {
+            rec.UpdateRecognizer(_latestFrame, 40);
+                rec.IdentifyUser(null);
+                //rec.SaveRecognizer("test.xml");
+            //}
         }
     }
 }

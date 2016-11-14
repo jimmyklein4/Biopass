@@ -34,6 +34,8 @@ namespace BioPass {
         public FacialRecognition(String filename) {
             rec = new LBPHFaceRecognizer();
             rec.Load(filename);
+            cascadeClassifier = new CascadeClassifier(@"Support\haarcascade_frontalface_default.xml");
+            _detectedFaces = new List<Image<Gray, Byte>>();
         }
         /**
          * Default constructor
@@ -66,7 +68,6 @@ namespace BioPass {
         * Note: Because the EigenFaceRecognizer requires you to have all the images the same size, 92x112 is hard coded
         */
         public void DetectFace(Image image) {
-            //idk if this is the right way to reference the file 
                 _detectFaceWorker = new BackgroundWorker();
                 _detectFaceWorker.DoWork += detectFace_DoWork;
                 _detectFaceWorker.RunWorkerCompleted += detectFace_RunWorkerCompleted;
@@ -83,7 +84,6 @@ namespace BioPass {
 
                 faces = faces.Copy(detected[0]);
                 faces = faces.Resize(92, 112, 0);
-                faces.Save(_detectedFaces.Count + ".jpg");
                 testFaceMat = faces.Mat;
                 args.Result = faces;
             }
@@ -137,6 +137,16 @@ namespace BioPass {
         public void SaveRecognizer(String filename) {
             rec.Save(filename);
         }
+
+        public void UpdateRecognizer(Image image, int label) {
+            if (rec != null) {
+                List<Image<Gray, Byte>> newFace = new List<Image<Gray, byte>>();
+                newFace.Add(new Image<Gray, byte>((Bitmap)image));
+                int[] labels = new int[1];
+                labels[0] = label;
+                rec.Update(newFace.ToArray(), labels);
+            }
+        }
         //Prints out the label of the user to be identifed
         //2000 is currently set as the eigen threshold. The lower the better
         public int IdentifyUser(object A) {
@@ -146,6 +156,7 @@ namespace BioPass {
                 //create some form of callback?
                 var results = rec.Predict(_detectedFaces[0]);
                 Console.WriteLine(results.Distance);
+                Console.WriteLine(results.Label);
                 if(results.Distance < EIGEN_THRESHOLD) {
                     _detectedFaces.Clear();
                     return results.Label;
