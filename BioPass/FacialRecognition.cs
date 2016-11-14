@@ -17,20 +17,22 @@ using System.Threading;
 //TODO: Go through and delete methods that are no longer needed
 
 //TODO: Write csv for file structure?
+
+//THREAD SAFETY IS A NIGHTMARE 
 namespace BioPass {
     class FacialRecognition : authMethod {
-        private EigenFaceRecognizer rec;
-        private Capture cap;
+        private LBPHFaceRecognizer rec;
         private BackgroundWorker _recTrainerWorker;
         private BackgroundWorker _detectFaceWorker;
         private CascadeClassifier cascadeClassifier;
         private List<Image<Gray, Byte>> _detectedFaces;
+        private Mat testFaceMat;
         private const double EIGEN_THRESHOLD = 2000.0;
         /**
          * Constructor if you already have a training set that you want to load in
          */
         public FacialRecognition(String filename) {
-            rec = new EigenFaceRecognizer(80, double.PositiveInfinity);
+            rec = new LBPHFaceRecognizer();
             rec.Load(filename);
         }
         /**
@@ -61,7 +63,7 @@ namespace BioPass {
         /**
         * Facial detection method. Calling this will take the photo given to it, detect a face,
         * cut out and return only the facial detection area. 
-        * Note: Because the EigenFaceRecognizer requires you to have all the images the same size, 300x300 is hard coded
+        * Note: Because the EigenFaceRecognizer requires you to have all the images the same size, 92x112 is hard coded
         */
         public void DetectFace(Image image) {
             //idk if this is the right way to reference the file 
@@ -82,6 +84,7 @@ namespace BioPass {
                 faces = faces.Copy(detected[0]);
                 faces = faces.Resize(92, 112, 0);
                 faces.Save(_detectedFaces.Count + ".jpg");
+                testFaceMat = faces.Mat;
                 args.Result = faces;
             }
         }
@@ -95,12 +98,11 @@ namespace BioPass {
          * Method to create initial Eigenface recoginizer. Uses faces given to it through faces with the labels being in labels
          */
         public void CreateInitialRecognizer() {
-           if (rec == null) { rec = new EigenFaceRecognizer(80, double.PositiveInfinity); }
+           if (rec == null) { rec = new LBPHFaceRecognizer(); }
             if (_detectedFaces.Count >= 10) {
                 _recTrainerWorker = new BackgroundWorker();
                 _recTrainerWorker.DoWork += recTrainer_DoWork;
                 _recTrainerWorker.RunWorkerAsync(_detectedFaces);
-                //_detectedFaces.Clear();
             } else {
                 Console.WriteLine("Not enough faces");
             }
@@ -113,19 +115,13 @@ namespace BioPass {
             // How to ensure safety? 
             List<Image<Gray, Byte>> grayFaces = new List<Image<Gray, byte>>();
             List<int> labels = new List<int>();
-            Console.WriteLine("Detected faces length: " + _detectedFaces.ToArray());
             Image<Gray,Byte>[] facesArray = _detectedFaces.ToArray();
 
             readCSV(@"Support\face_directory.txt", ref grayFaces, ref labels);
-            Console.WriteLine("Gray faces count: " + grayFaces.Count);
-            Console.WriteLine("Labels count: " + labels.Count);
-            Console.WriteLine(facesArray.Length);
             for (int i = 0; i < facesArray.Length; i++) {
                 grayFaces.Add(facesArray[i]);
                 labels.Add(40);
             }
-            Console.WriteLine("Gray faces count: " + grayFaces.ToArray().Length);
-            Console.WriteLine("Labels count: " + labels.ToArray().Length);
             rec.Train(grayFaces.ToArray(), labels.ToArray());
             Console.WriteLine("Rec is trained");
             _detectedFaces.Clear();
