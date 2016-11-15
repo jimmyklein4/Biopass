@@ -10,7 +10,7 @@ using System.IO;
 namespace BioPass
 {
     public class automateWeb
-    {
+    { 
         public ChromeDriverService service = null;
         public automateWeb(String website, String person_id)
         {
@@ -112,6 +112,10 @@ namespace BioPass
                 {
                     Console.Out.WriteLine(E);
                 }
+            }
+            else
+            {
+
             }
         }
     }
