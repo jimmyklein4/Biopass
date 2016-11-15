@@ -185,7 +185,7 @@ namespace BioPass
             return appID;
         }
 
-        public String getUsrNameField(String aid)
+        public String getUsernameField(String aid)
         {
             String sql = "SELECT username_field FROM application WHERE application_id='" + aid + "'";
             SQLiteCommand command = new SQLiteCommand(sql, dbConn);
