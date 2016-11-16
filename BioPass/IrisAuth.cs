@@ -20,7 +20,7 @@ namespace BioPass
             double min = 1.0;
             while (reader.Read())
             {
-                int[] template1 = ToArray(reader["iris_data"]);
+                int[] template1 = Base64ToTemplate(reader["iris_data"].ToString());
                 double dist = HammingDistance(template1, GetTemplate(image), null, null);
                 id  = dist < min ? (int) reader["user_id"] : id;
                 min = dist < min ? dist : min;
@@ -30,7 +30,7 @@ namespace BioPass
 
         public void UpdateUserTemplate(int userId, object image)
         {
-            String data = ToString(GetTemplate(image));
+            String data = templateToBase64(GetTemplate(image));
             SQLiteConnection.CreateFile("test.db");
             SQLiteConnection conn = new SQLiteConnection("Data Source=MyDatabase.sqlite;Version=3");
             String update = "update biometricProperties set iris_data = " + data + 
@@ -49,32 +49,12 @@ namespace BioPass
             int[] template2 = GetTemplate(image);
             while (reader.Read())
             {
-                int[] template1 = ToArray(reader["iris_data"]);
+                int[] template1 = Base64ToTemplate(reader["iris_data"].ToString());
                 return (HammingDistance(template1, template2, null, null) < .3);
             }
             return false;
         }
-
-        private int[] ToArray(object v)
-        {
-            String text = (String) v;
-            int[] result = new int[text.Length];
-            int i = 0;
-            foreach(char c in text)
-            {
-                result[i] = c - '0';
-                i++;
-            }
-            return result;
-        }
-
-        private String ToString(int[] template)
-        {
-            String s = "";
-            foreach (int i in template) s += i;
-            return s;
-        }
-
+        
         private int[] GetTemplate(object img)
         {
             Image<Gray, byte> image = (Image<Gray, byte>) img;
@@ -89,7 +69,6 @@ namespace BioPass
             Gray canny = new Gray(16);
             int minAccumulator = 0;
             int currAcumulator = 200;
-            Gray accumulator = new Gray(currAcumulator);
             double dp = 12;
             double minDistance = 10;
             int minSize = 0;
@@ -97,6 +76,7 @@ namespace BioPass
             CircleF maxCircle = new CircleF();
             while (currAcumulator > minAccumulator)
             {
+                Gray accumulator = new Gray(currAcumulator);
                 CircleF[][] circles = image.Clone().HoughCircles(
                     canny,
                     accumulator,
@@ -106,6 +86,7 @@ namespace BioPass
                     maxSize);
                 if (circles.Length > 0)
                     return circles[0][0];
+                currAcumulator--;
             }
             return maxCircle;
         }
@@ -217,7 +198,46 @@ namespace BioPass
             return signal;
         }
 
+        private String templateToBase64(int[] template)
+        {
+            byte[] bytes = new byte[template.Length / 8 + 1];
+            int i = 0;
+            int k = 0;
+            while(i < template.Length)
+            {
+                byte b = 0;
+                for(int j=0; j<8; j++)
+                {
+                    if (i < template.Length)
+                    {
+                        b = (byte)(b | (template[i] << j));
+                        i++;
+                    } else
+                    {
+                        break;
+                    }
+                }
+                bytes[k] = b;
+                k++;
+            }
+            return Convert.ToBase64String(bytes);
+        }
         
+        private int[] Base64ToTemplate(String base64)
+        {
+            byte[] bytes = Convert.FromBase64String(base64);
+            int[] template = new int[bytes.Length * 8];
+            int j = 0;
+            foreach(byte b in bytes)
+            {
+                for(int i=0; i<8; i++)
+                {
+                    template[j] = (b >> i) & 1;
+                }
+                j++;
+            }
+            return template;
+        }
 
     }
 }
