@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MathNet.Numerics.IntegralTransforms;
 using System.Numerics;
-using MathNet.Numerics.LinearAlgebra;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using System.Drawing;
-using Emgu.CV.CvEnum;
 using System.Data.SQLite;
 
 namespace BioPass
@@ -34,6 +28,17 @@ namespace BioPass
             return id;
         }
 
+        public void UpdateUserTemplate(int userId, object image)
+        {
+            String data = ToString(GetTemplate(image));
+            SQLiteConnection.CreateFile("test.db");
+            SQLiteConnection conn = new SQLiteConnection("Data Source=MyDatabase.sqlite;Version=3");
+            String update = "update biometricProperties set iris_data = " + data + 
+                " where user_id = " + userId + ";";
+            SQLiteCommand cmd = new SQLiteCommand(update, conn);
+            cmd.ExecuteNonQuery();
+        }
+
         public Boolean VerifyUser(object image, int userId){
             SQLiteConnection.CreateFile("test.db");
             SQLiteConnection conn = new SQLiteConnection("Data Source=MyDatabase.sqlite;Version=3");
@@ -41,10 +46,11 @@ namespace BioPass
                 + userId + ";";
             SQLiteCommand cmd = new SQLiteCommand(select, conn);
             SQLiteDataReader reader = cmd.ExecuteReader();
+            int[] template2 = GetTemplate(image);
             while (reader.Read())
             {
                 int[] template1 = ToArray(reader["iris_data"]);
-                return (HammingDistance(template1, GetTemplate(image), null, null) < .3);
+                return (HammingDistance(template1, template2, null, null) < .3);
             }
             return false;
         }
@@ -62,30 +68,45 @@ namespace BioPass
             return result;
         }
 
+        private String ToString(int[] template)
+        {
+            String s = "";
+            foreach (int i in template) s += i;
+            return s;
+        }
+
         private int[] GetTemplate(object img)
         {
             Image<Gray, byte> image = (Image<Gray, byte>) img;
             var circles = FindCircles(image);
             Image<Gray, byte> unraveled = Unravel(image, circles);
             Complex[][][] convolved = LogGabor(unraveled);
-            return PhaseQuantifier(convolved[0]);
+            return PhaseQuantifier(convolved[0]); //there's only 1 anyway
         }
 
         private CircleF FindCircles(Image<Gray, byte> image)
         {
             Gray canny = new Gray(16);
-            Gray accumulator = new Gray(12);
+            int minAccumulator = 0;
+            int currAcumulator = 200;
+            Gray accumulator = new Gray(currAcumulator);
             double dp = 12;
             double minDistance = 10;
             int minSize = 0;
             int maxSize = 0;
-            CircleF maxCircle = image.Clone().HoughCircles(
-                canny,
-                accumulator,
-                dp,
-                minDistance,
-                minSize,
-                maxSize)[0][0];
+            CircleF maxCircle = new CircleF();
+            while (currAcumulator > minAccumulator)
+            {
+                CircleF[][] circles = image.Clone().HoughCircles(
+                    canny,
+                    accumulator,
+                    dp,
+                    minDistance,
+                    minSize,
+                    maxSize);
+                if (circles.Length > 0)
+                    return circles[0][0];
+            }
             return maxCircle;
         }
 
@@ -100,11 +121,13 @@ namespace BioPass
         {
             int diffs = 0;
             int comps = 0;
+            mask1 = mask1 == null ? new int[template1.Length] : mask1;
+            mask2 = mask2 == null ? new int[template1.Length] : mask2;
             for (int i = 0; i < template1.Length; i++)
             {
                 if (mask1[i] != 1 && mask2[i] != 1)
                 {
-                    if (template1[i] != template2[i] && (mask1[i] != 1 && mask2[i] != 1))
+                    if (template1[i] != template2[i])
                     {
                         diffs++;
                     }
@@ -156,7 +179,7 @@ namespace BioPass
 
         private Complex[][][] LogGabor(Image<Gray, byte> img)
         {
-            int rotations = 8;
+            int rotations = 1;
             int mult = 8;
             int wavelength = 8;
             double sigma = .5;
