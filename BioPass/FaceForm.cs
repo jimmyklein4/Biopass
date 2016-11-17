@@ -55,7 +55,7 @@ namespace BioPass
         private static Bitmap _latestFrame;
         private Boolean detectFaces = false;
         private List<Image> _faces;
-        //private FacialRecognition rec;
+        private FacialRecognition rec;
         private List<int> labels;
         BackgroundWorker bw;
         private Camera CurrentCamera
