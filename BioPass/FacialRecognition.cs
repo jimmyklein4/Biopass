@@ -9,16 +9,7 @@ using System.Drawing;
 using System.ComponentModel;
 using System.Threading;
 
-//TODO: change rec so that it creates a new thread inside of this class 
-// instead of having to call the thread outside of the class
 
-//TODO: Save all face data so that it can be loaded in again. 
-
-//TODO: Go through and delete methods that are no longer needed
-
-//TODO: Write csv for file structure?
-
-//THREAD SAFETY IS A NIGHTMARE 
 namespace BioPass {
     class FacialRecognition : authMethod {
         private LBPHFaceRecognizer rec;
@@ -27,7 +18,7 @@ namespace BioPass {
         private CascadeClassifier cascadeClassifier;
         private List<Image<Gray, Byte>> _detectedFaces;
         private Mat testFaceMat;
-        private const double EIGEN_THRESHOLD = 2000.0;
+        private const double LBPH_THRESHOLD = 2000.0;
         /**
          * Constructor if you already have a training set that you want to load in
          */
@@ -38,12 +29,14 @@ namespace BioPass {
             _detectedFaces = new List<Image<Gray, Byte>>();
         }
         /**
-         * Default constructor
+         * Default constructor. Loads in the default training set (pre-trained)
          */
         public FacialRecognition() {
             cascadeClassifier = new CascadeClassifier(@"Support\haarcascade_frontalface_default.xml");
             _detectedFaces = new List<Image<Gray, Byte>>();
-
+            rec = new LBPHFaceRecognizer();
+            //Imports default training set from AT faces. Faces were trained using LBPH with default values
+            rec.Load(@"Support\default_training_set");
         }
         /**
          * Reads images and labels in from a CSV file 
@@ -65,7 +58,7 @@ namespace BioPass {
         /**
         * Facial detection method. Calling this will take the photo given to it, detect a face,
         * cut out and return only the facial detection area. 
-        * Note: Because the EigenFaceRecognizer requires you to have all the images the same size, 92x112 is hard coded
+        * Note: Because the LBPHFaceRecognizer requires you to have all the images the same size, 92x112 is hard coded
         */
         public void DetectFace(Image image) {
                 _detectFaceWorker = new BackgroundWorker();
@@ -95,10 +88,9 @@ namespace BioPass {
         }
 
         /**
-         * Method to create initial Eigenface recoginizer. Uses faces given to it through faces with the labels being in labels
+         * Method to create initial LBPHface recoginizer. Uses faces given to it through faces with the labels being in labels
          */
-        public void CreateInitialRecognizer() {
-           if (rec == null) { rec = new LBPHFaceRecognizer(); }
+        public void TrainRecognizer() {
             if (_detectedFaces.Count >= 10) {
                 _recTrainerWorker = new BackgroundWorker();
                 _recTrainerWorker.DoWork += recTrainer_DoWork;
@@ -113,17 +105,14 @@ namespace BioPass {
             // Look into how arguments work
             // may need to pack everything into a multi-dimensional array?
             // How to ensure safety? 
-            List<Image<Gray, Byte>> grayFaces = new List<Image<Gray, byte>>();
             List<int> labels = new List<int>();
             Image<Gray,Byte>[] facesArray = _detectedFaces.ToArray();
-
-            readCSV(@"Support\face_directory.txt", ref grayFaces, ref labels);
+            //TODO: CHANGE THIS BECAUSE WERE NOT TRAINING THE WHOLE SET ANYMORE
             for (int i = 0; i < facesArray.Length; i++) {
-                grayFaces.Add(facesArray[i]);
                 labels.Add(40);
             }
-            rec.Train(grayFaces.ToArray(), labels.ToArray());
-            Console.WriteLine("Rec is trained");
+            rec.Update(facesArray, labels.ToArray());
+            Console.WriteLine("Rec is updated");
             _detectedFaces.Clear();
         }
 
@@ -132,23 +121,14 @@ namespace BioPass {
         }
 
         /**
-         * Save the EigenFaceRecognizer to filename
+         * Save the LBPHFaceRecognizer to filename
          */
         public void SaveRecognizer(String filename) {
             rec.Save(filename);
         }
 
-        public void UpdateRecognizer(Image image, int label) {
-            if (rec != null) {
-                List<Image<Gray, Byte>> newFace = new List<Image<Gray, byte>>();
-                newFace.Add(new Image<Gray, byte>((Bitmap)image));
-                int[] labels = new int[1];
-                labels[0] = label;
-                rec.Update(newFace.ToArray(), labels);
-            }
-        }
         //Prints out the label of the user to be identifed
-        //2000 is currently set as the eigen threshold. The lower the better
+        //2000 is currently set as the LBPH threshold. The lower the better
         public int IdentifyUser(object A) {
             if (rec != null) {
                 //DetectFace((Bitmap)A);
@@ -157,7 +137,7 @@ namespace BioPass {
                 var results = rec.Predict(_detectedFaces[0]);
                 Console.WriteLine(results.Distance);
                 Console.WriteLine(results.Label);
-                if(results.Distance < EIGEN_THRESHOLD) {
+                if(results.Distance < LBPH_THRESHOLD) {
                     _detectedFaces.Clear();
                     return results.Label;
                 }

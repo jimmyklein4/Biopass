@@ -102,6 +102,7 @@ namespace BioPass
             if (_latestFrame != null)
             {
                 // Draw the latest image from the active camera
+                //This is causing an exception currently.
                 lock (_latestFrame) {
                     e.Graphics.DrawImage(_latestFrame, 0, 0, _latestFrame.Width, _latestFrame.Height);
                 }
@@ -215,7 +216,7 @@ namespace BioPass
             if (rec == null) {
                 rec = new FacialRecognition();
             }
-            rec.CreateInitialRecognizer();
+            rec.TrainRecognizer();
         }
         // Checks the face it detects against the recognizer 
         private void check_Click(object sender, EventArgs e) {
