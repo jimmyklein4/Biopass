@@ -1,53 +1,93 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MathNet.Numerics.IntegralTransforms;
 using System.Numerics;
-using MathNet.Numerics.LinearAlgebra;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using System.Drawing;
-using Emgu.CV.CvEnum;
+using System.Data.SQLite;
 
 namespace BioPass
 {
     class IrisAuth : authMethod
     {
         public int IdentifyUser(object image){
-            return 0;
+            SQLiteConnection.CreateFile("test.db");
+            SQLiteConnection conn = new SQLiteConnection("Data Source=MyDatabase.sqlite;Version=3");
+            String select = "select iris_data, user_id from biometricProperties;";
+            SQLiteCommand cmd = new SQLiteCommand(select, conn);
+            SQLiteDataReader reader = cmd.ExecuteReader();
+            int id = -1;
+            double min = 1.0;
+            while (reader.Read())
+            {
+                int[] template1 = Base64ToTemplate(reader["iris_data"].ToString());
+                double dist = HammingDistance(template1, GetTemplate(image), null, null);
+                id  = dist < min ? (int) reader["user_id"] : id;
+                min = dist < min ? dist : min;
+            }
+            return id;
+        }
+
+        public void UpdateUserTemplate(int userId, object image)
+        {
+            String data = templateToBase64(GetTemplate(image));
+            SQLiteConnection.CreateFile("test.db");
+            SQLiteConnection conn = new SQLiteConnection("Data Source=MyDatabase.sqlite;Version=3");
+            String update = "update biometricProperties set iris_data = " + data + 
+                " where user_id = " + userId + ";";
+            SQLiteCommand cmd = new SQLiteCommand(update, conn);
+            cmd.ExecuteNonQuery();
         }
 
         public Boolean VerifyUser(object image, int userId){
+            SQLiteConnection.CreateFile("test.db");
+            SQLiteConnection conn = new SQLiteConnection("Data Source=MyDatabase.sqlite;Version=3");
+            String select = "select iris_data from biometricProperties where user_id = "
+                + userId + ";";
+            SQLiteCommand cmd = new SQLiteCommand(select, conn);
+            SQLiteDataReader reader = cmd.ExecuteReader();
+            int[] template2 = GetTemplate(image);
+            while (reader.Read())
+            {
+                int[] template1 = Base64ToTemplate(reader["iris_data"].ToString());
+                return (HammingDistance(template1, template2, null, null) < .3);
+            }
             return false;
         }
-
-
-        private int[] GetTemplate(Image<Gray, byte> image)
+        
+        private int[] GetTemplate(object img)
         {
-
+            Image<Gray, byte> image = (Image<Gray, byte>) img;
             var circles = FindCircles(image);
             Image<Gray, byte> unraveled = Unravel(image, circles);
             Complex[][][] convolved = LogGabor(unraveled);
-            return PhaseQuantifier(convolved[0]);
+            return PhaseQuantifier(convolved[0]); //there's only 1 anyway
         }
 
         private CircleF FindCircles(Image<Gray, byte> image)
         {
             Gray canny = new Gray(16);
-            Gray accumulator = new Gray(12);
+            int minAccumulator = 0;
+            int currAcumulator = 200;
             double dp = 12;
             double minDistance = 10;
             int minSize = 0;
             int maxSize = 0;
-            CircleF maxCircle = image.Clone().HoughCircles(
-                canny,
-                accumulator,
-                dp,
-                minDistance,
-                minSize,
-                maxSize)[0][0];
+            CircleF maxCircle = new CircleF();
+            while (currAcumulator > minAccumulator)
+            {
+                Gray accumulator = new Gray(currAcumulator);
+                CircleF[][] circles = image.Clone().HoughCircles(
+                    canny,
+                    accumulator,
+                    dp,
+                    minDistance,
+                    minSize,
+                    maxSize);
+                if (circles.Length > 0)
+                    return circles[0][0];
+                currAcumulator--;
+            }
             return maxCircle;
         }
 
@@ -62,11 +102,13 @@ namespace BioPass
         {
             int diffs = 0;
             int comps = 0;
+            mask1 = mask1 == null ? new int[template1.Length] : mask1;
+            mask2 = mask2 == null ? new int[template1.Length] : mask2;
             for (int i = 0; i < template1.Length; i++)
             {
                 if (mask1[i] != 1 && mask2[i] != 1)
                 {
-                    if (template1[i] != template2[i] && (mask1[i] != 1 && mask2[i] != 1))
+                    if (template1[i] != template2[i])
                     {
                         diffs++;
                     }
@@ -118,7 +160,7 @@ namespace BioPass
 
         private Complex[][][] LogGabor(Image<Gray, byte> img)
         {
-            int rotations = 8;
+            int rotations = 1;
             int mult = 8;
             int wavelength = 8;
             double sigma = .5;
@@ -156,7 +198,46 @@ namespace BioPass
             return signal;
         }
 
+        private String templateToBase64(int[] template)
+        {
+            byte[] bytes = new byte[template.Length / 8 + 1];
+            int i = 0;
+            int k = 0;
+            while(i < template.Length)
+            {
+                byte b = 0;
+                for(int j=0; j<8; j++)
+                {
+                    if (i < template.Length)
+                    {
+                        b = (byte)(b | (template[i] << j));
+                        i++;
+                    } else
+                    {
+                        break;
+                    }
+                }
+                bytes[k] = b;
+                k++;
+            }
+            return Convert.ToBase64String(bytes);
+        }
         
+        private int[] Base64ToTemplate(String base64)
+        {
+            byte[] bytes = Convert.FromBase64String(base64);
+            int[] template = new int[bytes.Length * 8];
+            int j = 0;
+            foreach(byte b in bytes)
+            {
+                for(int i=0; i<8; i++)
+                {
+                    template[j] = (b >> i) & 1;
+                }
+                j++;
+            }
+            return template;
+        }
 
     }
 }

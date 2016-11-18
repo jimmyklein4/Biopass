@@ -14,6 +14,8 @@ namespace BioPass
 {
     public partial class FaceForm : Form
     {
+        Boolean verified = false;
+        String user = "";
         public FaceForm()
         {
             InitializeComponent();
@@ -100,6 +102,7 @@ namespace BioPass
             if (_latestFrame != null)
             {
                 // Draw the latest image from the active camera
+                //This is causing an exception currently.
                 lock (_latestFrame) {
                     e.Graphics.DrawImage(_latestFrame, 0, 0, _latestFrame.Width, _latestFrame.Height);
                 }
@@ -213,16 +216,132 @@ namespace BioPass
             if (rec == null) {
                 rec = new FacialRecognition();
             }
-            rec.CreateInitialRecognizer();
+            rec.TrainRecognizer();
         }
         // Checks the face it detects against the recognizer 
         private void check_Click(object sender, EventArgs e) {
-            //Boolean test = rec.IsRecognizerCreated();
-            //if (test) {
-            rec.UpdateRecognizer(_latestFrame, 40);
-                rec.IdentifyUser(null);
-                //rec.SaveRecognizer("test.xml");
-            //}
+            /*if (rec != null) {
+                Console.WriteLine(rec.IdentifyUser(FacialRecognition.DetectFace(_latestFrame)));
+                Console.WriteLine(rec.GetDistance(FacialRecognition.DetectFace(_latestFrame)));
+            }*/
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (label1.Visible == true)
+            {
+                label1.Visible = false; textBox1.Visible = false; checkedListBox1.Visible = false;// button3.Visible = false;
+            }
+            else
+            {
+                textBox1.Visible = true; checkedListBox1.Visible = true; label1.Visible = true;//button3.Visible = true; 
+            }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkedListBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            String[] selections = new string[2]; //Stores checklist Selections
+            for (int i = 0; i < checkedListBox1.CheckedItems.Count; i++)
+            {
+                selections[i] = checkedListBox1.CheckedItems[i].ToString();
+            }
+            if (checkedListBox1.CheckedItems.Count == 2)
+            {
+                textBox1.Visible = false;
+                label1.Visible = false;
+                checkedListBox1.Visible = false;
+                checkedListBox1.SetItemChecked(0, false); //reset checkbox
+                checkedListBox1.SetItemChecked(1, false); //reset checkbox
+                checkedListBox1.SetItemChecked(2, false); //reset checkbox
+                checkedListBox1.SetItemChecked(3, false); //reset checkbox
+
+
+                Boolean bioSuccess = false;
+                int[] verfiTest = new int[2];
+                //Launch BioMetrics
+                //user=BioMetrics(selections[0],selections[1]); //if anyone is identified set the user
+                //if (BioMetrics(selections[0])==true){veritest[0]=1; } else {veritest[0]=0; } //1=pass, 0=fail
+                //if (BioMetrics(selections[1])==true){veritest[1]=1 } else {veritest[1]=0; } //1=pass, 0=fail
+                //if ((veritest[0] == 1)  && (veritest[1] == 1)) { bioSuccess = true; } else { bioSuccess = false; user="";}
+                if (bioSuccess == true) { verified = true; appList.Visible = true; }
+                else { verified = false; appList.Visible = false; }
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            //db class not on this repo yet
+             String user = "";
+             int i = 0;
+             int k = 0;
+             string[] app = new string[] { "tumail", "blackboard", "facebook.com", "wikipedia.org" };
+             string[] appCata = new string[4];
+             string[] appUn = new string[4];
+             String cata = "";
+             String uncata = "";
+             DBhandler db = new DBhandler();
+             db.connectToDatabase();
+
+
+
+             for (int j = 0; j < app.Length; j++)
+             {
+                //Boolean isCatlgd = false; //remove once db class back in repo
+                 Boolean isCatlgd = db.appExistsForUser(app[j], user);
+                 if (isCatlgd == true) { appCata[i] = app[j]; i++; }
+                 else { appUn[k] = app[j]; k++; }
+             }
+             //  test filler
+             appCata[0] = "test";
+             appCata[1] = "test1";
+             appCata[2] = " test2";
+             //appUn[0] = "test2";
+             //appUn[1] = "test3";
+             // */
+             for (i = 0; i < appCata.Length; i++) { cata = cata + appCata[i] + Environment.NewLine; }
+             for (i = 0; i < appUn.Length; i++) { uncata = uncata + appUn[i] + Environment.NewLine; }
+
+             label4.Text = cata;
+             label2.Text = uncata;
+
+
+
+            //Will load list of all applications
+
+
+
+
+            Button clickedButton = (Button)sender;
+            toggleList(clickedButton, e);
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        /*
+        * Toggles view of the sorted app list
+        */
+        private void toggleList(Button clickedButton, EventArgs e)
+        {
+
+            if (clickedButton.Text == "Show Apps")
+            {
+                clickedButton.Text = "Hide Apps"; label4.Visible = true;   //load list
+                label2.Visible = true; label6.Visible = true; label5.Visible = true; listBox1.Visible = true;
+            }
+            else
+            {
+                clickedButton.Text = "Show Apps";
+                listBox1.Visible = false; label4.Visible = false; label5.Visible = false; //hide list 
+                label2.Visible = false; label6.Visible = false;
+            }
         }
     }
-}
+        }
