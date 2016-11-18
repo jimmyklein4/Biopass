@@ -119,6 +119,7 @@ namespace BioPass {
 
         /**
          * Save the LBPHFaceRecognizer to filename
+         * XML file
          */
         public void SaveRecognizer(String filename) {
             rec.Save(filename);

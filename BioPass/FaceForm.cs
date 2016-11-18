@@ -211,7 +211,6 @@ namespace BioPass
         }
         // Starts the recognition process
         private void create_rec_Click(object sender, EventArgs e) {
-            //rec = new FacialRecognition(@"C:\Users\james\Desktop\out.xml");
             if (rec == null) {
                 rec = new FacialRecognition();
             }
