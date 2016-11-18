@@ -18,7 +18,7 @@ namespace BioPass {
         private CascadeClassifier cascadeClassifier;
         private List<Image<Gray, Byte>> _detectedFaces;
         private Mat testFaceMat;
-        private const double LBPH_THRESHOLD = 2000.0;
+        private const double LBPH_THRESHOLD = 100.0;
         /**
          * Constructor if you already have a training set that you want to load in
          */
@@ -102,12 +102,9 @@ namespace BioPass {
         }
 
         private void recTrainer_DoWork(object Sender, DoWorkEventArgs args) {
-            // Look into how arguments work
-            // may need to pack everything into a multi-dimensional array?
-            // How to ensure safety? 
             List<int> labels = new List<int>();
             Image<Gray,Byte>[] facesArray = _detectedFaces.ToArray();
-            //TODO: CHANGE THIS BECAUSE WERE NOT TRAINING THE WHOLE SET ANYMORE
+            //TODO: Add in the label programmatically 
             for (int i = 0; i < facesArray.Length; i++) {
                 labels.Add(40);
             }
