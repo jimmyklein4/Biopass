@@ -58,7 +58,19 @@ namespace BioPass
         private int[] GetTemplate(object img)
         {
             Image<Gray, byte> image = (Image<Gray, byte>) img;
-            var circles = FindCircles(image);
+            //Set ROI of eye region
+            CascadeClassifier classifier = new CascadeClassifier(@"Support\haarcascade_eye.xml");
+            image.ROI = Rectangle.Empty;
+            image.ROI = classifier.DetectMultiScale(image)[0];
+            CvInvoke.Imshow("Croped Image", image);
+            CvInvoke.WaitKey(0);
+            CvInvoke.DestroyAllWindows();
+            //Set ROI of iris region
+            CircleF circles = FindCircles(image);
+            image.ROI = Rectangle.Empty;
+            Rectangle roi = new Rectangle((int) circles.Center.X, (int) circles.Center.Y, 
+                (int) circles.Radius, (int) circles.Radius);
+            image.ROI = roi;
             Image<Gray, byte> unraveled = Unravel(image, circles);
             Complex[][][] convolved = LogGabor(unraveled);
             return PhaseQuantifier(convolved[0]); //there's only 1 anyway
@@ -95,7 +107,12 @@ namespace BioPass
         {
             PointF center = circle.Center;
             double M = image.Width / Math.Log(image.Height);
-            return image.LogPolar(center, M);
+            //This may cause errors based on how EmguCV handles these methods.
+            //If so, just create new Images to store the return from these methods
+            image = image.LogPolar(center, M);
+            //Eliminate null space here
+            image = image.Resize(20, 240, Emgu.CV.CvEnum.Inter.Linear);
+            return image;
         }
 
         private Double HammingDistance(int[] template1, int[] template2, int[] mask1, int[] mask2)
