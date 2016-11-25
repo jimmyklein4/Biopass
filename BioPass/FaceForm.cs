@@ -19,6 +19,8 @@ namespace BioPass
         public FaceForm()
         {
             InitializeComponent();
+            rec = new FacialRecognition("test.xml");
+            //rec = new FacialRecognition();
         }
 
         private void FaceForm_Load(object sender, EventArgs e)
@@ -53,8 +55,9 @@ namespace BioPass
         private static Bitmap _latestFrame;
         private Boolean detectFaces = false;
         private List<Image> _faces;
-        //private FacialRecognition rec;
+        private FacialRecognition rec;
         private List<int> labels;
+        BackgroundWorker bw;
         private Camera CurrentCamera
         {
            get
@@ -98,17 +101,18 @@ namespace BioPass
         {
             if (_latestFrame != null)
             {
-                if (detectFaces) {
-                   // _latestFrame = FacialRecognition.DetectFace(_latestFrame);
-                }
                 // Draw the latest image from the active camera
-                e.Graphics.DrawImage(_latestFrame, 0, 0, _latestFrame.Width, _latestFrame.Height);
+                //This is causing an exception currently.
+                lock (_latestFrame) {
+                    e.Graphics.DrawImage(_latestFrame, 0, 0, _latestFrame.Width, _latestFrame.Height);
+                }
             }
         }
 
         public void OnImageCaptured(Touchless.Vision.Contracts.IFrameSource frameSource, Touchless.Vision.Contracts.Frame frame, double fps)
         {
             _latestFrame = frame.Image;
+            _latestFrame.RotateFlip(RotateFlipType.RotateNoneFlipX);
             pictureBoxDisplay.Invalidate();
         }
 
@@ -194,21 +198,25 @@ namespace BioPass
         }
         // Detects face and stores it in a list for later rec
         private void detect_Click(object sender, EventArgs e) {
-            if (_faces == null) {
-                _faces = new List<Image>();
+            Image toDetect = null;
+            try {
+                lock (_latestFrame) {
+                    toDetect = (Image)_latestFrame.Clone();
+                }
+            } catch (InvalidOperationException exeception) {
+                Console.Write(exeception.ToString());
             }
-            //_faces.Add(FacialRecognition.DetectFace(_latestFrame));
+            if (toDetect != null) {
+                rec.DetectFace(toDetect);
+            }
         }
         // Starts the recognition process
         private void create_rec_Click(object sender, EventArgs e) {
             //rec = new FacialRecognition(@"C:\Users\james\Desktop\out.xml");
-            if (_faces.Count >= 10) {
-                /*if (rec == null) {
-                    rec = new FacialRecognition();
-                }
-                rec.CreateInitialRecognizer(_faces.ToArray());
-                _faces = null;*/
+            if (rec == null) {
+                rec = new FacialRecognition();
             }
+            rec.TrainRecognizer();
         }
         // Checks the face it detects against the recognizer 
         private void check_Click(object sender, EventArgs e) {
