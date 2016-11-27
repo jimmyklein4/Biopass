@@ -248,6 +248,17 @@
             this.label5.TabIndex = 25;
             this.label5.Text = "Catalogued:";
             this.label5.Visible = false;
+            this.axZKFPEngX1.Enabled = true;
+            this.axZKFPEngX1.Location = new System.Drawing.Point(582, 10);
+            this.axZKFPEngX1.Name = "axZKFPEngX1";
+            this.axZKFPEngX1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axZKFPEngX1.OcxState")));
+            this.axZKFPEngX1.Size = new System.Drawing.Size(24, 24);
+            this.axZKFPEngX1.TabIndex = 16;
+            this.axZKFPEngX1.OnFeatureInfo += new AxZKFPEngXControl.IZKFPEngXEvents_OnFeatureInfoEventHandler(this.axZKFPEngX1_OnFeatureInfo);
+            this.axZKFPEngX1.OnImageReceived += new AxZKFPEngXControl.IZKFPEngXEvents_OnImageReceivedEventHandler(this.axZKFPEngX1_OnImageReceived);
+            this.axZKFPEngX1.OnEnroll += new AxZKFPEngXControl.IZKFPEngXEvents_OnEnrollEventHandler(this.axZKFPEngX1_OnEnroll);
+            this.axZKFPEngX1.OnCapture += new AxZKFPEngXControl.IZKFPEngXEvents_OnCaptureEventHandler(this.axZKFPEngX1_OnCapture);
+            this.axZKFPEngX1.OnFingerTouching += new System.EventHandler(this.axZKFPEngX1_OnFingerTouching);
             // 
             // label6
             // 
@@ -286,7 +297,7 @@
             this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(638, 515);
             this.Name = "FaceForm";
-            this.Text = "FacePass";
+            this.Text = "BioPass";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FaceForm_FormClosing);
             this.Load += new System.EventHandler(this.FaceForm_Load);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.FaceForm_KeyUp);
@@ -303,6 +314,12 @@
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Button btnAddAccount;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.StatusStrip statusStrip;
+        private System.Windows.Forms.ToolStripStatusLabel statusBar;
+        private System.Windows.Forms.Button registerBtn;
+        private System.Windows.Forms.Label appmodeLabel;
+        public AxZKFPEngXControl.AxZKFPEngX axZKFPEngX1;
+        //test
         private System.Windows.Forms.Button detect;
         private System.Windows.Forms.Button create_rec;
         private System.Windows.Forms.Button check;

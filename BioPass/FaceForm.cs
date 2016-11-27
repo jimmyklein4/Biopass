@@ -179,6 +179,7 @@ namespace BioPass
         private Bitmap getFingerprint() {
             return null;
         }
+
         private String collectPin() {
             return last4Ints;
         }
@@ -314,6 +315,19 @@ namespace BioPass
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+
+        }
+        private void Reset() {
+            Program.appmode = 0;
+            appmodeLabel.Visible = false;
+            Program.target = 0;
+        }
+        private void postAuth()
+        {
+            Login LoginWin = new Login();
+            DialogResult login_res = LoginWin.ShowDialog();
+            Debug.Write(LoginWin.application);
+            automateWeb web = new automateWeb(LoginWin.application, "1");
 
         }
     }
