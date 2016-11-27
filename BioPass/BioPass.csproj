@@ -138,9 +138,7 @@
     <Compile Include="Login.Designer.cs">
       <DependentUpon>Login.cs</DependentUpon>
     </Compile>
-    <Compile Include="newReg.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="newReg.cs" />
     <Compile Include="newReg.Designer.cs">
       <DependentUpon>newReg.cs</DependentUpon>
     </Compile>
