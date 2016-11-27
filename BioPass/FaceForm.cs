@@ -14,9 +14,13 @@ namespace BioPass
 {
     public partial class FaceForm : Form
     {
+        Boolean verified = false;
+        String user = "";
         public FaceForm()
         {
             InitializeComponent();
+            rec = new FacialRecognition("test.xml");
+            //rec = new FacialRecognition();
         }
 
         private void FaceForm_Load(object sender, EventArgs e)
@@ -51,8 +55,9 @@ namespace BioPass
         private static Bitmap _latestFrame;
         private Boolean detectFaces = false;
         private List<Image> _faces;
-        //private FacialRecognition rec;
+        private FacialRecognition rec;
         private List<int> labels;
+        BackgroundWorker bw;
         private Camera CurrentCamera
         {
            get
@@ -96,17 +101,18 @@ namespace BioPass
         {
             if (_latestFrame != null)
             {
-                if (detectFaces) {
-                   // _latestFrame = FacialRecognition.DetectFace(_latestFrame);
-                }
                 // Draw the latest image from the active camera
-                e.Graphics.DrawImage(_latestFrame, 0, 0, _latestFrame.Width, _latestFrame.Height);
+                //This is causing an exception currently.
+                lock (_latestFrame) {
+                    e.Graphics.DrawImage(_latestFrame, 0, 0, _latestFrame.Width, _latestFrame.Height);
+                }
             }
         }
 
         public void OnImageCaptured(Touchless.Vision.Contracts.IFrameSource frameSource, Touchless.Vision.Contracts.Frame frame, double fps)
         {
             _latestFrame = frame.Image;
+            _latestFrame.RotateFlip(RotateFlipType.RotateNoneFlipX);
             pictureBoxDisplay.Invalidate();
         }
 
@@ -193,21 +199,25 @@ namespace BioPass
         }
         // Detects face and stores it in a list for later rec
         private void detect_Click(object sender, EventArgs e) {
-            if (_faces == null) {
-                _faces = new List<Image>();
+            Image toDetect = null;
+            try {
+                lock (_latestFrame) {
+                    toDetect = (Image)_latestFrame.Clone();
+                }
+            } catch (InvalidOperationException exeception) {
+                Console.Write(exeception.ToString());
             }
-            //_faces.Add(FacialRecognition.DetectFace(_latestFrame));
+            if (toDetect != null) {
+                rec.DetectFace(toDetect);
+            }
         }
         // Starts the recognition process
         private void create_rec_Click(object sender, EventArgs e) {
             //rec = new FacialRecognition(@"C:\Users\james\Desktop\out.xml");
-            if (_faces.Count >= 10) {
-                /*if (rec == null) {
-                    rec = new FacialRecognition();
-                }
-                rec.CreateInitialRecognizer(_faces.ToArray());
-                _faces = null;*/
+            if (rec == null) {
+                rec = new FacialRecognition();
             }
+            rec.TrainRecognizer();
         }
         // Checks the face it detects against the recognizer 
         private void check_Click(object sender, EventArgs e) {
@@ -250,8 +260,17 @@ namespace BioPass
                 checkedListBox1.SetItemChecked(1, false); //reset checkbox
                 checkedListBox1.SetItemChecked(2, false); //reset checkbox
                 checkedListBox1.SetItemChecked(3, false); //reset checkbox
+
+
+                Boolean bioSuccess = false;
+                int[] verfiTest = new int[2];
                 //Launch BioMetrics
-                //BioMetrics(selections[0],selections[1]);
+                //user=BioMetrics(selections[0],selections[1]); //if anyone is identified set the user
+                //if (BioMetrics(selections[0])==true){veritest[0]=1; } else {veritest[0]=0; } //1=pass, 0=fail
+                //if (BioMetrics(selections[1])==true){veritest[1]=1 } else {veritest[1]=0; } //1=pass, 0=fail
+                //if ((veritest[0] == 1)  && (veritest[1] == 1)) { bioSuccess = true; } else { bioSuccess = false; user="";}
+                if (bioSuccess == true) { verified = true; appList.Visible = true; }
+                else { verified = false; appList.Visible = false; }
             }
         }
 
@@ -273,8 +292,8 @@ namespace BioPass
 
              for (int j = 0; j < app.Length; j++)
              {
-                Boolean isCatlgd = false; //remove once db class back in repo
-                 //Boolean isCatlgd = db.appExistsForUser(app[j], user);
+                //Boolean isCatlgd = false; //remove once db class back in repo
+                 Boolean isCatlgd = db.appExistsForUser(app[j], user);
                  if (isCatlgd == true) { appCata[i] = app[j]; i++; }
                  else { appUn[k] = app[j]; k++; }
              }
@@ -293,42 +312,37 @@ namespace BioPass
 
 
 
-                 //Will load list of all applications
+            //Will load list of all applications
 
 
 
 
-             Button clickedButton = (Button)sender;
-
-             if (clickedButton.Text == "Show Apps")
-             {
-                 clickedButton.Text = "Hide Apps"; label4.Visible = true;   //load list
-                 label2.Visible = true; label6.Visible = true; label5.Visible = true; listBox1.Visible = true;
-             }
-             else
-             {
-                 clickedButton.Text = "Show Apps";
-                 listBox1.Visible = false; label4.Visible = false; label5.Visible = false; //hide list 
-                 label2.Visible = false; label6.Visible = false; 
-             }
+            Button clickedButton = (Button)sender;
+            toggleList(clickedButton, e);
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
-        private void Reset() {
-            Program.appmode = 0;
-            appmodeLabel.Visible = false;
-            Program.target = 0;
-        }
-        private void postAuth()
-        {
-            Login LoginWin = new Login();
-            DialogResult login_res = LoginWin.ShowDialog();
-            Debug.Write(LoginWin.application);
-            automateWeb web = new automateWeb(LoginWin.application, "1");
 
+        /*
+        * Toggles view of the sorted app list
+        */
+        private void toggleList(Button clickedButton, EventArgs e)
+        {
+
+            if (clickedButton.Text == "Show Apps")
+            {
+                clickedButton.Text = "Hide Apps"; label4.Visible = true;   //load list
+                label2.Visible = true; label6.Visible = true; label5.Visible = true; listBox1.Visible = true;
+            }
+            else
+            {
+                clickedButton.Text = "Show Apps";
+                listBox1.Visible = false; label4.Visible = false; label5.Visible = false; //hide list 
+                label2.Visible = false; label6.Visible = false;
+            }
         }
     }
         }
