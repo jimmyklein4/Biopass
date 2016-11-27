@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FaceForm));
             this.pictureBoxDisplay = new System.Windows.Forms.PictureBox();
             this.comboBoxCameras = new System.Windows.Forms.ComboBox();
             this.btnStop = new System.Windows.Forms.Button();
@@ -47,7 +48,13 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
+            this.statusStrip = new System.Windows.Forms.StatusStrip();
+            this.statusBar = new System.Windows.Forms.ToolStripStatusLabel();
+            this.registerBtn = new System.Windows.Forms.Button();
+            this.appmodeLabel = new System.Windows.Forms.Label();
+            this.axZKFPEngX1 = new AxZKFPEngXControl.AxZKFPEngX();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxDisplay)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axZKFPEngX1)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBoxDisplay
@@ -248,17 +255,6 @@
             this.label5.TabIndex = 25;
             this.label5.Text = "Catalogued:";
             this.label5.Visible = false;
-            this.axZKFPEngX1.Enabled = true;
-            this.axZKFPEngX1.Location = new System.Drawing.Point(582, 10);
-            this.axZKFPEngX1.Name = "axZKFPEngX1";
-            this.axZKFPEngX1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axZKFPEngX1.OcxState")));
-            this.axZKFPEngX1.Size = new System.Drawing.Size(24, 24);
-            this.axZKFPEngX1.TabIndex = 16;
-            this.axZKFPEngX1.OnFeatureInfo += new AxZKFPEngXControl.IZKFPEngXEvents_OnFeatureInfoEventHandler(this.axZKFPEngX1_OnFeatureInfo);
-            this.axZKFPEngX1.OnImageReceived += new AxZKFPEngXControl.IZKFPEngXEvents_OnImageReceivedEventHandler(this.axZKFPEngX1_OnImageReceived);
-            this.axZKFPEngX1.OnEnroll += new AxZKFPEngXControl.IZKFPEngXEvents_OnEnrollEventHandler(this.axZKFPEngX1_OnEnroll);
-            this.axZKFPEngX1.OnCapture += new AxZKFPEngXControl.IZKFPEngXEvents_OnCaptureEventHandler(this.axZKFPEngX1_OnCapture);
-            this.axZKFPEngX1.OnFingerTouching += new System.EventHandler(this.axZKFPEngX1_OnFingerTouching);
             // 
             // label6
             // 
@@ -272,11 +268,52 @@
             this.label6.Text = "Uncatalogued:";
             this.label6.Visible = false;
             // 
+            // statusStrip
+            // 
+            this.statusStrip.Location = new System.Drawing.Point(0, 0);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Size = new System.Drawing.Size(200, 22);
+            this.statusStrip.TabIndex = 0;
+            // 
+            // statusBar
+            // 
+            this.statusBar.Name = "statusBar";
+            this.statusBar.Size = new System.Drawing.Size(23, 23);
+            // 
+            // registerBtn
+            // 
+            this.registerBtn.Location = new System.Drawing.Point(0, 0);
+            this.registerBtn.Name = "registerBtn";
+            this.registerBtn.Size = new System.Drawing.Size(75, 23);
+            this.registerBtn.TabIndex = 0;
+            // 
+            // appmodeLabel
+            // 
+            this.appmodeLabel.Location = new System.Drawing.Point(0, 0);
+            this.appmodeLabel.Name = "appmodeLabel";
+            this.appmodeLabel.Size = new System.Drawing.Size(100, 23);
+            this.appmodeLabel.TabIndex = 0;
+            // 
+            // axZKFPEngX1
+            // 
+            this.axZKFPEngX1.Enabled = true;
+            this.axZKFPEngX1.Location = new System.Drawing.Point(566, 32);
+            this.axZKFPEngX1.Name = "axZKFPEngX1";
+            this.axZKFPEngX1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axZKFPEngX1.OcxState")));
+            this.axZKFPEngX1.Size = new System.Drawing.Size(24, 23);
+            this.axZKFPEngX1.TabIndex = 27;
+            this.axZKFPEngX1.OnFeatureInfo += new AxZKFPEngXControl.IZKFPEngXEvents_OnFeatureInfoEventHandler(this.axZKFPEngX1_OnFeatureInfo);
+            this.axZKFPEngX1.OnImageReceived += new AxZKFPEngXControl.IZKFPEngXEvents_OnImageReceivedEventHandler(this.axZKFPEngX1_OnImageReceived);
+            this.axZKFPEngX1.OnEnroll += new AxZKFPEngXControl.IZKFPEngXEvents_OnEnrollEventHandler(this.axZKFPEngX1_OnEnroll);
+            this.axZKFPEngX1.OnCapture += new AxZKFPEngXControl.IZKFPEngXEvents_OnCaptureEventHandler(this.axZKFPEngX1_OnCapture);
+            this.axZKFPEngX1.OnFingerTouching += new System.EventHandler(this.axZKFPEngX1_OnFingerTouching);
+            // 
             // FaceForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(622, 566);
+            this.Controls.Add(this.axZKFPEngX1);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
@@ -302,6 +339,7 @@
             this.Load += new System.EventHandler(this.FaceForm_Load);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.FaceForm_KeyUp);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxDisplay)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axZKFPEngX1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -318,7 +356,6 @@
         private System.Windows.Forms.ToolStripStatusLabel statusBar;
         private System.Windows.Forms.Button registerBtn;
         private System.Windows.Forms.Label appmodeLabel;
-        public AxZKFPEngXControl.AxZKFPEngX axZKFPEngX1;
         //test
         private System.Windows.Forms.Button detect;
         private System.Windows.Forms.Button create_rec;
@@ -333,6 +370,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
+        public AxZKFPEngXControl.AxZKFPEngX axZKFPEngX1;
     }
 }
 

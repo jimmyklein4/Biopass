@@ -289,8 +289,6 @@ namespace BioPass
              DBhandler db = new DBhandler();
              db.connectToDatabase();
 
-
-
              for (int j = 0; j < app.Length; j++)
              {
                 //Boolean isCatlgd = false; //remove once db class back in repo

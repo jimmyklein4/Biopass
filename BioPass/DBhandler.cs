@@ -30,9 +30,26 @@ namespace BioPass
 
         public void createTables()
         {
-            string sql = "CREATE TABLE userAccount(account_id INTEGER PRIMARY KEY,username varchar(255) NOT NULL,password varchar(255) NOT NULL,application_id varchar(255) NOT NULL,user_id varchar(255) NOT NULL);"+
-                "CREATE TABLE application(application_id INTEGER PRIMARY KEY,name varchar(255) NOT NULL,type INTEGER NOT NULL,username_field varchar(255) NOT NULL,password_field varchar(255) NOT NULL);"+
-                "CREATE TABLE user(user_id INTEGER PRIMARY KEY,name varchar(255) NOT NULL,fingerprint BLOB,pin INTEGER);";
+            string sql = @"
+CREATE TABLE userAccount(
+account_id INTEGER PRIMARY KEY,
+username varchar(255) NOT NULL,
+password varchar(255) NOT NULL,
+application_id varchar(255) NOT NULL,
+user_id varchar(255) NOT NULL);"+
+                @"
+CREATE TABLE application(
+application_id INTEGER PRIMARY KEY,
+name varchar(255) NOT NULL,
+type INTEGER NOT NULL,
+username_field varchar(255) NOT NULL,
+password_field varchar(255) NOT NULL);"+
+                @"
+CREATE TABLE user(
+user_id INTEGER PRIMARY KEY,
+name varchar(255) NOT NULL,
+fingerprint BLOB,
+pin INTEGER);";
             SQLiteCommand cmd = new SQLiteCommand(sql, dbConn);
             cmd.ExecuteNonQuery();
         }
@@ -210,11 +227,11 @@ namespace BioPass
         public Boolean appExistsForUser(String app, String person_id)
         {
             Boolean state = false;
-            String sql = "SELECT ActName FROM Accounts WHERE ActName = '" + app + "' AND PersonId='" + person_id + "'";
+            String sql = "SELECT application.name FROM userAccount,application WHERE application.name = '" + app + "' AND userAccount.user_id='" + person_id + "'";
 
             SQLiteCommand command = new SQLiteCommand(sql, dbConn);
             SQLiteDataReader reader = command.ExecuteReader();
-            String appExist4User = (String)(reader["ActName"] != System.DBNull.Value ? reader["ActName"] : "");
+            String appExist4User = (String)(reader["name"] != System.DBNull.Value ? reader["name"] : "");
 
             if (appExist4User.Length > 0) { state = true; }
             return state;
