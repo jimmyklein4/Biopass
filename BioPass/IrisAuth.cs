@@ -250,8 +250,8 @@ namespace BioPass
                 for(int i=0; i<8; i++)
                 {
                     template[j] = (b >> i) & 1;
+                    j++;
                 }
-                j++;
             }
             return template;
         }
