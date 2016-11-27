@@ -344,7 +344,6 @@ namespace BioPass
                 listBox1.Visible = false; label4.Visible = false; label5.Visible = false; //hide list 
                 label2.Visible = false; label6.Visible = false;
             }
-            Program.recieveCapture(finger, face, pin);
         }
 
         private void registerBtn_Click(object sender, EventArgs e) {
