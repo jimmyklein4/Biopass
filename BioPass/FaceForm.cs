@@ -37,6 +37,7 @@ namespace BioPass
 
                 thrashOldCamera();
                 startCapturing();
+                init_fingerprint();
             }
 
         }
@@ -84,7 +85,7 @@ namespace BioPass
                 setFrameSource(new CameraFrameSource(c));
                 _frameSource.Camera.CaptureWidth = 640;
                 _frameSource.Camera.CaptureHeight = 480;
-                _frameSource.Camera.Fps = 10;
+                _frameSource.Camera.Fps = 50;
                 _frameSource.NewFrame += OnImageCaptured;
 
                 pictureBoxDisplay.Paint += new PaintEventHandler(drawLatestImage);
@@ -185,6 +186,7 @@ namespace BioPass
         private Bitmap getFingerprint() {
             return null;
         }
+         
         private String collectPin() {
             return last4Ints;
         }
@@ -287,8 +289,6 @@ namespace BioPass
              DBhandler db = new DBhandler();
              db.connectToDatabase();
 
-
-
              for (int j = 0; j < app.Length; j++)
              {
                 //Boolean isCatlgd = false; //remove once db class back in repo
@@ -343,5 +343,31 @@ namespace BioPass
                 label2.Visible = false; label6.Visible = false;
             }
         }
-    }
+
+        private void registerBtn_Click(object sender, EventArgs e) {
+            String name = "";
+            Program.appmode = 1;
+            newReg nameDialog = new newReg(); 
+            if(nameDialog.ShowDialog() == DialogResult.OK) {
+                name = nameDialog.textBox1.Text;
+                long user_id = Program.db.addUser(name);
+                appmodeLabel.Visible = true;
+                Program.target = user_id;
+                beginFPRegistration();
+            }
         }
+        private void Reset() {
+            Program.appmode = 0;
+            appmodeLabel.Visible = false;
+            Program.target = 0;
+        }
+        private void postAuth()
+        {
+            Login LoginWin = new Login();
+            DialogResult login_res = LoginWin.ShowDialog();
+            Debug.Write(LoginWin.application);
+            automateWeb web = new automateWeb(LoginWin.application, "1");
+
+        }
+    }
+}
