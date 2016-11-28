@@ -164,7 +164,6 @@ namespace BioPass
             for (int i = 0; i < radius.Length / 2 + 2; i++)
             {
                 radius[i] = i * (0.5 / (length / 2 + 1));
-                System.Console.Out.WriteLine(radius[i]);
             }
             double freq = 1.0 / wavelength;
             for (int i = 1; i < radius.Length / 2 + 2; i++)
