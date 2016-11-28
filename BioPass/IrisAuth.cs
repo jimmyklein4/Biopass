@@ -159,19 +159,20 @@ namespace BioPass
 
         private Double[] GetFilter(Double sigma, int length, Double wavelength)
         {
-            double[] radius = new double[length];
             if (length % 2 == 0) length = length - 1;
-            for(int i = 0; i < radius.Length; i++)
+            double[] radius = new double[length];
+            for (int i = 0; i < radius.Length / 2 + 2; i++)
             {
-                radius[i] = i * (0.5 / length);
+                radius[i] = i * (0.5 / (length / 2 + 1));
+                System.Console.Out.WriteLine(radius[i]);
             }
-            radius[0] = 1;
             double freq = 1.0 / wavelength;
-            for(int i = 0; i < radius.Length; i++)
+            for (int i = 1; i < radius.Length / 2 + 2; i++)
             {
                 radius[i] = Math.Exp((-1 * Math.Pow(Math.Log(radius[i] / freq), 2)) /
                     (2 * Math.Pow(Math.Log(sigma), 2)));
             }
+            radius[0] = 1;
             return radius;
         }
 
@@ -186,8 +187,8 @@ namespace BioPass
             for(int i = 0; i < rotations; i++)
             {
                 Complex[][] response = new Complex[img.Height][];
-                filter = GetFilter(sigma, img.Height, wavelength);
-                for(int j = 0; j < img.Width; j++)
+                filter = GetFilter(sigma, img.Height, wavelength); //Should be 240
+                for(int j = 0; j < img.Width; j++)  //should be 20
                 {
                     //idk if there's a method for this
                     Complex[] signal = new Complex[img.Height];
@@ -205,7 +206,7 @@ namespace BioPass
             }
             return results;
         }
-
+        //
         private Complex[] ApplyFilter(double[] filter, Complex[] signal)
         {
             for(int i = 0; i < filter.Length; i++)
