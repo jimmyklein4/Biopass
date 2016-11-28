@@ -18,6 +18,7 @@ namespace BioPass
             service.HideCommandPromptWindow = true;
 
             ChromeOptions options = new ChromeOptions();
+            options.LeaveBrowserRunning = true;
 
 
             var driver = new ChromeDriver(service, options);
@@ -117,6 +118,7 @@ namespace BioPass
             {
 
             }
+            service.Dispose();
         }
     }
 }

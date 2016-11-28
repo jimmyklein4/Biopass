@@ -36,7 +36,7 @@ namespace BioPass
         }
         private string getAppBoxVal()
         {
-            return comboBox1.SelectedItem.ToString();
+            return (comboBox1.SelectedItem!=null?comboBox1.SelectedItem.ToString() : "");
         }
 
         private void go_Click(object sender, EventArgs e)

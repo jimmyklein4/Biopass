@@ -24,9 +24,9 @@ namespace BioPass {
                 if (fingerprints != null) { 
                     foreach (DataRow dr in fingerprints.Rows) {
                         if (!dr.IsNull("fingerprint")) {
-                            Debug.WriteLine(int.Parse(dr["user_id"].ToString()));
+                            //Debug.WriteLine(int.Parse(dr["user_id"].ToString()));
                             String fp = System.Text.Encoding.UTF8.GetString((byte[])dr["fingerprint"]);
-                            Debug.WriteLine(fp);
+                            //Debug.WriteLine(fp);
                             axZKFPEngX1.AddRegTemplateStrToFPCacheDB(fpcHandle, int.Parse(dr["user_id"].ToString()), fp);
                         }
                     }

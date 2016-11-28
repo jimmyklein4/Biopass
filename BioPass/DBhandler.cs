@@ -141,12 +141,17 @@ pin INTEGER);";
 
         }
         public String getUserName(long uid) {
-            String sql = "SELECT name FROM user WHERE user_id='" + uid + "'";
-            SQLiteCommand command = new SQLiteCommand(sql, dbConn);
-            SQLiteDataReader reader = command.ExecuteReader();
+
+            SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
+            cmd.CommandText = "SELECT name FROM user WHERE user_id='" + uid + "';";
+            cmd.Prepare();
+            SQLiteDataReader reader = cmd.ExecuteReader();
+            reader.Read();
+
             String name = (String)(reader["name"] != System.DBNull.Value ? reader["name"] : "");
             return name;
         }
+
         public void registerUserFP(long uid, String fp) {
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
             cmd.CommandText = "UPDATE user SET fingerprint=@fp WHERE user_id=@uid;";

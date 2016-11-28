@@ -48,13 +48,14 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusBar = new System.Windows.Forms.ToolStripStatusLabel();
             this.registerBtn = new System.Windows.Forms.Button();
             this.appmodeLabel = new System.Windows.Forms.Label();
             this.axZKFPEngX1 = new AxZKFPEngXControl.AxZKFPEngX();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxDisplay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.axZKFPEngX1)).BeginInit();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // pictureBoxDisplay
@@ -268,13 +269,6 @@
             this.label6.Text = "Uncatalogued:";
             this.label6.Visible = false;
             // 
-            // statusStrip
-            // 
-            this.statusStrip.Location = new System.Drawing.Point(0, 0);
-            this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(200, 22);
-            this.statusStrip.TabIndex = 0;
-            // 
             // statusBar
             // 
             this.statusBar.Name = "statusBar";
@@ -308,11 +302,28 @@
             this.axZKFPEngX1.OnCapture += new AxZKFPEngXControl.IZKFPEngXEvents_OnCaptureEventHandler(this.axZKFPEngX1_OnCapture);
             this.axZKFPEngX1.OnFingerTouching += new System.EventHandler(this.axZKFPEngX1_OnFingerTouching);
             // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.statusBar});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 566);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(622, 22);
+            this.statusStrip1.TabIndex = 28;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.statusBar.Name = "statusBar";
+            this.statusBar.Size = new System.Drawing.Size(118, 17);
+            this.statusBar.Text = "statusBar";
+            // 
             // FaceForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(622, 566);
+            this.ClientSize = new System.Drawing.Size(622, 588);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.axZKFPEngX1);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
@@ -340,6 +351,8 @@
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.FaceForm_KeyUp);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxDisplay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.axZKFPEngX1)).EndInit();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -352,8 +365,6 @@
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Button btnAddAccount;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.StatusStrip statusStrip;
-        private System.Windows.Forms.ToolStripStatusLabel statusBar;
         private System.Windows.Forms.Button registerBtn;
         private System.Windows.Forms.Label appmodeLabel;
         //test
@@ -371,6 +382,8 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
         public AxZKFPEngXControl.AxZKFPEngX axZKFPEngX1;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel statusBar;
     }
 }
 
