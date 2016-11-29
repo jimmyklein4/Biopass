@@ -1,18 +1,17 @@
 ﻿using System;
-using MathNet.Numerics.IntegralTransforms;
 using System.Numerics;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using System.Drawing;
 using System.Data.SQLite;
+using MathNet.Numerics.IntegralTransforms;
 
 namespace BioPass
 {
     class IrisAuth : authMethod
     {
         public int IdentifyUser(object image){
-            SQLiteConnection.CreateFile("test.db");
-            SQLiteConnection conn = new SQLiteConnection("Data Source=MyDatabase.sqlite;Version=3");
+            SQLiteConnection conn = new SQLiteConnection("Data Source=biopass.sqlite;Version=3");
             String select = "select iris_data, user_id from biometricProperties;";
             SQLiteCommand cmd = new SQLiteCommand(select, conn);
             SQLiteDataReader reader = cmd.ExecuteReader();
@@ -20,19 +19,26 @@ namespace BioPass
             double min = 1.0;
             while (reader.Read())
             {
-                int[] template1 = Base64ToTemplate(reader["iris_data"].ToString());
+                int[] template1 = Base64ToTemplate(reader.GetString(reader.GetOrdinal("iris_data")));
                 double dist = HammingDistance(template1, GetTemplate(image), null, null);
-                id  = dist < min ? (int) reader["user_id"] : id;
+                id  = dist < min ? (int) reader.GetInt32(reader.GetOrdinal("user_id")) : id;
                 min = dist < min ? dist : min;
             }
             return id;
         }
 
-        public void UpdateUserTemplate(int userId, object image)
+        public void UpdateUserTemplate(object image, int userId)
         {
             String data = templateToBase64(GetTemplate(image));
-            SQLiteConnection.CreateFile("test.db");
-            SQLiteConnection conn = new SQLiteConnection("Data Source=MyDatabase.sqlite;Version=3");
+            String oldData = "";
+            String select = "select iris_data from biometricProperties where user_id = " + userId+";";
+            SQLiteConnection conn = new SQLiteConnection("Data Source=biopass.sqlite;Version=3");
+            SQLiteDataReader reader = new SQLiteCommand(select, conn).ExecuteReader();
+            while (reader.Read()) //only 1 record should return lul
+            {
+                oldData = reader.GetString(reader.GetOrdinal("iris_data")) + ";";
+            }
+            data = oldData + data;
             String update = "update biometricProperties set iris_data = " + data + 
                 " where user_id = " + userId + ";";
             SQLiteCommand cmd = new SQLiteCommand(update, conn);
@@ -40,8 +46,7 @@ namespace BioPass
         }
 
         public Boolean VerifyUser(object image, int userId){
-            SQLiteConnection.CreateFile("test.db");
-            SQLiteConnection conn = new SQLiteConnection("Data Source=MyDatabase.sqlite;Version=3");
+            SQLiteConnection conn = new SQLiteConnection("Data Source=biopass.sqlite;Version=3");
             String select = "select iris_data from biometricProperties where user_id = "
                 + userId + ";";
             SQLiteCommand cmd = new SQLiteCommand(select, conn);
@@ -49,28 +54,34 @@ namespace BioPass
             int[] template2 = GetTemplate(image);
             while (reader.Read())
             {
-                int[] template1 = Base64ToTemplate(reader["iris_data"].ToString());
-                return (HammingDistance(template1, template2, null, null) < .3);
+                int[] template1 = Base64ToTemplate(reader.GetString(reader.GetOrdinal("iris_data")));
+                return (HammingDistance(template2, template1, null, null) < .3);
             }
             return false;
         }
         
         private int[] GetTemplate(object img)
         {
-            Image<Gray, byte> image = (Image<Gray, byte>) img;
+            Image<Gray, byte> image = new Image<Gray, byte>((Bitmap) img);
             //Set ROI of eye region
             CascadeClassifier classifier = new CascadeClassifier(@"Support\haarcascade_eye.xml");
             image.ROI = Rectangle.Empty;
             image.ROI = classifier.DetectMultiScale(image)[0];
-            CvInvoke.Imshow("Croped Image", image);
-            CvInvoke.WaitKey(0);
-            CvInvoke.DestroyAllWindows();
+            Image<Gray, byte> showImage = image.Clone();
             //Set ROI of iris region
             CircleF circles = FindCircles(image);
             image.ROI = Rectangle.Empty;
             Rectangle roi = new Rectangle((int) circles.Center.X, (int) circles.Center.Y, 
                 (int) circles.Radius, (int) circles.Radius);
             image.ROI = roi;
+
+            //Show segmentation
+            CvInvoke.Circle(showImage, Point.Round(circles.Center), (int)circles.Radius, new Rgb(255, 0, 0).MCvScalar);
+            CvInvoke.Imshow("Croped Image", showImage);
+            CvInvoke.WaitKey(0);
+            CvInvoke.DestroyAllWindows();
+
+            //Normalize and encode features
             Image<Gray, byte> unraveled = Unravel(image, circles);
             Complex[][][] convolved = LogGabor(unraveled);
             return PhaseQuantifier(convolved[0]); //there's only 1 anyway
@@ -78,10 +89,10 @@ namespace BioPass
 
         private CircleF FindCircles(Image<Gray, byte> image)
         {
-            Gray canny = new Gray(16);
+            Gray canny = new Gray(255*.25);
             int minAccumulator = 0;
             int currAcumulator = 200;
-            double dp = 12;
+            double dp = 2.5;
             double minDistance = 10;
             int minSize = 0;
             int maxSize = 0;
@@ -205,7 +216,7 @@ namespace BioPass
             }
             return results;
         }
-        //
+        
         private Complex[] ApplyFilter(double[] filter, Complex[] signal)
         {
             for(int i = 0; i < filter.Length; i++)
