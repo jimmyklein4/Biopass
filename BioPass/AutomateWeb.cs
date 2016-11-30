@@ -1,10 +1,7 @@
 ﻿using System;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Support;
 using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.IE;
 using OpenQA.Selenium.Support.UI;
-using OpenQA.Selenium.Remote;
 using System.Diagnostics;
 using System.IO;
 namespace BioPass

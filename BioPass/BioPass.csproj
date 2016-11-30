@@ -98,7 +98,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Selenium.WebDriverBackedSelenium">
-      <HintPath>..\packages\Selenium\Selenium.WebDriverBackedSelenium.dll</HintPath>
+      <HintPath>..\packages\Selenium.WebDriverBackedSelenium.3.0.1\lib\net35\Selenium.WebDriverBackedSelenium.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -118,7 +118,7 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="ThoughtWorks.Selenium.Core">
-      <HintPath>..\packages\Selenium\ThoughtWorks.Selenium.Core.dll</HintPath>
+      <HintPath>..\packages\Selenium.RC.3.0.1\lib\net35\ThoughtWorks.Selenium.Core.dll</HintPath>
     </Reference>
     <Reference Include="Touchless.Vision">
       <HintPath>..\Touchless.Vision.dll</HintPath>
@@ -127,14 +127,20 @@
       <HintPath>..\WebCamLib.dll</HintPath>
     </Reference>
     <Reference Include="WebDriver">
-      <HintPath>..\packages\Selenium\WebDriver.dll</HintPath>
+      <HintPath>..\packages\Selenium.WebDriver.3.0.1\lib\net35\WebDriver.dll</HintPath>
     </Reference>
     <Reference Include="WebDriver.Support">
-      <HintPath>..\packages\Selenium\WebDriver.Support.dll</HintPath>
+      <HintPath>..\packages\Selenium.Support.3.0.1\lib\net35\WebDriver.Support.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="automateWeb.cs" />
+    <Compile Include="CredentialsView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CredentialsView.Designer.cs">
+      <DependentUpon>CredentialsView.cs</DependentUpon>
+    </Compile>
     <Compile Include="fingerprintAuth.cs" />
     <Compile Include="Login.cs">
       <SubType>Form</SubType>
@@ -166,6 +172,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
+    <EmbeddedResource Include="CredentialsView.resx">
+      <DependentUpon>CredentialsView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FaceForm.resx">
       <DependentUpon>FaceForm.cs</DependentUpon>
       <SubType>Designer</SubType>
