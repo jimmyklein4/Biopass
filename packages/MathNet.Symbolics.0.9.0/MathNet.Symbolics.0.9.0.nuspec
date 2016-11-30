@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>MathNet.Symbolics</id>
+    <version>0.9.0</version>
+    <title>Math.NET Symbolics</title>
+    <authors>Christoph Ruegg</authors>
+    <owners>Christoph Ruegg</owners>
+    <licenseUrl>http://symbolics.mathdotnet.com/License.html</licenseUrl>
+    <projectUrl>http://symbolics.mathdotnet.com/</projectUrl>
+    <iconUrl>http://www.mathdotnet.com/images/MathNet128.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Math.NET Symbolics is a basic open source computer algebra library. Written in F# but works well in C# as well. Supports .Net 4.0 and Mono on Windows, Linux and Mac.</description>
+    <summary>Math.NET Symbolics is a basic open source computer algebra library for .Net and Mono. Written in F# but works well in C# as well.</summary>
+    <releaseNotes>MathML: basic strict MathML formatting and parsing support
+Infix/LaTeX: fix missing paranthesis when formatting denominator-free powers
+LaTeX: fix symbols when formatting arcsin, arccos or arctan
+Expression: refactoring; operators are now implemented in module instead of class</releaseNotes>
+    <tags>math symbolics algebra simplify solve cas fsharp parse</tags>
+    <dependencies>
+      <dependency id="FParsec" version="1.0.1" />
+      <dependency id="FSharp.Core" version="3.1.2.5" />
+      <dependency id="MathNet.Numerics" version="3.8.0" />
+      <dependency id="MathNet.Numerics.FSharp" version="3.8.0" />
+    </dependencies>
+  </metadata>
+</package>
