@@ -102,9 +102,7 @@ namespace BioPass
             if (_latestFrame != null)
             {
                 // Draw the latest image from the active camera
-                lock (_latestFrame) {
                     e.Graphics.DrawImage(_latestFrame, 0, 0, _latestFrame.Width, _latestFrame.Height);
-                }
             }
         }
 

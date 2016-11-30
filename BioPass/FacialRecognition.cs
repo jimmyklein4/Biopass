@@ -10,6 +10,8 @@ using System.ComponentModel;
 using System.Threading;
 
 
+//TODO method that will update rec or add a new person given an id
+
 namespace BioPass {
     class FacialRecognition : authMethod {
         private LBPHFaceRecognizer rec;
@@ -64,7 +66,7 @@ namespace BioPass {
                 _detectFaceWorker = new BackgroundWorker();
                 _detectFaceWorker.DoWork += detectFace_DoWork;
                 _detectFaceWorker.RunWorkerCompleted += detectFace_RunWorkerCompleted;
-                _detectFaceWorker.RunWorkerAsync(image);
+                _detectFaceWorker.RunWorkerAsync(image.Clone());
 
         }
 
@@ -128,10 +130,8 @@ namespace BioPass {
         //Prints out the label of the user to be identifed
         //2000 is currently set as the LBPH threshold. The lower the better
         public int IdentifyUser(object A) {
-            if (rec != null) {
+            if (_detectedFaces[0]!=null) {
                 //DetectFace((Bitmap)A);
-                //This is breaking because detect face is now async. need to wait somehow. 
-                //create some form of callback?
                 var results = rec.Predict(_detectedFaces[0]);
                 Console.WriteLine(results.Distance);
                 Console.WriteLine(results.Label);
