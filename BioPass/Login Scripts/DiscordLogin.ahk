@@ -1,21 +1,18 @@
 ﻿#NoEnv  ; Recom#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
-; #Warn  ; Enable warnings to assist with detecting common errors.
-SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
-SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
-User=mhoff145@gmail.com			
-pw=105040mph
-
-	
+User=		
+pw=
   	Runwait, taskkill /im Discord.exe /f
 	sleep,2000
+
+
 	run, C:\Users\Michael\AppData\Local\Discord\Update.exe --processStart Discord.exe
 	winwaitactive,Discord,,5
 
 	ifwinexist,Discord
 	{
 		winActivate, Discord
-		sleep,8000
+		sleep,10000
 		logout()
 		sleep, 5000
 		login(user,pw)
