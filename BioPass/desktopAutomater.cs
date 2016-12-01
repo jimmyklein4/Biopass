@@ -50,11 +50,20 @@ namespace BioPass
                 case "Battle.Net":
                     parsePath(path, @"Login Scripts\BnetLogin.ahk");
                     break;
-                case "Outlook":
-                    parsePath(path, @"Login Scripts\OutlookLogin.ahk");
+                case "Outlook13":
+                    parsePath(path, @"Login Scripts\Outlook13Login.ahk");
                     break;
                 case "Discord":
                     parsePath(path, @"Login Scripts\DiscordLogin.ahk");
+                    break;
+                case "MSWord13":
+                    parsePath(path, @"Login Scripts\Word13Login.ahk");
+                    break;
+                case "Excel13":
+                    parsePath(path, @"Login Scripts\Excel13Login.ahk");
+                    break;
+                case "Access13":
+                    parsePath(path, @"Login Scripts\Access13Login.ahk");
                     break;
             }
 

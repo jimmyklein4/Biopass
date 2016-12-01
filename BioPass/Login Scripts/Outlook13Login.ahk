@@ -6,8 +6,8 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 User=
 pw=
 
-	run, C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Microsoft Office 2013
-winwaitactive,Outlook,,5
+	run, C:\Program Files\Microsoft Office 15\root\office15\OUTLOOK.EXE
+	winwaitactive,Outlook Today - Outlook,,5
 
 	ifwinexist,Outlook Today - Outlook
 	{	
@@ -26,26 +26,18 @@ winwaitactive,Outlook,,5
 
 
 login(name,pass){
-	winwait, Outlook Today - Outlook,,5
-	if ErrorLevel
-	{
-		blockinput,off
-		return
-	}
-	winactivate,Outlook Today - Outlook
-	winwaitactive,Outlook Today - Outlook
-	sleep, 500
-	setkeydelay,15,15
-	coordmode, mouse, window
+
 	blockinput,on
-	click 60,167,3
-	sendInput, {Backspace}
+	click 30,39,1
+	click 87,302,1
+	sleep,1500
+	click 217,282,1
+	sleep,1500
 	sendInput, %name%
-	sleep,200
-	sendInput,{Tab}
-	sleep,200
-	sendInput, %pass%
-	sleep, 200
-	send, {enter}
+	send,{enter}
+	sleep,2000
+	sendInput,%pass%
+	click,72,292,1
+	send,{enter}
 	blockinput,off
 }
