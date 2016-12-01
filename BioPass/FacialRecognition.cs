@@ -11,6 +11,7 @@ using System.Threading;
 
 
 //TODO method that will update rec or add a new person given an id
+//TODO change training set to start at 1 instead of 0
 
 namespace BioPass {
     class FacialRecognition : authMethod {
