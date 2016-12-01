@@ -212,7 +212,7 @@ namespace BioPass
             if (rec == null) {
                 rec = new FacialRecognition();
             }
-            rec.TrainRecognizer();
+            rec.TrainRecognizer(40);
         }
         // Checks the face it detects against the recognizer 
         private void check_Click(object sender, EventArgs e) {

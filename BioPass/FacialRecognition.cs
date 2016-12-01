@@ -93,11 +93,11 @@ namespace BioPass {
         /**
          * Method to create initial LBPHface recoginizer. Uses faces given to it through faces with the labels being in labels
          */
-        public void TrainRecognizer() {
+        public void TrainRecognizer(int label) {
             if (_detectedFaces.Count >= 10) {
                 _recTrainerWorker = new BackgroundWorker();
                 _recTrainerWorker.DoWork += recTrainer_DoWork;
-                _recTrainerWorker.RunWorkerAsync(_detectedFaces);
+                _recTrainerWorker.RunWorkerAsync(label);
             } else {
                 Console.WriteLine("Not enough faces");
             }
@@ -109,7 +109,7 @@ namespace BioPass {
             Image<Gray,Byte>[] facesArray = _detectedFaces.ToArray();
             //TODO: Add in the label programmatically 
             for (int i = 0; i < facesArray.Length; i++) {
-                labels.Add(40);
+                labels.Add((int)args.Argument);
             }
             rec.Update(facesArray, labels.ToArray());
             Console.WriteLine("Rec is updated");
@@ -128,8 +128,18 @@ namespace BioPass {
             rec.Save(filename);
         }
 
+        /**
+         * Update the recognizer. Call will still be from _detectedfaces 
+         * may not work i have no idea
+         */ 
+        public void UpdateRecognizer(int label) {
+            _recTrainerWorker = new BackgroundWorker();
+            _recTrainerWorker.DoWork += recTrainer_DoWork;
+            _recTrainerWorker.RunWorkerAsync(label);
+        }
+
         //Prints out the label of the user to be identifed
-        //2000 is currently set as the LBPH threshold. The lower the better
+        //100 is currently set as the LBPH threshold. The lower the better
         public int IdentifyUser(object A) {
             if (_detectedFaces[0]!=null) {
                 //DetectFace((Bitmap)A);
