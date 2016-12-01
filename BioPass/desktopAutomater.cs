@@ -65,6 +65,9 @@ namespace BioPass
                 case "Access13":
                     parsePath(path, @"Login Scripts\Access13Login.ahk");
                     break;
+                case "pwProtectedExcel":
+                    parsePath(path, @"Login Scripts\Excel13PWProtectedWorkBook.ahk");
+                    break;
             }
 
         }
