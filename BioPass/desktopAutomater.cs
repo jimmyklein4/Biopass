@@ -78,7 +78,7 @@ namespace BioPass
         private void parsePath(String path, String script)
         {
             var lines = File.ReadAllLines(script);
-            lines[8] = "run," + path;
+            lines[8] = "run, " + path;
             File.WriteAllLines(script, lines);
         }
 
