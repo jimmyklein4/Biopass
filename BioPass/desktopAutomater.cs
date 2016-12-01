@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoHotkey.Interop; //requires autohotkey.interop.dll reference, dll isfound in Login Scripts folder
+using AutoHotkey.Interop; //requires autohotkey.interop.dll reference, dll is found in Login Scripts folder
 
 namespace BioPass
 {
@@ -13,8 +9,9 @@ namespace BioPass
 
         /*
          * Parses automation script with credentials, runs script, then removes credentials
-         */
-        private void parseNrun(String User, String pw, String file)
+         * ~tested~
+        */
+        public void parseNrun(String User, String pw, String file)
         {
             string text = File.ReadAllText(file);
             text = text.Replace("User=", "User=" + User);
@@ -25,35 +22,64 @@ namespace BioPass
             text = File.ReadAllText(file); //reset  to default script skeleton
             text = text.Replace("User=" + User, "User="); //reset  to default script skeleton
             text = text.Replace("pw=" + pw, "pw="); //reset  to default script skeleton
-            File.WriteAllText(file, text); //reset  to default script skeletoN
+            File.WriteAllText(file, text); //reset  to default script skeleton
+        }
+
+        /*
+         * Parses automation script with credentials, runs script, then removes credentials
+         * ~not yet tested~
+        */
+        public void parseNrun1(String User, String pw, String script)
+        {
+            parseCreds("", User, "", pw, script); //insert credentials to automation script
+            var ahk = AutoHotkeyEngine.Instance; //create ahk object from dll
+            ahk.LoadFile(script); //run ahk script
+            parseCreds(User, "", pw, "", script); //reset to default script skeleton
         }
 
         /*
          * Sets exe path for specified app in the automation script
-         */
-        private void setPath(String path, String App)
+        */
+        public void setPath(String path, String App)
         {
             switch (App)
             {
                 case "Steam":
-                    parse(path,@"Login Scripts\SteamLogin.ahk");
+                    parsePath(path, @"Login Scripts\SteamLogin.ahk");
                     break;
                 case "Battle.Net":
-                    parse(path, @"Login Scripts\BnetLogin.ahk");
+                    parsePath(path, @"Login Scripts\BnetLogin.ahk");
                     break;
                 case "Outlook":
-                    parse(path, @"Login Scripts\OutlookLogin.ahk");
+                    parsePath(path, @"Login Scripts\OutlookLogin.ahk");
+                    break;
+                case "Discord":
+                    parsePath(path, @"Login Scripts\DiscordLogin.ahk");
                     break;
             }
 
         }
 
-        private void parse(String path, String script)
+        /*
+        * Parses exe path for specified app in the automation script
+        */
+        private void parsePath(String path, String script)
         {
             var lines = File.ReadAllLines(script);
-            lines[9] = "run,"+path;
+            lines[8] = "run," + path;
             File.WriteAllLines(script, lines);
-
         }
+
+        /*
+        * Parses user credentials for specified app in the automation script
+        */
+        private void parseCreds(String User0, String User1, String pw0, String pw1, String script)
+        {
+            string text = File.ReadAllText(script);
+            text = text.Replace("User=" + User0, "User=" + User1);
+            text = text.Replace("pw=" + pw0, "pw=" + pw1);
+            File.WriteAllText(script, text);
+        }
+
     }
 }
