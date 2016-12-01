@@ -66,7 +66,7 @@ namespace BioPass
                     parsePath(path, @"Login Scripts\Access13Login.ahk");
                     break;
                 case "pwProtectedExcel":
-                    parsePath(path, @"Login Scripts\Excel13PWProtectedWorkBook.ahk");
+                    parsePath(path, @"Login Scripts\Excel13PWProtectedWorkBook.ahk"); //Will need user to specify location of workbook
                     break;
             }
 
