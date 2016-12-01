@@ -219,7 +219,7 @@ namespace BioPass
                 rec = new FacialRecognition();
             }
             //The number is where you'd put the id
-            rec.TrainRecognizer(40);
+            rec.TrainRecognizer(41);
         }
         // Checks the face it detects against the recognizer 
         private void check_Click(object sender, EventArgs e) {
