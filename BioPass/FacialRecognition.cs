@@ -10,9 +10,6 @@ using System.ComponentModel;
 using System.Threading;
 
 
-//TODO method that will update rec or add a new person given an id
-//TODO change training set to start at 1 instead of 0
-
 namespace BioPass {
     class FacialRecognition : authMethod {
         private LBPHFaceRecognizer rec;
@@ -86,6 +83,7 @@ namespace BioPass {
             TrainRecognizer(sentArgs.Item2);
         }
         /**
+         * DEPRECATED 
         * Facial detection method. Calling this will take the photo given to it, detect a face,
         * cut out and return only the facial detection area. 
         * Note: Because the LBPHFaceRecognizer requires you to have all the images the same size, 92x112 is hard coded
@@ -97,7 +95,7 @@ namespace BioPass {
                 _detectFaceWorker.RunWorkerAsync(image.Clone());
 
         }
-
+        //DEPRECATED
         private void detectFace_DoWork(Object sender, DoWorkEventArgs args) {
             Image<Gray, Byte> faces = new Image<Gray, byte>((Bitmap)args.Argument);
             Rectangle[] detected = cascadeClassifier.DetectMultiScale(faces, 1.1, 10, Size.Empty);
@@ -111,7 +109,7 @@ namespace BioPass {
                 args.Result = faces;
             }
         }
-
+        //DEPRECATED
         private void detectFace_RunWorkerCompleted(object Sender, RunWorkerCompletedEventArgs args) {
             _detectedFaces.Add((Image<Gray, Byte>)args.Result);
             Console.WriteLine("Detected Face Thread Completed. Number of faces:" + _detectedFaces.Count);
@@ -164,8 +162,7 @@ namespace BioPass {
             _recTrainerWorker.RunWorkerAsync(label);
         }
 
-        //Prints out the label of the user to be identifed
-        //100 is currently set as the LBPH threshold. The lower the better
+        //Returns the label for the user being detected
         public int IdentifyUser(object A) {
             Image<Gray, Byte> faces = new Image<Gray, byte>((Bitmap)A);
             Rectangle[] detected = cascadeClassifier.DetectMultiScale(faces, 1.1, 10, Size.Empty);
@@ -178,19 +175,6 @@ namespace BioPass {
                 return rec.Predict(faces).Label;
             }
             return -1;
-            //if (_detectedFaces[0]!=null) {
-            //    //DetectFace((Bitmap)A);
-            //    var results = rec.Predict(_detectedFaces[0]);
-            //    Console.WriteLine(results.Distance);
-            //    Console.WriteLine(results.Label);
-            //    if(results.Distance < LBPH_THRESHOLD) {
-            //        _detectedFaces.Clear();
-            //        return results.Label;
-            //    }
-            //    //TODO: DELETE. DANGEROUS CALL
-            //    _detectedFaces.Clear();
-            //}
-            //return -1;
         }
         //TODO: Implement
         public Boolean VerifyUser(object A, int user_id) {
