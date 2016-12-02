@@ -25,18 +25,18 @@ namespace BioPass
 
         private void FaceForm_Load(object sender, EventArgs e)
         {
-            if (!DesignMode)
-            {
+            if (!DesignMode) {
                 // Refresh the list of available cameras
                 comboBoxCameras.Items.Clear();
-                foreach (Camera cam in CameraService.AvailableCameras)
+                foreach (Camera cam in CameraService.AvailableCameras) { 
                     comboBoxCameras.Items.Add(cam);
-
-                if( comboBoxCameras.Items.Count > 0 )
+                }
+                if (comboBoxCameras.Items.Count > 0) {
                     comboBoxCameras.SelectedIndex = 0;
+                    thrashOldCamera();
+                    startCapturing();
+                }
 
-                thrashOldCamera();
-                startCapturing();
                 init_fingerprint();
             }
 

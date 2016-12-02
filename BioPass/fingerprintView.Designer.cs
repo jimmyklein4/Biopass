@@ -66,7 +66,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(373, 302);
             this.Controls.Add(this.fingerprintList);
-            this.Name = "fingerprintView";
+            this.Name.Name = "fingerprintView";
             this.Text = "fingerprintView";
             ((System.ComponentModel.ISupportInitialize)(this.fingerprintList)).EndInit();
             this.ResumeLayout(false);
