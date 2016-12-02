@@ -66,7 +66,10 @@ namespace BioPass
             //Set ROI of eye region
             CascadeClassifier classifier = new CascadeClassifier(@"Support\haarcascade_eye.xml");
             image.ROI = Rectangle.Empty;
-            image.ROI = classifier.DetectMultiScale(image)[0];
+            try
+            {
+                image.ROI = classifier.DetectMultiScale(image)[0];
+            } catch (Exception) { }
             Image<Gray, byte> showImage = image.Clone();
             //Set ROI of iris region
             CircleF circles = FindCircles(image);
@@ -92,7 +95,7 @@ namespace BioPass
             Gray canny = new Gray(255*.25);
             int minAccumulator = 0;
             int currAcumulator = 200;
-            double dp = 1;
+            double dp = 2.5;
             double minDistance = 10;
             int minSize = 0;
             int maxSize = 0;
@@ -100,7 +103,7 @@ namespace BioPass
             while (currAcumulator > minAccumulator)
             {
                 Gray accumulator = new Gray(currAcumulator);
-                CircleF[][] circles = image.Clone().HoughCircles(
+                CircleF[][] circles = image.Clone().SmoothGaussian(7).HoughCircles(
                     canny,
                     accumulator,
                     dp,
@@ -112,7 +115,7 @@ namespace BioPass
                 currAcumulator--;
             }
             return maxCircle;
-        }
+        }//
 
         private Image<Gray, byte> Unravel(Image<Gray, byte> image, CircleF circle)
         {
@@ -126,8 +129,8 @@ namespace BioPass
 
         private Double HammingDistance(int[] template1, int[] template2, int[] mask1, int[] mask2)
         {
-            int diffs = 0;
-            int comps = 0;
+            double diffs = 0;
+            double comps = 0;
             mask1 = mask1 == null ? new int[template1.Length] : mask1;
             mask2 = mask2 == null ? new int[template1.Length] : mask2;
             for (int i = 0; i < template1.Length; i++)
@@ -188,7 +191,7 @@ namespace BioPass
         {
             int rotations = 1;
             int mult = 8;
-            int wavelength = 8;
+            int wavelength = 18;
             double sigma = .5;
             Double[] filter = new Double[img.Height];
             Complex[][][] results = new Complex[rotations][][];
@@ -291,6 +294,23 @@ namespace BioPass
             }
             image.ROI = new Rectangle(boundLeft, 0, boundRight - boundLeft, image.Height);
             return image;
+        }
+
+        private Image<Gray, byte>[] GetEyeRegions(object img, int max)
+        {
+            Image<Gray, byte> image = new Image<Gray, byte>((Bitmap)img);
+            CascadeClassifier classifier = new CascadeClassifier(@"Support\haarcascade_eye.xml");
+            Image<Gray, byte>[] images = new Image<Gray, byte>[max];
+            int i = 0;
+            foreach (Rectangle c in classifier.DetectMultiScale(image))
+            {
+                Image<Gray, byte> clone = image.Clone();
+                clone.ROI = c;
+                images[i] = clone;
+                i++;
+                if (i >= max) break;
+            }
+            return images;
         }
     }
 }
