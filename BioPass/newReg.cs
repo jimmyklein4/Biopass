@@ -36,8 +36,9 @@ namespace BioPass {
         }
         private void createBtn_Click(object sender, EventArgs e) {
             String name = nameBox.Text;
-            long user_id = Program.db.addUser(name);
-            target = user_id+40;
+            String pin = pinBox.Text;
+            long user_id = Program.db.addUser(name, pin);
+            target = user_id;
             toggleBioPanel(true);
             toggleNamePanel(false);
         }
@@ -60,21 +61,30 @@ namespace BioPass {
             }
             faceModBtn.Text = ""+Program.mainForm._faces.Count + "/10";
             if(Program.mainForm._faces.Count >= 10) {
-                faceModBtn.Text = ""+Program.mainForm._faces.Count + "/10 - Build model";
+                faceModBtn.Text = ""+Program.mainForm._faces.Count + "/10; Build model";
                 faceModBtn.Enabled = true;
             }
         }
+
         private void faceModBtn_Click(object sender, EventArgs e) {
             //actually add the user now
             if (Program.mainForm.rec == null) {
-                Program.mainForm.rec = new FacialRecognition();
+                Program.mainForm.rec = new FacialRecognition("facereq.xml");
             }
             Program.mainForm.rec.AddNewUser(Program.mainForm._faces.ToArray(), (int) target);
             Program.mainForm._faces = null;
         }
 
-        private void pinBtn_Click(object sender, EventArgs e) {
-            
+        private void IrisBtn_Click(object sender, EventArgs e) {
+            try {
+                lock (FaceForm._latestFrame) {
+                    Bitmap image = (Bitmap)FaceForm._latestFrame.Clone();
+                    IrisAuth iris = new IrisAuth();
+                    String template = iris.templateToBase64(iris.GetTemplate(image));
+                }
+            } catch (InvalidOperationException exeception) {
+                Console.Write(exeception.ToString());
+            }
         }
     }
 }

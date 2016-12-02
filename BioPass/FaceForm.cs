@@ -17,7 +17,7 @@ namespace BioPass
         public FaceForm()
         {
             InitializeComponent();
-            rec = new FacialRecognition();
+            rec = new FacialRecognition("facereq.xml");
         }
 
         private void FaceForm_Load(object sender, EventArgs e)
@@ -28,11 +28,15 @@ namespace BioPass
                 foreach (Camera cam in CameraService.AvailableCameras) { 
                     comboBoxCameras.Items.Add(cam);
                 }
-                Debug.WriteLine(comboBoxCameras.Items.Count);
+                //Debug.WriteLine(comboBoxCameras.Items.Count);
                 if (comboBoxCameras.Items.Count > 0) {
                     comboBoxCameras.SelectedIndex = 0;
                     thrashOldCamera();
                     startCapturing();
+                }
+
+                foreach(Control item in this.Controls) {
+                    item.TabStop = false;
                 }
 
                 init_fingerprint();
@@ -156,6 +160,7 @@ namespace BioPass
 
         String last4Ints;
         void FaceForm_KeyUp(object sender, KeyEventArgs e) {
+            this.Focus();
             int keyValue = e.KeyValue;
             if ((keyValue >= 0x30 && keyValue <= 0x39) || (keyValue >= 0x41 && keyValue <= 0x5A)) {
                char keyChar = char.ToLower(Convert.ToChar(e.KeyCode));
@@ -194,13 +199,13 @@ namespace BioPass
             return last4Ints;
         }
  
-        void compileUserData() {
+        public void compileUserData() {
             Bitmap face = getWebcamImage();
-            Bitmap finger = getFingerprint();
             String pin = collectPin();
 
-            Program.recieveCapture(finger,face, pin);
+            Program.recieveCapture(null, face, pin);
         }
+
         // Detects face and stores it in a list for later rec
         private void detect_Click(object sender, EventArgs e) {
             if(_faces == null) { _faces = new List<Image>(); }
@@ -212,6 +217,7 @@ namespace BioPass
                 Console.Write(exeception.ToString());
             }
         }
+
         // Starts the recognition process
         private void create_rec_Click(object sender, EventArgs e) {
             if (rec == null) {
@@ -221,6 +227,7 @@ namespace BioPass
             rec.AddNewUser(_faces.ToArray(), 41);
             _faces = null;
         }
+
         // Checks the face it detects against the recognizer 
         private void check_Click(object sender, EventArgs e) {
             Console.WriteLine(rec.IdentifyUser(_faces.First()));
@@ -246,9 +253,8 @@ namespace BioPass
         {
             Login LoginWin = new Login(_target);
             DialogResult login_res = LoginWin.ShowDialog();
-            Debug.Write(LoginWin.application);
+            //Debug.Write(LoginWin.application);
             automateWeb web = new automateWeb(LoginWin.application, _target);
-
         }
     }
 }

@@ -26,15 +26,17 @@
             this.cancelReg = new System.Windows.Forms.Button();
             this.acceptReg = new System.Windows.Forms.Button();
             this.bioPanel = new System.Windows.Forms.Panel();
+            this.IrisBtn = new System.Windows.Forms.Button();
+            this.faceModBtn = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
-            this.pinBtn = new System.Windows.Forms.Button();
             this.faceBtn = new System.Windows.Forms.Button();
             this.fpBtn = new System.Windows.Forms.Button();
             this.namePanel = new System.Windows.Forms.Panel();
             this.createBtn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.nameBox = new System.Windows.Forms.TextBox();
-            this.faceModBtn = new System.Windows.Forms.Button();
+            this.pinBox = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.bioPanel.SuspendLayout();
             this.namePanel.SuspendLayout();
             this.SuspendLayout();
@@ -61,15 +63,36 @@
             // 
             // bioPanel
             // 
+            this.bioPanel.Controls.Add(this.IrisBtn);
             this.bioPanel.Controls.Add(this.faceModBtn);
             this.bioPanel.Controls.Add(this.label2);
-            this.bioPanel.Controls.Add(this.pinBtn);
             this.bioPanel.Controls.Add(this.faceBtn);
             this.bioPanel.Controls.Add(this.fpBtn);
             this.bioPanel.Location = new System.Drawing.Point(3, 64);
             this.bioPanel.Name = "bioPanel";
             this.bioPanel.Size = new System.Drawing.Size(331, 108);
             this.bioPanel.TabIndex = 9;
+            // 
+            // IrisBtn
+            // 
+            this.IrisBtn.Location = new System.Drawing.Point(232, 29);
+            this.IrisBtn.Name = "IrisBtn";
+            this.IrisBtn.Size = new System.Drawing.Size(91, 67);
+            this.IrisBtn.TabIndex = 13;
+            this.IrisBtn.Text = "Iris";
+            this.IrisBtn.UseVisualStyleBackColor = true;
+            this.IrisBtn.Click += new System.EventHandler(this.IrisBtn_Click);
+            // 
+            // faceModBtn
+            // 
+            this.faceModBtn.Enabled = false;
+            this.faceModBtn.Location = new System.Drawing.Point(120, 63);
+            this.faceModBtn.Name = "faceModBtn";
+            this.faceModBtn.Size = new System.Drawing.Size(91, 33);
+            this.faceModBtn.TabIndex = 12;
+            this.faceModBtn.Text = "Facial Model";
+            this.faceModBtn.UseVisualStyleBackColor = true;
+            this.faceModBtn.Click += new System.EventHandler(this.faceModBtn_Click);
             // 
             // label2
             // 
@@ -79,16 +102,6 @@
             this.label2.Size = new System.Drawing.Size(275, 13);
             this.label2.TabIndex = 11;
             this.label2.Text = "Select the following options to build your biometric model:";
-            // 
-            // pinBtn
-            // 
-            this.pinBtn.Location = new System.Drawing.Point(232, 29);
-            this.pinBtn.Name = "pinBtn";
-            this.pinBtn.Size = new System.Drawing.Size(91, 67);
-            this.pinBtn.TabIndex = 10;
-            this.pinBtn.Text = "Pin";
-            this.pinBtn.UseVisualStyleBackColor = true;
-            this.pinBtn.Click += new System.EventHandler(this.pinBtn_Click);
             // 
             // faceBtn
             // 
@@ -112,6 +125,8 @@
             // 
             // namePanel
             // 
+            this.namePanel.Controls.Add(this.label3);
+            this.namePanel.Controls.Add(this.pinBox);
             this.namePanel.Controls.Add(this.createBtn);
             this.namePanel.Controls.Add(this.label1);
             this.namePanel.Controls.Add(this.nameBox);
@@ -143,19 +158,24 @@
             // 
             this.nameBox.Location = new System.Drawing.Point(33, 23);
             this.nameBox.Name = "nameBox";
-            this.nameBox.Size = new System.Drawing.Size(203, 20);
+            this.nameBox.Size = new System.Drawing.Size(109, 20);
             this.nameBox.TabIndex = 9;
             // 
-            // faceModBtn
+            // pinBox
             // 
-            this.faceModBtn.Enabled = false;
-            this.faceModBtn.Location = new System.Drawing.Point(120, 63);
-            this.faceModBtn.Name = "faceModBtn";
-            this.faceModBtn.Size = new System.Drawing.Size(91, 33);
-            this.faceModBtn.TabIndex = 12;
-            this.faceModBtn.Text = "Facial Model";
-            this.faceModBtn.UseVisualStyleBackColor = true;
-            this.faceModBtn.Click += new System.EventHandler(this.faceModBtn_Click);
+            this.pinBox.Location = new System.Drawing.Point(160, 23);
+            this.pinBox.Name = "pinBox";
+            this.pinBox.Size = new System.Drawing.Size(76, 20);
+            this.pinBox.TabIndex = 12;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(157, 7);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(98, 13);
+            this.label3.TabIndex = 13;
+            this.label3.Text = "Please enter a pin: ";
             // 
             // newReg
             // 
@@ -188,7 +208,6 @@
         private System.Windows.Forms.Button acceptReg;
         private System.Windows.Forms.Panel bioPanel;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button pinBtn;
         private System.Windows.Forms.Button faceBtn;
         private System.Windows.Forms.Button fpBtn;
         private System.Windows.Forms.Panel namePanel;
@@ -196,5 +215,8 @@
         private System.Windows.Forms.Label label1;
         public System.Windows.Forms.TextBox nameBox;
         private System.Windows.Forms.Button faceModBtn;
+        private System.Windows.Forms.Button IrisBtn;
+        private System.Windows.Forms.Label label3;
+        public System.Windows.Forms.TextBox pinBox;
     }
 }

@@ -77,12 +77,14 @@
             // 
             // doneBtn
             // 
+            this.doneBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.doneBtn.Location = new System.Drawing.Point(296, 295);
             this.doneBtn.Name = "doneBtn";
             this.doneBtn.Size = new System.Drawing.Size(65, 20);
             this.doneBtn.TabIndex = 1;
             this.doneBtn.Text = "Done";
             this.doneBtn.UseVisualStyleBackColor = true;
+            this.doneBtn.Click += new System.EventHandler(this.doneBtn_Click);
             // 
             // fingerprintView
             // 
