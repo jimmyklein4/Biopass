@@ -249,7 +249,7 @@ namespace BioPass
             appmodeLabel.Visible = false;
             Program.target = 0;
         }
-        private void postAuth(long _target)
+        public void postAuth(long _target)
         {
             Login LoginWin = new Login(_target);
             DialogResult login_res = LoginWin.ShowDialog();

@@ -46,7 +46,17 @@ namespace BioPass {
         } 
         public static void recieveCapture(Object finger, Bitmap face, String pin) {
             face.Save(tempFacePath);
-            Debug.WriteLine("Identifed from Face " + mainForm.rec.IdentifyUser(face));
+            //Debug.WriteLine("Identifed from Face " + mainForm.rec.IdentifyUser(face));
+            int faceIdentity = mainForm.rec.IdentifyUser(face);
+            if (pin == null || pin.Length != 4) MessageBox.Show("No pin provided. Face is not enough to verify user.");
+            else {
+                String match = db.compareIdToPin(faceIdentity, pin);
+                if (match != null && match.Length > 0) {
+                    MessageBox.Show("User identified as: " + match);
+                    mainForm.postAuth(faceIdentity);
+                }
+            }
+
           //finger.Save(tempFingerPath);
         }
         
