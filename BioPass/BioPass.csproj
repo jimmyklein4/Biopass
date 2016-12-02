@@ -77,6 +77,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug %28x32%29|x86'">
     <OutputPath>bin\x86\Debug %28x32%29\</OutputPath>
     <PlatformTarget>x86</PlatformTarget>
+    <DefineConstants>u</DefineConstants>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AutoHotkey.Interop">

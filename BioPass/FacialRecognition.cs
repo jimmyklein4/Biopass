@@ -37,7 +37,7 @@ namespace BioPass {
             _detectedFaces = new List<Image<Gray, Byte>>();
             rec = new LBPHFaceRecognizer();
             //Imports default training set from AT faces. Faces were trained using LBPH with default values
-            rec.Load(@"Support\default_training_set");
+            rec.Load(@"Support\default_training_set.xml");
         }
         /**
          * Reads images and labels in from a CSV file 
@@ -58,6 +58,7 @@ namespace BioPass {
 
         public void AddNewUser(Image[] faces, int label) {
             Image[] facesCopy = new Image[faces.Length];
+
             faces.CopyTo(facesCopy, 0);
             var args = new Tuple<Image[], int>(facesCopy, label);
 

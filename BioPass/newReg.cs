@@ -37,7 +37,7 @@ namespace BioPass {
         private void createBtn_Click(object sender, EventArgs e) {
             String name = nameBox.Text;
             long user_id = Program.db.addUser(name);
-            target = user_id;
+            target = user_id+40;
             toggleBioPanel(true);
             toggleNamePanel(false);
         }
