@@ -121,7 +121,7 @@ namespace BioPass
                     minDistance,
                     minSize,
                     maxSize);
-                if (circles.Length > 0)
+                if (circles[0].Length > 0)
                     return circles[0][0];
                 currAcumulator--;
             }
