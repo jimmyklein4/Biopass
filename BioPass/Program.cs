@@ -19,6 +19,15 @@ namespace BioPass {
         public static DBhandler db = new DBhandler();
         public static long target = -1;
         public static Object lastFingerprint;
+        public static FaceForm mainForm;
+        public static fingerprintView fingerprintForm;
+
+        // For Fingerprint enrollment
+        public static String targetFingerprintName;
+        public static long targetFingerprintID;
+        public static long targetFingerUserID;
+        public static long targetFingerRow;
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -32,12 +41,14 @@ namespace BioPass {
             }
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FaceForm());
+            mainForm = new FaceForm();
+            Application.Run(mainForm);
         }
 
         public static void recieveCapture(Object finger, Bitmap face, String pin) {
             face.Save(tempFacePath);
           //finger.Save(tempFingerPath);
         }
+        
     }
 }

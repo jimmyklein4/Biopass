@@ -9,8 +9,9 @@ namespace BioPass
     public class automateWeb
     { 
         public ChromeDriverService service = null;
-        public automateWeb(String website, String person_id)
+        public automateWeb(String website, long person_id)
         {
+            if(website == null || website.Length == 0) return;
             service = ChromeDriverService.CreateDefaultService(AppDomain.CurrentDomain.BaseDirectory);
             service.HideCommandPromptWindow = true;
 

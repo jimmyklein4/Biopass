@@ -11,7 +11,7 @@ using System.Threading;
 
 
 namespace BioPass {
-    class FacialRecognition : authMethod {
+    public class FacialRecognition : authMethod {
         private LBPHFaceRecognizer rec;
         private BackgroundWorker _recTrainerWorker;
         private BackgroundWorker _detectFaceWorker;

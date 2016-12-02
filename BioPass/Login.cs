@@ -14,9 +14,11 @@ namespace BioPass
     public partial class Login : Form
     {
         public string application { get; set; }
-        public Login()
+        public long target;
+        public Login(long _target)
         {
             InitializeComponent();
+             target = _target;
         }
         private void Login_Load(object sender, EventArgs e)
         {
@@ -44,6 +46,10 @@ namespace BioPass
             application = getAppBoxVal();
             Debug.Write(application);
             Close(); 
+        }
+        private void fpBtn_Click(object sender, EventArgs e) {
+            fingerprintView fpView = new BioPass.fingerprintView(target);
+            fpView.Show();
         }
     }
 }

@@ -14,8 +14,6 @@ namespace BioPass
 {
     public partial class FaceForm : Form
     {
-        Boolean verified = false;
-        String user = "";
         public FaceForm()
         {
             InitializeComponent();
@@ -54,12 +52,9 @@ namespace BioPass
         }
 
         private CameraFrameSource _frameSource;
-        private static Bitmap _latestFrame;
-        private Boolean detectFaces = false;
-        private List<Image> _faces;
-        private FacialRecognition rec;
-        private List<int> labels;
-        BackgroundWorker bw;
+        public static Bitmap _latestFrame;
+        public List<Image> _faces;
+        public FacialRecognition rec;
         private Camera CurrentCamera {
            get
            {
@@ -106,14 +101,18 @@ namespace BioPass
             }
         }
 
-        private void drawLatestImage(object sender, PaintEventArgs e)
-        {
-            if (_latestFrame != null)
-            {
-                // Draw the latest image from the active camera
-                    int Width = _latestFrame.Width;
-                    int Height = _latestFrame.Height;
-                    e.Graphics.DrawImage(_latestFrame, 0, 0, Width, Height);
+        private void drawLatestImage(object sender, PaintEventArgs e) {
+            try { 
+                if (_latestFrame != null) {
+                    // Draw the latest image from the active camera
+                        int Width = _latestFrame.Width;
+                        int Height = _latestFrame.Height;
+                        e.Graphics.DrawImage(_latestFrame, 0, 0, Width, Height);
+                }
+            } catch (Exception ex) { 
+                thrashOldCamera();
+                startCapturing();
+                Debug.WriteLine(ex);
             }
         }
 
@@ -131,8 +130,6 @@ namespace BioPass
 
             _frameSource = cameraFrameSource;
         }
-
-        //
 
         private void thrashOldCamera()
         {
@@ -167,14 +164,14 @@ namespace BioPass
                     last4Ints = "";
                 }
                 if(last4Ints.Length == 4) {
-                    last4Ints = last4Ints.Substring(1, last4Ints.Length - 1);
+                    last4Ints = "";
                 }
            
                 if(char.IsLetterOrDigit(keyChar)) {
                     last4Ints += keyChar;
-                    Debug.WriteLine(last4Ints);
+                    pinLabel.Text = last4Ints;
+                    //Debug.WriteLine(last4Ints);
                 }
-
             }
 
             if(e.KeyCode==Keys.Enter) {
@@ -231,17 +228,14 @@ namespace BioPass
             _faces = null;
         }
         
-
         private void registerBtn_Click(object sender, EventArgs e) {
-            String name = "";
             Program.appmode = 1;
+            appmodeLabel.Visible = true;
+            appmodeLabel.Text = "Registering";
+
             newReg nameDialog = new newReg(); 
             if(nameDialog.ShowDialog() == DialogResult.OK) {
-                name = nameDialog.textBox1.Text;
-                long user_id = Program.db.addUser(name);
-                appmodeLabel.Visible = true;
-                Program.target = user_id;
-                beginFPRegistration();
+                Reset();
             }
         }
         private void Reset() {
@@ -249,12 +243,12 @@ namespace BioPass
             appmodeLabel.Visible = false;
             Program.target = 0;
         }
-        private void postAuth()
+        private void postAuth(long _target)
         {
-            Login LoginWin = new Login();
+            Login LoginWin = new Login(_target);
             DialogResult login_res = LoginWin.ShowDialog();
             Debug.Write(LoginWin.application);
-            automateWeb web = new automateWeb(LoginWin.application, "1");
+            automateWeb web = new automateWeb(LoginWin.application, _target);
 
         }
     }

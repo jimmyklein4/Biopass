@@ -31,15 +31,16 @@
             this.label1 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.go = new System.Windows.Forms.Button();
+            this.fpBtn = new System.Windows.Forms.Button();
+            this.cancelBtn = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(22, 21);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label1.Location = new System.Drawing.Point(16, 17);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(123, 17);
+            this.label1.Size = new System.Drawing.Size(94, 13);
             this.label1.TabIndex = 2;
             this.label1.Text = "Select application:";
             // 
@@ -47,31 +48,54 @@
             // 
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(25, 59);
-            this.comboBox1.Margin = new System.Windows.Forms.Padding(4);
+            this.comboBox1.Location = new System.Drawing.Point(28, 33);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(160, 24);
+            this.comboBox1.Size = new System.Drawing.Size(121, 21);
             this.comboBox1.TabIndex = 3;
             // 
             // go
             // 
             this.go.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.go.Location = new System.Drawing.Point(85, 91);
-            this.go.Margin = new System.Windows.Forms.Padding(4);
+            this.go.Location = new System.Drawing.Point(155, 33);
             this.go.Name = "go";
-            this.go.Size = new System.Drawing.Size(100, 28);
+            this.go.Size = new System.Drawing.Size(45, 23);
             this.go.TabIndex = 4;
             this.go.Text = "Go!";
             this.go.Click += new System.EventHandler(this.go_Click);
             // 
+            // fpBtn
+            // 
+            this.fpBtn.Location = new System.Drawing.Point(125, 121);
+            this.fpBtn.Name = "fpBtn";
+            this.fpBtn.Size = new System.Drawing.Size(75, 23);
+            this.fpBtn.TabIndex = 5;
+            this.fpBtn.Text = "Fingerprints";
+            this.fpBtn.UseVisualStyleBackColor = true;
+            this.fpBtn.Click += new System.EventHandler(this.fpBtn_Click);
+            // 
+            // cancelBtn
+            // 
+            this.cancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.cancelBtn.Location = new System.Drawing.Point(19, 121);
+            this.cancelBtn.Name = "cancelBtn";
+            this.cancelBtn.Size = new System.Drawing.Size(75, 23);
+            this.cancelBtn.TabIndex = 6;
+            this.cancelBtn.Text = "Cancel";
+            this.cancelBtn.UseVisualStyleBackColor = true;
+            // 
             // Login
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(282, 133);
+            this.CancelButton = this.cancelBtn;
+            this.ClientSize = new System.Drawing.Size(212, 156);
+            this.ControlBox = false;
+            this.Controls.Add(this.cancelBtn);
+            this.Controls.Add(this.fpBtn);
             this.Controls.Add(this.go);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.label1);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "Login";
             this.Text = "Login";
             this.Load += new System.EventHandler(this.Login_Load);
@@ -85,5 +109,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Button go;
+        private System.Windows.Forms.Button fpBtn;
+        private System.Windows.Forms.Button cancelBtn;
     }
 }

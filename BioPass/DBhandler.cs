@@ -25,7 +25,6 @@ namespace BioPass
         {
             dbConn = new SQLiteConnection("Data Source=biopass.sqlite;Version=3;");
             dbConn.Open();
-
         }
 
         public void createTables()
@@ -48,8 +47,14 @@ password_field varchar(255) NOT NULL);"+
 CREATE TABLE user(
 user_id INTEGER PRIMARY KEY,
 name varchar(255) NOT NULL,
-fingerprint BLOB,
-pin INTEGER);";
+pin INTEGER);"+
+                @"
+CREATE TABLE fingerprint(
+fp_id INTEGER PRIMARY KEY,
+finger varchar(255) NOT NULL,
+fp BLOB,
+user_id varchar(255) NOT NULL);
+";
             SQLiteCommand cmd = new SQLiteCommand(sql, dbConn);
             cmd.ExecuteNonQuery();
         }
@@ -135,6 +140,8 @@ pin INTEGER);";
 
             cmd.CommandText = "select last_insert_rowid();";
             SQLiteDataReader reader = cmd.ExecuteReader();
+            reader.Read();
+
             long row = (long) reader[0];
 
             return row;
@@ -152,20 +159,63 @@ pin INTEGER);";
             return name;
         }
 
-        public void registerUserFP(long uid, String fp) {
+        public void registerUserFP(long uid, string fp, string fpName) {
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
-            cmd.CommandText = "UPDATE user SET fingerprint=@fp WHERE user_id=@uid;";
+            cmd.CommandText = "INSERT INTO fingerprint(fingerprint, user_id, finger) VALUES (@fp, @uid, @fpName);";
 
             cmd.Parameters.Add(new SQLiteParameter("@fp", fp));
             cmd.Parameters.Add(new SQLiteParameter("@uid", uid));
+            cmd.Parameters.Add(new SQLiteParameter("@fpName", fpName));
 
             cmd.Prepare();
             cmd.ExecuteNonQuery();
         }
+        public string getUserNameByFinger(long fp_id) {
+            SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
+            cmd.CommandText = "SELECT user.name FROM user,fingerprint WHERE fp_id=@fp_id AND user.user_id=fingerprint.user_id;";
+            cmd.Parameters.Add(new SQLiteParameter("@fp_id", fp_id));
+
+            cmd.Prepare();
+            SQLiteDataReader reader = cmd.ExecuteReader();
+            reader.Read();
+
+            String name = (String)(reader["name"] != System.DBNull.Value ? reader["name"] : "");
+            return name;
+        }
+        public string[] getUserArrayByFinger(long fp_id) {
+            SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
+            cmd.CommandText = "SELECT user.name, user.user_id FROM user,fingerprint WHERE fp_id=@fp_id AND user.user_id=fingerprint.user_id;";
+            cmd.Parameters.Add(new SQLiteParameter("@fp_id", fp_id));
+
+            cmd.Prepare();
+            SQLiteDataReader reader = cmd.ExecuteReader();
+            reader.Read();
+
+            String name = (String)(reader["name"] != System.DBNull.Value ? reader["name"] : "");
+            String user_id = (String)(reader["user_id"] != System.DBNull.Value ? reader["user_id"].ToString() : "");
+
+            string[] array = { name, user_id };
+
+            return array;
+        }
+        public DataTable getUserFPs(long uid) {
+            SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
+            cmd.CommandText = "SELECT fp_id, fingerprint, finger FROM fingerprint WHERE user_id=@uid;";
+
+            cmd.Parameters.Add(new SQLiteParameter("@uid", uid));
+
+            cmd.Prepare();
+            SQLiteDataReader reader = cmd.ExecuteReader();
+
+            DataTable dt = new DataTable();
+            dt.Load(reader);
+
+            return dt;
+        }
 
         public DataTable getAllUsersFP() {
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
-            cmd.CommandText = "SELECT user_id, fingerprint FROM user;";
+            cmd.CommandText = "SELECT fp_id, fingerprint FROM fingerprint;";
 
             cmd.Prepare();
             SQLiteDataReader reader = cmd.ExecuteReader();
