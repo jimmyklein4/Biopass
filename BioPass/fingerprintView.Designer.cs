@@ -24,11 +24,11 @@
         /// </summary>
         private void InitializeComponent() {
             this.fingerprintList = new System.Windows.Forms.DataGridView();
+            this.doneBtn = new System.Windows.Forms.Button();
             this.Finger = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.fp_id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Fingerprint = new System.Windows.Forms.DataGridViewButtonColumn();
             this.Delete = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.doneBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.fingerprintList)).BeginInit();
             this.SuspendLayout();
             // 
@@ -49,6 +49,17 @@
             this.fingerprintList.TabIndex = 0;
             this.fingerprintList.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.fingerprintList_CellClick);
             // 
+            // doneBtn
+            // 
+            this.doneBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.doneBtn.Location = new System.Drawing.Point(296, 295);
+            this.doneBtn.Name = "doneBtn";
+            this.doneBtn.Size = new System.Drawing.Size(65, 20);
+            this.doneBtn.TabIndex = 1;
+            this.doneBtn.Text = "Done";
+            this.doneBtn.UseVisualStyleBackColor = true;
+            this.doneBtn.Click += new System.EventHandler(this.doneBtn_Click);
+            // 
             // Finger
             // 
             this.Finger.HeaderText = "Finger";
@@ -59,6 +70,7 @@
             this.fp_id.HeaderText = "fp_id";
             this.fp_id.Name = "fp_id";
             this.fp_id.ReadOnly = true;
+            this.fp_id.Visible = false;
             // 
             // Fingerprint
             // 
@@ -74,17 +86,6 @@
             this.Delete.Name = "Delete";
             this.Delete.Text = "Delete";
             this.Delete.UseColumnTextForButtonValue = true;
-            // 
-            // doneBtn
-            // 
-            this.doneBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.doneBtn.Location = new System.Drawing.Point(296, 295);
-            this.doneBtn.Name = "doneBtn";
-            this.doneBtn.Size = new System.Drawing.Size(65, 20);
-            this.doneBtn.TabIndex = 1;
-            this.doneBtn.Text = "Done";
-            this.doneBtn.UseVisualStyleBackColor = true;
-            this.doneBtn.Click += new System.EventHandler(this.doneBtn_Click);
             // 
             // fingerprintView
             // 
@@ -107,10 +108,10 @@
         #endregion
 
         private System.Windows.Forms.DataGridView fingerprintList;
+        private System.Windows.Forms.Button doneBtn;
         private System.Windows.Forms.DataGridViewTextBoxColumn Finger;
         private System.Windows.Forms.DataGridViewTextBoxColumn fp_id;
         private System.Windows.Forms.DataGridViewButtonColumn Fingerprint;
         private System.Windows.Forms.DataGridViewButtonColumn Delete;
-        private System.Windows.Forms.Button doneBtn;
     }
 }

@@ -64,11 +64,13 @@ namespace BioPass {
                 } else { 
                     string[] array = Program.db.getUserArrayByFinger(ID);
                     string user_name = array[0];
-                    long user_id = Int64.Parse(array[1]); 
-                    MessageBox.Show("User identified as: "+ user_name + ". Checking other biometrics...");
-                    compileUserData(user_id);
-                    statusBar.Text = string.Format("Identify Succeed ID = {0} Score = {1}  Processed Number = {2}", user_id, score, processedNum);
-                    //postAuth(user_id);
+                    if (user_name != null && user_name.Length > 0) {
+                        long user_id = Int64.Parse(array[1]);
+                        MessageBox.Show("User identified as: " + user_name + ". Checking other biometrics...");
+                        compileUserData(user_id);
+                        statusBar.Text = string.Format("Identify Succeed ID = {0} Score = {1}  Processed Number = {2}", user_id, score, processedNum);
+                        //postAuth(user_id);
+                    }
                 }
             }
         }

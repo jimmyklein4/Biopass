@@ -36,22 +36,35 @@ namespace BioPass {
             PopulateDataGridView();
         }
         private void fingerprintList_CellClick(object sender, DataGridViewCellEventArgs e) {
-          if (e.ColumnIndex == fingerprintList.Columns["Fingerprint"].Index && e.RowIndex >= 0) {
-            Program.targetFingerprintName = fingerprintList[fingerprintList.Columns["Finger"].Index, e.RowIndex].Value.ToString();
-            Program.targetFingerUserID = target;
-            Program.targetFingerRow = e.RowIndex;
-            
-            DataGridViewCell fpid_cell = fingerprintList[fingerprintList.Columns["fp_id"].Index, e.RowIndex];
-            if(fpid_cell != null) {
-                object fpid_val = fpid_cell.Value;
-                if(fpid_val != null) {
-                    string fpid = fpid_cell.Value.ToString();
-                    Program.targetFingerprintID = Int64.Parse(fpid);
+            if (e.ColumnIndex == fingerprintList.Columns["Fingerprint"].Index && e.RowIndex >= 0) {
+                Program.targetFingerprintName = fingerprintList[fingerprintList.Columns["Finger"].Index, e.RowIndex].Value.ToString();
+                Program.targetFingerUserID = target;
+                Program.targetFingerRow = e.RowIndex;
+
+                DataGridViewCell fpid_cell = fingerprintList[fingerprintList.Columns["fp_id"].Index, e.RowIndex];
+                if (fpid_cell != null) {
+                    object fpid_val = fpid_cell.Value;
+                    if (fpid_val != null) {
+                        string fpid = fpid_cell.Value.ToString();
+                        Program.targetFingerprintID = Int64.Parse(fpid);
+                    }
                 }
+
+                Program.mainForm.beginFPRegistration();
+            } else if (e.ColumnIndex == fingerprintList.Columns["Delete"].Index && e.RowIndex >= 0) {
+                long fp_id = -1;
+                DataGridViewCell fpid_cell = fingerprintList[fingerprintList.Columns["fp_id"].Index, e.RowIndex];
+                if (fpid_cell != null) {
+                    object fpid_val = fpid_cell.Value;
+                    if (fpid_val != null) {
+                        string fpid = fpid_cell.Value.ToString();
+                        fp_id = Int64.Parse(fpid);
+                        Program.db.deleteFP(fp_id);
+                        PopulateDataGridView();
+                    }
+                }
+
             }
-            
-            Program.mainForm.beginFPRegistration();
-          }
         }
 
         private void doneBtn_Click(object sender, EventArgs e) {

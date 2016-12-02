@@ -75,7 +75,7 @@ namespace BioPass {
                 Debug.WriteLine(faceIdentity);
                 if (faceIdentity == finger_uid) {
                     String match = db.getUserName(finger_uid);
-                    MessageBox.Show("User identified as: " + match);
+                    MessageBox.Show("(Face, FP) User identified as: " + match);
                     mainForm.postAuth(faceIdentity);
                 }
             }
