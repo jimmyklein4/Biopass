@@ -55,8 +55,14 @@ CREATE TABLE fingerprint(
 fp_id INTEGER PRIMARY KEY,
 finger varchar(255) NOT NULL,
 fingerprint BLOB,
+user_id varchar(255) NOT NULL);"+
+                @"
+CREATE TABLE iris(
+iris_id INTEGER PRIMARY KEY,
+iris_data varchar(255) NOT NULL,
 user_id varchar(255) NOT NULL);
 ";
+            ;
             SQLiteCommand cmd = new SQLiteCommand(sql, dbConn);
             cmd.ExecuteNonQuery();
         }
@@ -213,6 +219,16 @@ user_id varchar(255) NOT NULL);
             return row;
         }
 
+        public void deleteFP(long fp) {
+            SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
+            cmd.CommandText = "DELETE FROM fingerprint where fp_id=@fp";
+
+            cmd.Parameters.Add(new SQLiteParameter("@fp", fp));
+
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
+        }
+
         public string getUserNameByFinger(long fp_id) {
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
             cmd.CommandText = "SELECT user.name FROM user,fingerprint WHERE fp_id=@fp_id AND user.user_id=fingerprint.user_id;";
@@ -227,19 +243,21 @@ user_id varchar(255) NOT NULL);
         }
 
         public string[] getUserArrayByFinger(long fp_id) {
+            string[] array = new string[2];
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
             cmd.CommandText = "SELECT user.name, user.user_id FROM user,fingerprint WHERE fp_id=@fp_id AND user.user_id=fingerprint.user_id;";
             cmd.Parameters.Add(new SQLiteParameter("@fp_id", fp_id));
 
             cmd.Prepare();
             SQLiteDataReader reader = cmd.ExecuteReader();
-            reader.Read();
+            if (reader.Read()) {
 
-            String name = (String)(reader["name"] != System.DBNull.Value ? reader["name"] : "");
-            String user_id = (String)(reader["user_id"] != System.DBNull.Value ? reader["user_id"].ToString() : "");
+                String name = (String)(reader["name"] != System.DBNull.Value ? reader["name"] : "");
+                String user_id = (String)(reader["user_id"] != System.DBNull.Value ? reader["user_id"].ToString() : "");
 
-            string[] array = { name, user_id };
-
+                array[0] = name;
+                array[1] = user_id;
+            }
             return array;
         }
 
@@ -284,6 +302,24 @@ user_id varchar(255) NOT NULL);
 
                 transaction.Commit();
             }
+        }
+        
+        public long addIrisData(String data, long userId) {
+            SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
+            cmd.CommandText = "INSERT INTO iris_data (iris, user_id) VALUES (@iid, @uid)";
+
+            cmd.Parameters.Add(new SQLiteParameter("@iid", data));
+            cmd.Parameters.Add(new SQLiteParameter("@uid", userId));
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
+
+            cmd.CommandText = "select last_insert_rowid();";
+            SQLiteDataReader reader = cmd.ExecuteReader();
+            reader.Read();
+
+            long row = (long)reader[0];
+
+            return row;
         }
 
         public Boolean exists() {
