@@ -154,7 +154,7 @@ user_id varchar(255) NOT NULL);
             cmd.CommandText = "INSERT INTO user(name, pin) VALUES(@name, @pin)";
 
             cmd.Parameters.Add(new SQLiteParameter("@name", name));
-            cmd.Parameters.Add(new SQLiteParameter("@pin", name));
+            cmd.Parameters.Add(new SQLiteParameter("@pin", pin));
 
             cmd.Prepare();
             cmd.ExecuteNonQuery();
@@ -177,6 +177,20 @@ user_id varchar(255) NOT NULL);
 
             String name = (String)(reader["name"] != System.DBNull.Value ? reader["name"] : "");
             return name;
+        }
+
+        public String compareIdToPin(long uid, String pin) {
+            SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
+            cmd.CommandText = "SELECT name, user_id FROM user WHERE user_id=@uid AND pin=@pin;";
+            cmd.Parameters.Add(new SQLiteParameter("@uid", uid));
+            cmd.Parameters.Add(new SQLiteParameter("@pin", pin));
+
+            cmd.Prepare();
+            SQLiteDataReader reader = cmd.ExecuteReader();
+            reader.Read();
+
+            String user_id = (string)(reader["name"] != System.DBNull.Value ? reader["name"] : "");
+            return user_id;
         }
 
         public long registerUserFP(long uid, string fp, string fpName) {
