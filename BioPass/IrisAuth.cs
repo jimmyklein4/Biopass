@@ -95,7 +95,7 @@ namespace BioPass
 
         private CircleF FindCircles(Image<Gray, byte> image)
         {
-            Gray canny = new Gray(255 * .25);
+            Gray canny = new Gray(200);
             int minAccumulator = 0;
             int currAcumulator = 200;
             double dp = 2.5;
@@ -296,7 +296,11 @@ namespace BioPass
                     break;
                 }
             }
-            image.ROI = new Rectangle(boundLeft, 0, boundRight - boundLeft, image.Height);
+            try
+            {
+                image.ROI = new Rectangle(boundLeft, 0, boundRight - boundLeft, image.Height);
+            }
+            catch (Exception) { }
             return image;
         }
 
