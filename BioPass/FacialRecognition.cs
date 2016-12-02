@@ -15,10 +15,11 @@ namespace BioPass {
         private LBPHFaceRecognizer rec;
         private BackgroundWorker _recTrainerWorker;
         private BackgroundWorker _detectFaceWorker;
+        private BackgroundWorker _addNewUserWorker;
         private CascadeClassifier cascadeClassifier;
         private List<Image<Gray, Byte>> _detectedFaces;
         private Mat testFaceMat;
-        private const double LBPH_THRESHOLD = 2000.0;
+        private const double LBPH_THRESHOLD = 100.0;
         /**
          * Constructor if you already have a training set that you want to load in
          */
@@ -55,7 +56,34 @@ namespace BioPass {
             }
         }
 
+        public void AddNewUser(Image[] faces, int label) {
+            Image[] facesCopy = new Image[faces.Length];
+            faces.CopyTo(facesCopy, 0);
+            var args = new Tuple<Image[], int>(facesCopy, label);
+
+            _addNewUserWorker = new BackgroundWorker();
+            _addNewUserWorker.DoWork += addNewUser_DoWork;
+            _addNewUserWorker.RunWorkerAsync(args);
+        }
+
+        private void addNewUser_DoWork(Object sender, DoWorkEventArgs args) {
+            Tuple<Image[], int> sentArgs = (Tuple<Image[], int>)args.Argument;
+            _detectedFaces = new List<Image<Gray, byte>>();
+            for (int i = 0; i < sentArgs.Item1.Length; i++) {
+                Image<Gray, Byte> face = new Image<Gray, Byte>((Bitmap)sentArgs.Item1[i]);
+                Rectangle[] detected = cascadeClassifier.DetectMultiScale(face, 1.1, 10, Size.Empty);
+                if (detected.Length > 0) {
+                    //Array.Sort(detected, detected.Length);
+                    //TODO sort array
+                    face = face.Copy(detected[0]);
+                    face = face.Resize(92, 112, 0);
+                    _detectedFaces.Add(face);
+                }
+            }
+            TrainRecognizer(sentArgs.Item2);
+        }
         /**
+         * DEPRECATED 
         * Facial detection method. Calling this will take the photo given to it, detect a face,
         * cut out and return only the facial detection area. 
         * Note: Because the LBPHFaceRecognizer requires you to have all the images the same size, 92x112 is hard coded
@@ -64,10 +92,10 @@ namespace BioPass {
                 _detectFaceWorker = new BackgroundWorker();
                 _detectFaceWorker.DoWork += detectFace_DoWork;
                 _detectFaceWorker.RunWorkerCompleted += detectFace_RunWorkerCompleted;
-                _detectFaceWorker.RunWorkerAsync(image);
+                _detectFaceWorker.RunWorkerAsync(image.Clone());
 
         }
-
+        //DEPRECATED
         private void detectFace_DoWork(Object sender, DoWorkEventArgs args) {
             Image<Gray, Byte> faces = new Image<Gray, byte>((Bitmap)args.Argument);
             Rectangle[] detected = cascadeClassifier.DetectMultiScale(faces, 1.1, 10, Size.Empty);
@@ -81,7 +109,7 @@ namespace BioPass {
                 args.Result = faces;
             }
         }
-
+        //DEPRECATED
         private void detectFace_RunWorkerCompleted(object Sender, RunWorkerCompletedEventArgs args) {
             _detectedFaces.Add((Image<Gray, Byte>)args.Result);
             Console.WriteLine("Detected Face Thread Completed. Number of faces:" + _detectedFaces.Count);
@@ -90,26 +118,22 @@ namespace BioPass {
         /**
          * Method to create initial LBPHface recoginizer. Uses faces given to it through faces with the labels being in labels
          */
-        public void TrainRecognizer() {
+        public void TrainRecognizer(int label) {
             if (_detectedFaces.Count >= 10) {
                 _recTrainerWorker = new BackgroundWorker();
                 _recTrainerWorker.DoWork += recTrainer_DoWork;
-                _recTrainerWorker.RunWorkerAsync(_detectedFaces);
+                _recTrainerWorker.RunWorkerAsync(label);
             } else {
                 Console.WriteLine("Not enough faces");
             }
-         
+
         }
 
         private void recTrainer_DoWork(object Sender, DoWorkEventArgs args) {
-            // Look into how arguments work
-            // may need to pack everything into a multi-dimensional array?
-            // How to ensure safety? 
             List<int> labels = new List<int>();
             Image<Gray,Byte>[] facesArray = _detectedFaces.ToArray();
-            //TODO: CHANGE THIS BECAUSE WERE NOT TRAINING THE WHOLE SET ANYMORE
             for (int i = 0; i < facesArray.Length; i++) {
-                labels.Add(40);
+                labels.Add((int)args.Argument);
             }
             rec.Update(facesArray, labels.ToArray());
             Console.WriteLine("Rec is updated");
@@ -122,27 +146,33 @@ namespace BioPass {
 
         /**
          * Save the LBPHFaceRecognizer to filename
+         * XML file
          */
         public void SaveRecognizer(String filename) {
             rec.Save(filename);
         }
 
-        //Prints out the label of the user to be identifed
-        //2000 is currently set as the LBPH threshold. The lower the better
+        /**
+         * Update the recognizer. Call will still be from _detectedfaces 
+         * may not work i have no idea
+         */ 
+        public void UpdateRecognizer(int label) {
+            _recTrainerWorker = new BackgroundWorker();
+            _recTrainerWorker.DoWork += recTrainer_DoWork;
+            _recTrainerWorker.RunWorkerAsync(label);
+        }
+
+        //Returns the label for the user being detected
         public int IdentifyUser(object A) {
-            if (rec != null) {
-                //DetectFace((Bitmap)A);
-                //This is breaking because detect face is now async. need to wait somehow. 
-                //create some form of callback?
-                var results = rec.Predict(_detectedFaces[0]);
-                Console.WriteLine(results.Distance);
-                Console.WriteLine(results.Label);
-                if(results.Distance < LBPH_THRESHOLD) {
-                    _detectedFaces.Clear();
-                    return results.Label;
-                }
-                //TODO: DELETE. DANGEROUS CALL
-                _detectedFaces.Clear();
+            Image<Gray, Byte> faces = new Image<Gray, byte>((Bitmap)A);
+            Rectangle[] detected = cascadeClassifier.DetectMultiScale(faces, 1.1, 10, Size.Empty);
+            if (detected.Length > 0) {
+                //Array.Sort(detected, detected.Length);
+                //TODO sort array
+
+                faces = faces.Copy(detected[0]);
+                faces = faces.Resize(92, 112, 0);
+                return rec.Predict(faces).Label;
             }
             return -1;
         }
