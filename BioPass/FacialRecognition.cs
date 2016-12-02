@@ -58,7 +58,6 @@ namespace BioPass {
 
         public void AddNewUser(Image[] faces, int label) {
             Image[] facesCopy = new Image[faces.Length];
-
             faces.CopyTo(facesCopy, 0);
             var args = new Tuple<Image[], int>(facesCopy, label);
 

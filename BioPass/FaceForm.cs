@@ -17,8 +17,7 @@ namespace BioPass
         public FaceForm()
         {
             InitializeComponent();
-            rec = new FacialRecognition("test.xml");
-            //rec = new FacialRecognition();
+            rec = new FacialRecognition();
         }
 
         private void FaceForm_Load(object sender, EventArgs e)
