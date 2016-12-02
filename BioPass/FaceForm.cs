@@ -103,10 +103,7 @@ namespace BioPass
             if (_latestFrame != null)
             {
                 // Draw the latest image from the active camera
-                //This is causing an exception currently.
-                lock (_latestFrame) {
                     e.Graphics.DrawImage(_latestFrame, 0, 0, _latestFrame.Width, _latestFrame.Height);
-                }
             }
         }
 
@@ -214,7 +211,6 @@ namespace BioPass
         }
         // Starts the recognition process
         private void create_rec_Click(object sender, EventArgs e) {
-            //rec = new FacialRecognition(@"C:\Users\james\Desktop\out.xml");
             if (rec == null) {
                 rec = new FacialRecognition();
             }
@@ -223,10 +219,7 @@ namespace BioPass
         }
         // Checks the face it detects against the recognizer 
         private void check_Click(object sender, EventArgs e) {
-            /*if (rec != null) {
-                Console.WriteLine(rec.IdentifyUser(FacialRecognition.DetectFace(_latestFrame)));
-                Console.WriteLine(rec.GetDistance(FacialRecognition.DetectFace(_latestFrame)));
-            }*/
+            Console.WriteLine(rec.IdentifyUser(null));
         }
 
         private void button1_Click(object sender, EventArgs e)
