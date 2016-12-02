@@ -10,6 +10,9 @@ using System.ComponentModel;
 using System.Threading;
 
 
+//TODO method that will update rec or add a new person given an id
+//TODO change training set to start at 1 instead of 0
+
 namespace BioPass {
     class FacialRecognition : authMethod {
         private LBPHFaceRecognizer rec;
@@ -18,7 +21,7 @@ namespace BioPass {
         private CascadeClassifier cascadeClassifier;
         private List<Image<Gray, Byte>> _detectedFaces;
         private Mat testFaceMat;
-        private const double LBPH_THRESHOLD = 2000.0;
+        private const double LBPH_THRESHOLD = 100.0;
         /**
          * Constructor if you already have a training set that you want to load in
          */
@@ -61,10 +64,10 @@ namespace BioPass {
         * Note: Because the LBPHFaceRecognizer requires you to have all the images the same size, 92x112 is hard coded
         */
         public void DetectFace(Image image) {
-                _detectFaceWorker = new BackgroundWorker();
-                _detectFaceWorker.DoWork += detectFace_DoWork;
-                _detectFaceWorker.RunWorkerCompleted += detectFace_RunWorkerCompleted;
-                _detectFaceWorker.RunWorkerAsync(image);
+            _detectFaceWorker = new BackgroundWorker();
+            _detectFaceWorker.DoWork += detectFace_DoWork;
+            _detectFaceWorker.RunWorkerCompleted += detectFace_RunWorkerCompleted;
+            _detectFaceWorker.RunWorkerAsync(image.Clone());
 
         }
 
@@ -90,26 +93,23 @@ namespace BioPass {
         /**
          * Method to create initial LBPHface recoginizer. Uses faces given to it through faces with the labels being in labels
          */
-        public void TrainRecognizer() {
+        public void TrainRecognizer(int label) {
             if (_detectedFaces.Count >= 10) {
                 _recTrainerWorker = new BackgroundWorker();
                 _recTrainerWorker.DoWork += recTrainer_DoWork;
-                _recTrainerWorker.RunWorkerAsync(_detectedFaces);
+                _recTrainerWorker.RunWorkerAsync(label);
             } else {
                 Console.WriteLine("Not enough faces");
             }
-         
+
         }
 
         private void recTrainer_DoWork(object Sender, DoWorkEventArgs args) {
-            // Look into how arguments work
-            // may need to pack everything into a multi-dimensional array?
-            // How to ensure safety? 
             List<int> labels = new List<int>();
-            Image<Gray,Byte>[] facesArray = _detectedFaces.ToArray();
-            //TODO: CHANGE THIS BECAUSE WERE NOT TRAINING THE WHOLE SET ANYMORE
+            Image<Gray, Byte>[] facesArray = _detectedFaces.ToArray();
+            //TODO: Add in the label programmatically 
             for (int i = 0; i < facesArray.Length; i++) {
-                labels.Add(40);
+                labels.Add((int)args.Argument);
             }
             rec.Update(facesArray, labels.ToArray());
             Console.WriteLine("Rec is updated");
@@ -122,22 +122,31 @@ namespace BioPass {
 
         /**
          * Save the LBPHFaceRecognizer to filename
+         * XML file
          */
         public void SaveRecognizer(String filename) {
             rec.Save(filename);
         }
 
+        /**
+         * Update the recognizer. Call will still be from _detectedfaces 
+         * may not work i have no idea
+         */
+        public void UpdateRecognizer(int label) {
+            _recTrainerWorker = new BackgroundWorker();
+            _recTrainerWorker.DoWork += recTrainer_DoWork;
+            _recTrainerWorker.RunWorkerAsync(label);
+        }
+
         //Prints out the label of the user to be identifed
-        //2000 is currently set as the LBPH threshold. The lower the better
+        //100 is currently set as the LBPH threshold. The lower the better
         public int IdentifyUser(object A) {
-            if (rec != null) {
+            if (_detectedFaces[0] != null) {
                 //DetectFace((Bitmap)A);
-                //This is breaking because detect face is now async. need to wait somehow. 
-                //create some form of callback?
                 var results = rec.Predict(_detectedFaces[0]);
                 Console.WriteLine(results.Distance);
                 Console.WriteLine(results.Label);
-                if(results.Distance < LBPH_THRESHOLD) {
+                if (results.Distance < LBPH_THRESHOLD) {
                     _detectedFaces.Clear();
                     return results.Label;
                 }

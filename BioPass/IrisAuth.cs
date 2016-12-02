@@ -92,7 +92,7 @@ namespace BioPass
             Gray canny = new Gray(255*.25);
             int minAccumulator = 0;
             int currAcumulator = 200;
-            double dp = 2.5;
+            double dp = 1;
             double minDistance = 10;
             int minSize = 0;
             int maxSize = 0;
@@ -117,11 +117,9 @@ namespace BioPass
         private Image<Gray, byte> Unravel(Image<Gray, byte> image, CircleF circle)
         {
             PointF center = circle.Center;
-            double M = image.Width / Math.Log(image.Height);
-            //This may cause errors based on how EmguCV handles these methods.
-            //If so, just create new Images to store the return from these methods
+            double M = circle.Radius / Math.Log(circle.Radius);
             image = image.LogPolar(center, M);
-            //Eliminate null space here
+            image = RemoveNull(image);
             image = image.Resize(20, 240, Emgu.CV.CvEnum.Inter.Linear);
             return image;
         }
@@ -267,5 +265,32 @@ namespace BioPass
             return template;
         }
 
+        private Image<Gray, byte> RemoveNull(Image<Gray, byte> image)
+        {
+            image = image.Clone();
+            int boundRight = 0;
+            int boundLeft = image.Width;
+            byte[,,] data = image.Data; //get data reference only once for optimization purposes
+            //We only iterate through first row because it starts at top of image
+            //This prevents  one of the four corners showing up as not-noise
+            for (int i = image.Width - 1; i > 0; i--)
+            {
+                if (data[0, i, 0] > 10)
+                {
+                    boundRight = i > boundRight ? i : boundRight;
+                    break;
+                }
+            }
+            for (int i = 0; i < boundRight; i++)
+            {
+                if (data[0, i, 0] > 10)
+                {
+                    boundLeft = i < boundLeft ? i : boundLeft;
+                    break;
+                }
+            }
+            image.ROI = new Rectangle(boundLeft, 0, boundRight - boundLeft, image.Height);
+            return image;
+        }
     }
 }
