@@ -32,12 +32,12 @@ namespace BioPass {
                     }
                 }
                 statusBar.Text = "Sensor Connected!";
-                Debug.Write("FP init success!", "Information");                
+                Debug.WriteLine("FP init success!", "Information");                
             }
             else
             {
                 axZKFPEngX1.EndEngine();
-                Debug.Write("FP init failed!", "Error"); 
+                Debug.WriteLine("FP init failed!", "Error"); 
             }
             FMatchType = 2;
         }

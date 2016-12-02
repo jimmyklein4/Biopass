@@ -31,7 +31,7 @@ namespace BioPass
                 foreach (Camera cam in CameraService.AvailableCameras) { 
                     comboBoxCameras.Items.Add(cam);
                 }
-                Debug.Write(comboBoxCameras.Items.Count);
+                Debug.WriteLine(comboBoxCameras.Items.Count);
                 if (comboBoxCameras.Items.Count > 0) {
                     comboBoxCameras.SelectedIndex = 0;
                     thrashOldCamera();
@@ -60,12 +60,18 @@ namespace BioPass
         private FacialRecognition rec;
         private List<int> labels;
         BackgroundWorker bw;
-        private Camera CurrentCamera
-        {
+        private Camera CurrentCamera {
            get
            {
               return comboBoxCameras.SelectedItem as Camera;
            }
+        }
+
+        private void comboBoxCameras_DropDownClose(object sender, EventArgs e) {
+            if (_frameSource != null && _frameSource.Camera == comboBoxCameras.SelectedItem)
+                return;
+            thrashOldCamera();
+            startCapturing();
         }
 
         private void btnStart_Click(object sender, EventArgs e)
@@ -83,6 +89,7 @@ namespace BioPass
             try
             {
                 Camera c = (Camera)comboBoxCameras.SelectedItem;
+                Debug.WriteLine("Changing camera to: " + c);
                 setFrameSource(new CameraFrameSource(c));
                 _frameSource.Camera.CaptureWidth = 640;
                 _frameSource.Camera.CaptureHeight = 480;
@@ -104,7 +111,9 @@ namespace BioPass
             if (_latestFrame != null)
             {
                 // Draw the latest image from the active camera
-                    e.Graphics.DrawImage(_latestFrame, 0, 0, _latestFrame.Width, _latestFrame.Height);
+                    int Width = _latestFrame.Width;
+                    int Height = _latestFrame.Height;
+                    e.Graphics.DrawImage(_latestFrame, 0, 0, Width, Height);
             }
         }
 

@@ -61,6 +61,7 @@
             this.comboBoxCameras.Name = "comboBoxCameras";
             this.comboBoxCameras.Size = new System.Drawing.Size(153, 21);
             this.comboBoxCameras.TabIndex = 12;
+            this.comboBoxCameras.DropDownClosed += new System.EventHandler(this.comboBoxCameras_DropDownClose);
             // 
             // btnStop
             // 
