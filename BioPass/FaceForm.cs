@@ -197,16 +197,13 @@ namespace BioPass
         }
         // Detects face and stores it in a list for later rec
         private void detect_Click(object sender, EventArgs e) {
-            Image toDetect = null;
+            if(_faces == null) { _faces = new List<Image>(); }
             try {
                 lock (_latestFrame) {
-                    toDetect = (Image)_latestFrame.Clone();
+                    _faces.Add((Image)_latestFrame.Clone());
                 }
             } catch (InvalidOperationException exeception) {
                 Console.Write(exeception.ToString());
-            }
-            if (toDetect != null) {
-                rec.DetectFace(toDetect);
             }
         }
         // Starts the recognition process
@@ -215,11 +212,13 @@ namespace BioPass
                 rec = new FacialRecognition();
             }
             //The number is where you'd put the id
-            rec.TrainRecognizer(41);
+            rec.AddNewUser(_faces.ToArray(), 41);
+            _faces = null;
         }
         // Checks the face it detects against the recognizer 
         private void check_Click(object sender, EventArgs e) {
-            Console.WriteLine(rec.IdentifyUser(null));
+            Console.WriteLine(rec.IdentifyUser(_faces.First()));
+            _faces = null;
         }
 
         private void button1_Click(object sender, EventArgs e)
