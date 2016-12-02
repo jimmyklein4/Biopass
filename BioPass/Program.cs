@@ -44,19 +44,41 @@ namespace BioPass {
             mainForm = new FaceForm();
             Application.Run(mainForm);
         } 
-        public static void recieveCapture(Object finger, Bitmap face, String pin) {
+        public static void recieveCapture(long finger_uid, Bitmap face, String pin) {
             face.Save(tempFacePath);
+
             //Debug.WriteLine("Identifed from Face " + mainForm.rec.IdentifyUser(face));
+            mainForm.blankPin();
+            Boolean compareToFP = false;
+            if(finger_uid != -1) {
+                compareToFP = true;
+            }
+
             int faceIdentity = mainForm.rec.IdentifyUser(face);
-            if (pin == null || pin.Length != 4) MessageBox.Show("No pin provided. Face is not enough to verify user.");
-            else {
+
+            if (!compareToFP && (pin == null || pin.Length != 4)) {
+                MessageBox.Show("Bad or No pin provided. Face is not enough to verify user.");
+            } else if (!compareToFP && (pin != null && pin.Length == 4)) {
                 String match = db.compareIdToPin(faceIdentity, pin);
                 if (match != null && match.Length > 0) {
+                    MessageBox.Show("(Pin and Face) User identified as: " + match);
+                    mainForm.postAuth(faceIdentity);
+                }
+            } else if (compareToFP && (pin != null && pin.Length == 4)) {
+                String match = db.compareIdToPin(faceIdentity, pin);
+                if (match != null && match.Length > 0 && finger_uid == faceIdentity) {
+                    MessageBox.Show("(Pin, Face, FP) User identified as: " + match);
+                    mainForm.postAuth(faceIdentity);
+                }
+            } else if (compareToFP) {
+                Debug.WriteLine(finger_uid);
+                Debug.WriteLine(faceIdentity);
+                if (faceIdentity == finger_uid) {
+                    String match = db.getUserName(finger_uid);
                     MessageBox.Show("User identified as: " + match);
                     mainForm.postAuth(faceIdentity);
                 }
             }
-
           //finger.Save(tempFingerPath);
         }
         

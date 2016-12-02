@@ -55,8 +55,14 @@ CREATE TABLE fingerprint(
 fp_id INTEGER PRIMARY KEY,
 finger varchar(255) NOT NULL,
 fingerprint BLOB,
+user_id varchar(255) NOT NULL);"+
+                @"
+CREATE TABLE iris(
+iris_id INTEGER PRIMARY KEY,
+iris_data varchar(255) NOT NULL,
 user_id varchar(255) NOT NULL);
 ";
+            ;
             SQLiteCommand cmd = new SQLiteCommand(sql, dbConn);
             cmd.ExecuteNonQuery();
         }
@@ -284,6 +290,24 @@ user_id varchar(255) NOT NULL);
 
                 transaction.Commit();
             }
+        }
+        
+        public long addIrisData(String data, long userId) {
+            SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
+            cmd.CommandText = "INSERT INTO iris_data (iris, user_id) VALUES (@iid, @uid)";
+
+            cmd.Parameters.Add(new SQLiteParameter("@iid", data));
+            cmd.Parameters.Add(new SQLiteParameter("@uid", userId));
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
+
+            cmd.CommandText = "select last_insert_rowid();";
+            SQLiteDataReader reader = cmd.ExecuteReader();
+            reader.Read();
+
+            long row = (long)reader[0];
+
+            return row;
         }
 
         public Boolean exists() {

@@ -80,7 +80,7 @@ namespace BioPass {
                 lock (FaceForm._latestFrame) {
                     Bitmap image = (Bitmap)FaceForm._latestFrame.Clone();
                     IrisAuth iris = new IrisAuth();
-                    String template = iris.templateToBase64(iris.GetTemplate(image));
+                    iris.AddUser(image, target);
                 }
             } catch (InvalidOperationException exeception) {
                 Console.Write(exeception.ToString());

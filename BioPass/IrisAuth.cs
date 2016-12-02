@@ -13,7 +13,7 @@ namespace BioPass
         public int IdentifyUser(object image)
         {
             SQLiteConnection conn = new SQLiteConnection("Data Source=biopass.sqlite;Version=3");
-            String select = "select iris_data, user_id from biometricProperties;";
+            String select = "select iris_data, user_id from iris;";
             SQLiteCommand cmd = new SQLiteCommand(select, conn);
             SQLiteDataReader reader = cmd.ExecuteReader();
             int id = -1;
@@ -32,7 +32,7 @@ namespace BioPass
         {
             String data = templateToBase64(GetTemplate(image));
             String oldData = "";
-            String select = "select iris_data from biometricProperties where user_id = " + userId + ";";
+            String select = "select iris_data from iris where user_id = " + userId + ";";
             SQLiteConnection conn = new SQLiteConnection("Data Source=biopass.sqlite;Version=3");
             SQLiteDataReader reader = new SQLiteCommand(select, conn).ExecuteReader();
             while (reader.Read()) //only 1 record should return lul
@@ -40,7 +40,7 @@ namespace BioPass
                 oldData = reader.GetString(reader.GetOrdinal("iris_data")) + ";";
             }
             data = oldData + data;
-            String update = "update biometricProperties set iris_data = " + data +
+            String update = "update iris set iris_data = " + data +
                 " where user_id = " + userId + ";";
             SQLiteCommand cmd = new SQLiteCommand(update, conn);
             cmd.ExecuteNonQuery();
@@ -49,7 +49,7 @@ namespace BioPass
         public Boolean VerifyUser(object image, int userId)
         {
             SQLiteConnection conn = new SQLiteConnection("Data Source=biopass.sqlite;Version=3");
-            String select = "select iris_data from biometricProperties where user_id = "
+            String select = "select iris_data from iris where user_id = "
                 + userId + ";";
             SQLiteCommand cmd = new SQLiteCommand(select, conn);
             SQLiteDataReader reader = cmd.ExecuteReader();
@@ -60,6 +60,14 @@ namespace BioPass
                 return (HammingDistance(template2, template1, null, null) < .3);
             }
             return false;
+        }
+
+        public void AddUser(object image, long userId) {
+            int[] template2 = GetTemplate(image);
+            String data = templateToBase64(GetTemplate(image));
+
+            long iid = Program.db.addIrisData(data, userId);
+
         }
 
         private int[] GetTemplate(object img)

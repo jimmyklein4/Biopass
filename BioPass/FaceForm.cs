@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using Touchless.Vision.Camera;
 using System.Drawing.Imaging;
 using System.Diagnostics;
+using System.IO;
 
 namespace BioPass
 {
@@ -17,7 +18,11 @@ namespace BioPass
         public FaceForm()
         {
             InitializeComponent();
-            rec = new FacialRecognition("facereq.xml");
+            if (File.Exists(Directory.GetCurrentDirectory() + "/facereq.xml")) {
+                rec = new FacialRecognition("facereq.xml");
+            } else {
+                rec = new FacialRecognition();
+            }
         }
 
         private void FaceForm_Load(object sender, EventArgs e)
@@ -159,6 +164,9 @@ namespace BioPass
         }
 
         String last4Ints;
+        public void blankPin() {
+            last4Ints = pinLabel.Text = "";
+        }
         void FaceForm_KeyUp(object sender, KeyEventArgs e) {
             this.Focus();
             int keyValue = e.KeyValue;
@@ -199,11 +207,11 @@ namespace BioPass
             return last4Ints;
         }
  
-        public void compileUserData() {
+        public void compileUserData(long fpid = -1) {
             Bitmap face = getWebcamImage();
             String pin = collectPin();
 
-            Program.recieveCapture(null, face, pin);
+            Program.recieveCapture(fpid, face, pin);
         }
 
         // Detects face and stores it in a list for later rec
