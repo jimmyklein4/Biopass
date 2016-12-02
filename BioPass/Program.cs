@@ -43,10 +43,10 @@ namespace BioPass {
             Application.SetCompatibleTextRenderingDefault(false);
             mainForm = new FaceForm();
             Application.Run(mainForm);
-        }
-
+        } 
         public static void recieveCapture(Object finger, Bitmap face, String pin) {
             face.Save(tempFacePath);
+            Debug.WriteLine("Identifed from Face " + mainForm.rec.IdentifyUser(face));
           //finger.Save(tempFingerPath);
         }
         

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Data.SQLite;
 using System.Data.SqlClient;
 using System.Data;
+using System.Diagnostics;
 
 namespace BioPass
 {
@@ -18,6 +19,7 @@ namespace BioPass
             SQLiteConnection.CreateFile("biopass.sqlite");
             this.connectToDatabase();
             this.createTables();
+            this.prepUserDB();
         }
 
         // Creates a connection with our database file.
@@ -52,7 +54,7 @@ pin INTEGER);"+
 CREATE TABLE fingerprint(
 fp_id INTEGER PRIMARY KEY,
 finger varchar(255) NOT NULL,
-fp BLOB,
+fingerprint BLOB,
 user_id varchar(255) NOT NULL);
 ";
             SQLiteCommand cmd = new SQLiteCommand(sql, dbConn);
@@ -103,6 +105,7 @@ user_id varchar(255) NOT NULL);
             username = (String)(reader["username"] != System.DBNull.Value ? reader["username"] : "");
             return username;
         }
+
         public String getPassword(String aid, String uid)
         {
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
@@ -128,7 +131,6 @@ user_id varchar(255) NOT NULL);
         }
 
         // User table
-
          public long addUser(String name) {
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
             cmd.CommandText = "INSERT INTO user(name) VALUES(@name)";
@@ -145,10 +147,28 @@ user_id varchar(255) NOT NULL);
             long row = (long) reader[0];
 
             return row;
-
         }
-        public String getUserName(long uid) {
 
+        public long addUser(String name, String pin) {
+            SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
+            cmd.CommandText = "INSERT INTO user(name, pin) VALUES(@name, @pin)";
+
+            cmd.Parameters.Add(new SQLiteParameter("@name", name));
+            cmd.Parameters.Add(new SQLiteParameter("@pin", name));
+
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
+
+            cmd.CommandText = "select last_insert_rowid();";
+            SQLiteDataReader reader = cmd.ExecuteReader();
+            reader.Read();
+
+            long row = (long)reader[0];
+
+            return row;
+        }
+
+        public String getUserName(long uid) {
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
             cmd.CommandText = "SELECT name FROM user WHERE user_id='" + uid + "';";
             cmd.Prepare();
@@ -159,7 +179,7 @@ user_id varchar(255) NOT NULL);
             return name;
         }
 
-        public void registerUserFP(long uid, string fp, string fpName) {
+        public long registerUserFP(long uid, string fp, string fpName) {
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
             cmd.CommandText = "INSERT INTO fingerprint(fingerprint, user_id, finger) VALUES (@fp, @uid, @fpName);";
 
@@ -169,7 +189,16 @@ user_id varchar(255) NOT NULL);
 
             cmd.Prepare();
             cmd.ExecuteNonQuery();
+
+            cmd.CommandText = "select last_insert_rowid();";
+            SQLiteDataReader reader = cmd.ExecuteReader();
+            reader.Read();
+
+            long row = (long)reader[0];
+
+            return row;
         }
+
         public string getUserNameByFinger(long fp_id) {
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
             cmd.CommandText = "SELECT user.name FROM user,fingerprint WHERE fp_id=@fp_id AND user.user_id=fingerprint.user_id;";
@@ -182,6 +211,7 @@ user_id varchar(255) NOT NULL);
             String name = (String)(reader["name"] != System.DBNull.Value ? reader["name"] : "");
             return name;
         }
+
         public string[] getUserArrayByFinger(long fp_id) {
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
             cmd.CommandText = "SELECT user.name, user.user_id FROM user,fingerprint WHERE fp_id=@fp_id AND user.user_id=fingerprint.user_id;";
@@ -198,6 +228,7 @@ user_id varchar(255) NOT NULL);
 
             return array;
         }
+
         public DataTable getUserFPs(long uid) {
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
             cmd.CommandText = "SELECT fp_id, fingerprint, finger FROM fingerprint WHERE user_id=@uid;";
@@ -226,15 +257,28 @@ user_id varchar(255) NOT NULL);
             return dt;
         }
 
-        public Boolean exists()
-        {
+        public void prepUserDB() {
+            SQLiteCommand cmd = new SQLiteCommand(dbConn);
+            using (var transaction = dbConn.BeginTransaction()) {
+                // 40 inserts
+                for (var i = 1; i < 41; i++) {
+                    cmd.CommandText = @"INSERT INTO user (name) VALUES ('fakeuser"+i+@"');";
+                    Debug.WriteLine(cmd.CommandText);
+                    cmd.ExecuteNonQuery();
+
+                }
+
+                transaction.Commit();
+            }
+        }
+
+        public Boolean exists() {
             String path = Environment.CurrentDirectory;
-            System.Diagnostics.Debug.WriteLine(path);
+            Debug.WriteLine(path);
             return (System.IO.File.Exists(path + "/biopass.sqlite"));
         }
 
         //application table
-
         public void addApp(String appname, int type, String usrnameField, String pwField)
         {
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);

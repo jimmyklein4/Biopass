@@ -60,7 +60,7 @@ namespace BioPass
             return false;
         }
         
-        private int[] GetTemplate(object img)
+        public  int[] GetTemplate(object img)
         {
             Image<Gray, byte> image = new Image<Gray, byte>((Bitmap) img);
             //Set ROI of eye region
@@ -224,7 +224,7 @@ namespace BioPass
             return signal;
         }
 
-        private String templateToBase64(int[] template)
+        public String templateToBase64(int[] template)
         {
             byte[] bytes = new byte[template.Length / 8 + 1];
             int i = 0;

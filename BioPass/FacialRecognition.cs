@@ -137,6 +137,7 @@ namespace BioPass {
             }
             rec.Update(facesArray, labels.ToArray());
             Console.WriteLine("Rec is updated");
+            SaveRecognizer("facereq.xml");
             _detectedFaces.Clear();
         }
 

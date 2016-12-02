@@ -91,23 +91,26 @@ namespace BioPass {
 		        if(sRegTemplate.Length > 0) {
 
                     if (sRegTemplate10.Length > 0) { 
-                        Debug.WriteLine("Adding FP to FPCacheDB");
-                        axZKFPEngX1.AddRegTemplateStrToFPCacheDBEx(fpcHandle, (int) Program.targetFingerprintID, sRegTemplate, sRegTemplate10);
+                        Debug.WriteLine("Adding FP " + Program.targetFingerprintID + " to FPCacheDB");
+
+                        object pTemplate;
+                        pTemplate = axZKFPEngX1.DecodeTemplate1(sRegTemplate10);
+
+                        // Note: 10.0Template can not be compressed (±»Ñ¹Ëõ)
+                        axZKFPEngX1.SetTemplateLen(ref pTemplate, 602);
+                        String encodedTemplate = axZKFPEngX1.EncodeTemplate1(pTemplate);
+                        long fpid = Program.db.registerUserFP(Program.targetFingerUserID, encodedTemplate, Program.targetFingerprintName);
+
+                        axZKFPEngX1.AddRegTemplateStrToFPCacheDBEx(fpcHandle, (int)fpid, sRegTemplate, sRegTemplate10);
+
+                        //axZKFPEngX1.SaveTemplate("fingerprint.tpl", pTemplate);
+                        MessageBox.Show("Register Succeed", "Information!");
+                        Program.fingerprintForm.PopulateDataGridView();
+
+
                     } else { 
                         MessageBox.Show("Register 10.0 failed, template length is zero", "error!");
                     }
-
-                    object pTemplate;
-				    pTemplate = axZKFPEngX1.DecodeTemplate1(sRegTemplate10);
-
-			        // Note: 10.0Template can not be compressed (±»Ñ¹Ëõ)
-			        axZKFPEngX1.SetTemplateLen(ref pTemplate, 602);
-                    String encodedTemplate = axZKFPEngX1.EncodeTemplate1(pTemplate);
-                    Program.db.registerUserFP(Program.targetFingerUserID, encodedTemplate, Program.targetFingerprintName);
-                  
-                    //axZKFPEngX1.SaveTemplate("fingerprint.tpl", pTemplate);
-			        MessageBox.Show("Register Succeed", "Information!");
-                    Program.fingerprintForm.PopulateDataGridView();
                 } else {
                     MessageBox.Show("Register Failed, template length is zero", "error!");
 		        };
