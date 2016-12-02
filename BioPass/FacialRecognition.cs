@@ -18,6 +18,7 @@ namespace BioPass {
         private LBPHFaceRecognizer rec;
         private BackgroundWorker _recTrainerWorker;
         private BackgroundWorker _detectFaceWorker;
+        private BackgroundWorker _addNewUserWorker;
         private CascadeClassifier cascadeClassifier;
         private List<Image<Gray, Byte>> _detectedFaces;
         private Mat testFaceMat;
@@ -58,6 +59,32 @@ namespace BioPass {
             }
         }
 
+        public void AddNewUser(Image[] faces, int label) {
+            Image[] facesCopy = new Image[faces.Length];
+            faces.CopyTo(facesCopy, 0);
+            var args = new Tuple<Image[], int>(facesCopy, label);
+
+            _addNewUserWorker = new BackgroundWorker();
+            _addNewUserWorker.DoWork += addNewUser_DoWork;
+            _addNewUserWorker.RunWorkerAsync(args);
+        }
+
+        private void addNewUser_DoWork(Object sender, DoWorkEventArgs args) {
+            Tuple<Image[], int> sentArgs = (Tuple<Image[], int>)args.Argument;
+            _detectedFaces = new List<Image<Gray, byte>>();
+            for (int i = 0; i < sentArgs.Item1.Length; i++) {
+                Image<Gray, Byte> face = new Image<Gray, Byte>((Bitmap)sentArgs.Item1[i]);
+                Rectangle[] detected = cascadeClassifier.DetectMultiScale(face, 1.1, 10, Size.Empty);
+                if (detected.Length > 0) {
+                    //Array.Sort(detected, detected.Length);
+                    //TODO sort array
+                    face = face.Copy(detected[0]);
+                    face = face.Resize(92, 112, 0);
+                    _detectedFaces.Add(face);
+                }
+            }
+            TrainRecognizer(sentArgs.Item2);
+        }
         /**
         * Facial detection method. Calling this will take the photo given to it, detect a face,
         * cut out and return only the facial detection area. 
@@ -107,7 +134,6 @@ namespace BioPass {
         private void recTrainer_DoWork(object Sender, DoWorkEventArgs args) {
             List<int> labels = new List<int>();
             Image<Gray,Byte>[] facesArray = _detectedFaces.ToArray();
-            //TODO: Add in the label programmatically 
             for (int i = 0; i < facesArray.Length; i++) {
                 labels.Add((int)args.Argument);
             }
@@ -141,19 +167,30 @@ namespace BioPass {
         //Prints out the label of the user to be identifed
         //100 is currently set as the LBPH threshold. The lower the better
         public int IdentifyUser(object A) {
-            if (_detectedFaces[0]!=null) {
-                //DetectFace((Bitmap)A);
-                var results = rec.Predict(_detectedFaces[0]);
-                Console.WriteLine(results.Distance);
-                Console.WriteLine(results.Label);
-                if(results.Distance < LBPH_THRESHOLD) {
-                    _detectedFaces.Clear();
-                    return results.Label;
-                }
-                //TODO: DELETE. DANGEROUS CALL
-                _detectedFaces.Clear();
+            Image<Gray, Byte> faces = new Image<Gray, byte>((Bitmap)A);
+            Rectangle[] detected = cascadeClassifier.DetectMultiScale(faces, 1.1, 10, Size.Empty);
+            if (detected.Length > 0) {
+                //Array.Sort(detected, detected.Length);
+                //TODO sort array
+
+                faces = faces.Copy(detected[0]);
+                faces = faces.Resize(92, 112, 0);
+                return rec.Predict(faces).Label;
             }
             return -1;
+            //if (_detectedFaces[0]!=null) {
+            //    //DetectFace((Bitmap)A);
+            //    var results = rec.Predict(_detectedFaces[0]);
+            //    Console.WriteLine(results.Distance);
+            //    Console.WriteLine(results.Label);
+            //    if(results.Distance < LBPH_THRESHOLD) {
+            //        _detectedFaces.Clear();
+            //        return results.Label;
+            //    }
+            //    //TODO: DELETE. DANGEROUS CALL
+            //    _detectedFaces.Clear();
+            //}
+            //return -1;
         }
         //TODO: Implement
         public Boolean VerifyUser(object A, int user_id) {
