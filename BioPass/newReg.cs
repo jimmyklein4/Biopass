@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+//TODO: Auto-take photos
+
 namespace BioPass {
     public partial class newReg : Form {
         public long target;
@@ -53,8 +55,12 @@ namespace BioPass {
             // prep faces array
             if(Program.mainForm._faces == null) { Program.mainForm._faces = new List<Image>(); }
             try {
-                lock (FaceForm._latestFrame) {
-                    Program.mainForm._faces.Add((Image) FaceForm._latestFrame.Clone());
+                while (Program.mainForm._faces.Count < 10) {
+                    lock (FaceForm._latestFrame) {
+                        Program.mainForm._faces.Add((Image)FaceForm._latestFrame.Clone(
+                            new Rectangle(0, 0, FaceForm._latestFrame.Width, FaceForm._latestFrame.Height),
+                            FaceForm._latestFrame.PixelFormat));
+                    }
                 }
             } catch (InvalidOperationException exeception) {
                 Console.Write(exeception.ToString());
@@ -78,7 +84,9 @@ namespace BioPass {
         private void IrisBtn_Click(object sender, EventArgs e) {
             try {
                 lock (FaceForm._latestFrame) {
-                    Bitmap image = (Bitmap)FaceForm._latestFrame.Clone();
+                    Bitmap image = (Bitmap)FaceForm._latestFrame.Clone(
+                        new Rectangle(0, 0, FaceForm._latestFrame.Width, FaceForm._latestFrame.Height),
+                        FaceForm._latestFrame.PixelFormat);
                     IrisAuth iris = new IrisAuth();
                     iris.AddUser(image, target);
                 }

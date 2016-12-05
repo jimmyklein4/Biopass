@@ -9,6 +9,7 @@ using System.Drawing;
 using System.ComponentModel;
 using System.Threading;
 
+//TODO: Take photos automatically. Check newReg.cs
 
 namespace BioPass {
     public class FacialRecognition : authMethod {
