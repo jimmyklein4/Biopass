@@ -306,7 +306,7 @@ user_id varchar(255) NOT NULL);
         
         public long addIrisData(String data, long userId) {
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
-            cmd.CommandText = "INSERT INTO iris_data (iris, user_id) VALUES (@iid, @uid)";
+            cmd.CommandText = "INSERT INTO iris (iris_data, user_id) VALUES (@iid, @uid)";
 
             cmd.Parameters.Add(new SQLiteParameter("@iid", data));
             cmd.Parameters.Add(new SQLiteParameter("@uid", userId));

@@ -10,6 +10,8 @@ namespace BioPass
 {
     class IrisAuth : authMethod
     {
+        const double TEMPLATE_NULL = 99;
+
         public int IdentifyUser(object image)
         {
             SQLiteConnection conn = new SQLiteConnection("Data Source=biopass.sqlite;Version=3");
@@ -30,6 +32,8 @@ namespace BioPass
 
         public void UpdateUserTemplate(object image, int userId)
         {
+            int[] template = GetTemplate(image);
+            if (template == null) return;
             String data = templateToBase64(GetTemplate(image));
             String oldData = "";
             String select = "select iris_data from iris where user_id = " + userId + ";";
@@ -64,10 +68,10 @@ namespace BioPass
 
         public void AddUser(object image, long userId) {
             int[] template2 = GetTemplate(image);
+            if (template2 == null) return;
             String data = templateToBase64(GetTemplate(image));
 
             long iid = Program.db.addIrisData(data, userId);
-
         }
 
         private int[] GetTemplate(object img)
@@ -81,24 +85,97 @@ namespace BioPass
                 image.ROI = classifier.DetectMultiScale(image)[0];
             }
             catch (Exception) { }
-            Image<Gray, byte> showImage = image.Clone();
+            String s = @"C:\Users\rober_000\Downloads\CASIA-Iris-Interval\001\R\S1001R01.jpg";
+            String x = @"C:\Users\iris.jpg";
+            // Image<Gray, byte> baseImage = new Image<Gray, byte>(s);
+            Image<Gray, byte> baseImage = image.Copy();
+            baseImage = RemoveThresholdNoise(baseImage);
+            image = image.Copy();
+
+            image = RemoveThresholdNoise(image);
+            image = image.ThresholdBinary(new Gray(55), new Gray(255));
+            
+            Image<Gray, byte> showImage = image.Copy();
             //Set ROI of iris region
             CircleF circles = FindCircles(image);
-            image.ROI = Rectangle.Empty;
-            Rectangle roi = new Rectangle((int)circles.Center.X, (int)circles.Center.Y,
-                (int)circles.Radius, (int)circles.Radius);
-            image.ROI = roi;
-
-            //Show segmentation
-            CvInvoke.Circle(showImage, Point.Round(circles.Center), (int)circles.Radius, new Rgb(255, 0, 0).MCvScalar);
-            CvInvoke.Imshow("Croped Image", showImage);
+            Image<Gray, byte> mask = new Image<Gray, byte>(image.Size);
+            CvInvoke.Circle(mask, new Point((int)circles.Center.X, (int)circles.Center.Y), (int)circles.Radius,
+                new MCvScalar(255, 255, 255), -1, Emgu.CV.CvEnum.LineType.AntiAlias, 0);
+            mask = mask.Not();
+            image = image.And(image, mask);
+            CvInvoke.Imshow("OnO", baseImage);
+            baseImage = baseImage.And(baseImage, mask);
+            CvInvoke.Imshow("OwO", baseImage);
             CvInvoke.WaitKey(0);
             CvInvoke.DestroyAllWindows();
+            //if (circles.Area == 0)
+            //    return null;
 
+            circles = GetIrisFromPupilImage(baseImage, circles);
+            if (circles.Radius == 0) return null;
+            Rectangle roi = new Rectangle((int)(circles.Center.X - circles.Radius), (int)(circles.Center.Y - circles.Radius),
+                (int)circles.Radius * 2, (int)circles.Radius* 2);
+            baseImage.ROI = roi;
+            //Show segmentation
+            CvInvoke.Circle(baseImage, new Point(baseImage.Width / 2, baseImage.Height / 2),
+                (int)circles.Radius, new Rgb(255, 0, 0).MCvScalar);
+            CvInvoke.Imshow("OwO", baseImage);
+            CvInvoke.WaitKey(0);
+            CvInvoke.DestroyAllWindows();
             //Normalize and encode features
-            Image<Gray, byte> unraveled = Unravel(image, circles);
+            Image<Gray, byte> unraveled = Unravel(baseImage, circles);
             Complex[][][] convolved = LogGabor(unraveled);
             return PhaseQuantifier(convolved[0]); //there's only 1 anyway
+        }
+
+        private Image<Gray, byte> RemoveThresholdNoise(Image<Gray, byte> image)
+        {//original param: 235, testing param: 210
+            Image<Gray, byte> lightToBlack = image.ThresholdBinary(new Gray(210), new Gray(255)).Not();
+            image = image.And(lightToBlack, image);
+            Image<Gray, byte> blackToBlack = image.ThresholdBinary(new Gray(15), new Gray(255));
+            image = image.And(blackToBlack, image);
+            return image;
+        }
+
+        private CircleF GetIrisFromPupilImage(Image<Gray, byte> image, CircleF pupil)
+        {
+            image = image.Copy();
+            int beg = (int) (pupil.Center.X + (pupil.Radius * 1.2));
+            CvInvoke.Circle(image, Point.Round(pupil.Center), (int)pupil.Radius, new Rgb(178, 0, 0).MCvScalar);
+            int end = image.Width;
+            int height = (int)pupil.Center.Y;
+            int hits = 0;
+            int start = 0;
+            int currGray = 220;
+            for (; currGray >= 0; currGray-=5)
+            {
+                Image<Gray, byte> processImage = image.Copy();
+                processImage = processImage.ThresholdBinary(new Gray(currGray), new Gray(255));
+                byte[,,] data = processImage.Data;
+                for (int i = beg; i < end; i++)
+                {
+                    if (data[height, i, 0] >= 245 && hits == 0) { hits++; start = i; }
+                    else if (data[height, i, 0] >= 245) hits++;
+                    else { hits = 0; start = 0; }
+                    if (hits > 20) return new CircleF(pupil.Center, start - pupil.Center.X);
+                }
+            }
+            currGray = 220;
+            beg = (int)(pupil.Center.X - (pupil.Radius * 1.2));
+            for (; currGray >= 0; currGray -= 5)
+            {
+                Image<Gray, byte> processImage = image.Copy();
+                processImage = image.ThresholdBinary(new Gray(currGray), new Gray(255));
+                byte[,,] data = image.Data;
+                for (int i = beg; i > 0; i--)
+                {
+                    if (data[height, i, 0] >= 245 && hits == 0) { hits++; start = i; }
+                    else if (data[height, i, 0] >= 245) hits++;
+                    else { hits = 0; start = 0; }
+                    if (hits > 20) return new CircleF(pupil.Center, -1*(start - pupil.Center.X));
+                }
+            }
+            return new CircleF();
         }
 
         private CircleF FindCircles(Image<Gray, byte> image)
@@ -106,7 +183,7 @@ namespace BioPass
             Gray canny = new Gray(200);
             int minAccumulator = 0;
             int currAcumulator = 200;
-            double dp = 2.5;
+            double dp = 1;
             double minDistance = 10;
             int minSize = 0;
             int maxSize = 0;
@@ -130,11 +207,20 @@ namespace BioPass
 
         private Image<Gray, byte> Unravel(Image<Gray, byte> image, CircleF circle)
         {
-            PointF center = circle.Center;
+            PointF center = new PointF(image.Width / 2, image.Height / 2);
+            Image<Gray, byte> mask = new Image<Gray, byte>(image.Width, image.Height);
+            Point center2 = new Point(image.Width / 2, image.Height / 2);
+            CvInvoke.Circle(mask, center2, (int)circle.Radius, new MCvScalar(255, 255, 255), -1, Emgu.CV.CvEnum.LineType.AntiAlias, 0);
+            image = image.And(image, mask);
             double M = circle.Radius / Math.Log(circle.Radius);
             image = image.LogPolar(center, M);
+
             image = RemoveNull(image);
+
             image = image.Resize(20, 240, Emgu.CV.CvEnum.Inter.Linear);
+            CvInvoke.Imshow("OwO", image);
+            CvInvoke.WaitKey(0);
+            CvInvoke.DestroyAllWindows();
             return image;
         }
 
@@ -142,6 +228,7 @@ namespace BioPass
         {
             double diffs = 0;
             double comps = 0;
+            if (template1 == null || template2 == null) return TEMPLATE_NULL;
             mask1 = mask1 == null ? new int[template1.Length] : mask1;
             mask2 = mask2 == null ? new int[template1.Length] : mask2;
             for (int i = 0; i < template1.Length; i++)
@@ -208,16 +295,17 @@ namespace BioPass
             Complex[][][] results = new Complex[rotations][][];
             for (int i = 0; i < rotations; i++)
             {
-                Complex[][] response = new Complex[img.Height][];
+                Complex[][] response = new Complex[img.Width][];
                 filter = GetFilter(sigma, img.Height, wavelength); //Should be 240
                 for (int j = 0; j < img.Width; j++)  //should be 20
                 {
                     //idk if there's a method for this
                     Complex[] signal = new Complex[img.Height];
-                    for (int k = 0; i < img.Height; k++)
+                    for (int k = 0; k < img.Height; k++)
                     {
                         signal[k] = img[k, j].Intensity;
                     }
+                    System.Console.Out.WriteLine("");
                     Fourier.Forward(signal);
                     signal = ApplyFilter(filter, signal);
                     Fourier.Inverse(signal);
