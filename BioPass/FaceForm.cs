@@ -96,7 +96,7 @@ namespace BioPass
                 setFrameSource(new CameraFrameSource(c));
                 _frameSource.Camera.CaptureWidth = 640;
                 _frameSource.Camera.CaptureHeight = 480;
-                _frameSource.Camera.Fps = 50;
+                _frameSource.Camera.Fps = 20;
                 _frameSource.NewFrame += OnImageCaptured;
 
                 pictureBoxDisplay.Paint += new PaintEventHandler(drawLatestImage);
@@ -194,7 +194,9 @@ namespace BioPass
 
         // Get the current webcam image
         private Bitmap getWebcamImage() {
-            Bitmap current = (Bitmap)_latestFrame.Clone();
+            Bitmap current = (Bitmap)_latestFrame.Clone(
+                new Rectangle(0, 0, _latestFrame.Width, 
+                _latestFrame.Height), _latestFrame.PixelFormat);
             return current;
         }
 
@@ -214,33 +216,7 @@ namespace BioPass
             Program.recieveCapture(fpid, face, pin);
         }
 
-        // Detects face and stores it in a list for later rec
-        private void detect_Click(object sender, EventArgs e) {
-            if(_faces == null) { _faces = new List<Image>(); }
-            try {
-                lock (_latestFrame) {
-                    _faces.Add((Image)_latestFrame.Clone());
-                }
-            } catch (InvalidOperationException exeception) {
-                Console.Write(exeception.ToString());
-            }
-        }
-
-        // Starts the recognition process
-        private void create_rec_Click(object sender, EventArgs e) {
-            if (rec == null) {
-                rec = new FacialRecognition();
-            }
-            //The number is where you'd put the id
-            rec.AddNewUser(_faces.ToArray(), 41);
-            _faces = null;
-        }
-
-        // Checks the face it detects against the recognizer 
-        private void check_Click(object sender, EventArgs e) {
-            Console.WriteLine(rec.IdentifyUser(_faces.First()));
-            _faces = null;
-        }
+        // Detects face and stores it in a list for later re
         
         private void registerBtn_Click(object sender, EventArgs e) {
             Program.appmode = 1;
