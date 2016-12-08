@@ -5,6 +5,7 @@ using Emgu.CV.Structure;
 using System.Drawing;
 using System.Data.SQLite;
 using MathNet.Numerics.IntegralTransforms;
+using System.IO;
 
 namespace BioPass
 {
@@ -70,7 +71,6 @@ namespace BioPass
             int[] template2 = GetTemplate(image);
             if (template2 == null) return;
             String data = templateToBase64(GetTemplate(image));
-
             long iid = Program.db.addIrisData(data, userId);
         }
 
@@ -85,31 +85,28 @@ namespace BioPass
                 image.ROI = classifier.DetectMultiScale(image)[0];
             }
             catch (Exception) { }
-            String s = @"C:\Users\rober_000\Downloads\CASIA-Iris-Interval\001\R\S1001R01.jpg";
-            String x = @"C:\Users\iris.jpg";
-            // Image<Gray, byte> baseImage = new Image<Gray, byte>(s);
             Image<Gray, byte> baseImage = image.Copy();
             baseImage = RemoveThresholdNoise(baseImage);
             image = image.Copy();
 
             image = RemoveThresholdNoise(image);
-            image = image.ThresholdBinary(new Gray(55), new Gray(255));
-            
+            image = image.ThresholdBinary(new Gray(25), new Gray(255));
+
+            CvInvoke.Imshow("Detected Eye", baseImage);
+            CvInvoke.WaitKey(0);
+            CvInvoke.DestroyAllWindows();
             Image<Gray, byte> showImage = image.Copy();
             //Set ROI of iris region
             CircleF circles = FindCircles(image);
-            Image<Gray, byte> mask = new Image<Gray, byte>(image.Size);
+            Image<Gray, byte> mask = new Image<Gray, byte>(baseImage.Size);
             CvInvoke.Circle(mask, new Point((int)circles.Center.X, (int)circles.Center.Y), (int)circles.Radius,
                 new MCvScalar(255, 255, 255), -1, Emgu.CV.CvEnum.LineType.AntiAlias, 0);
-            mask = mask.Not();
-            image = image.And(image, mask);
-            CvInvoke.Imshow("OnO", baseImage);
-            baseImage = baseImage.And(baseImage, mask);
-            CvInvoke.Imshow("OwO", baseImage);
+            baseImage = baseImage.And(baseImage, mask.Not());
+            CvInvoke.Imshow("Detected Pupil", baseImage);
             CvInvoke.WaitKey(0);
             CvInvoke.DestroyAllWindows();
-            //if (circles.Area == 0)
-            //    return null;
+            if (circles.Area == 0)
+                return null;
 
             circles = GetIrisFromPupilImage(baseImage, circles);
             if (circles.Radius == 0) return null;
@@ -119,7 +116,7 @@ namespace BioPass
             //Show segmentation
             CvInvoke.Circle(baseImage, new Point(baseImage.Width / 2, baseImage.Height / 2),
                 (int)circles.Radius, new Rgb(255, 0, 0).MCvScalar);
-            CvInvoke.Imshow("OwO", baseImage);
+            CvInvoke.Imshow("Detected Iris", baseImage);
             CvInvoke.WaitKey(0);
             CvInvoke.DestroyAllWindows();
             //Normalize and encode features
@@ -214,11 +211,9 @@ namespace BioPass
             image = image.And(image, mask);
             double M = circle.Radius / Math.Log(circle.Radius);
             image = image.LogPolar(center, M);
-
             image = RemoveNull(image);
-
             image = image.Resize(20, 240, Emgu.CV.CvEnum.Inter.Linear);
-            CvInvoke.Imshow("OwO", image);
+            CvInvoke.Imshow("Normalized Iris Strip", image);
             CvInvoke.WaitKey(0);
             CvInvoke.DestroyAllWindows();
             return image;
