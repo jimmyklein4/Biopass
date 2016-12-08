@@ -178,9 +178,8 @@ namespace BioPass {
             }
             return -1;
         }
-        //TODO: Implement
         public Boolean VerifyUser(object A, int user_id) {
-            return false;
+            return (user_id == (rec.Predict(new Image<Gray, Byte>((Bitmap)A)).Label));
         }
     }
 }
