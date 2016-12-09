@@ -370,5 +370,10 @@ namespace BioPass
             automateWeb web = new automateWeb(LoginWin.application, "1");
 
         }
+
+        private void FaceForm_Load_1(object sender, EventArgs e)
+        {
+
+        }
     }
 }

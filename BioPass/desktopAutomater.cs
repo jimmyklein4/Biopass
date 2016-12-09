@@ -50,23 +50,23 @@ namespace BioPass
                 case "Battle.Net":
                     parsePath(path, @"Login Scripts\BnetLogin.ahk");
                     break;
-                case "Outlook13":
+                case "Outlook":
                     parsePath(path, @"Login Scripts\Outlook13Login.ahk");
                     break;
                 case "Discord":
                     parsePath(path, @"Login Scripts\DiscordLogin.ahk");
                     break;
-                case "MSWord13":
+                case "MSWord":
                     parsePath(path, @"Login Scripts\Word13Login.ahk");
                     break;
-                case "Excel13":
+                case "Excel":
                     parsePath(path, @"Login Scripts\Excel13Login.ahk");
                     break;
-                case "Access13":
+                case "Access":
                     parsePath(path, @"Login Scripts\Access13Login.ahk");
                     break;
-                case "pwProtectedExcelFile":
-                    parsePath(path, @"Login Scripts\Excel13PWProtectedWorkBook.ahk"); //Will need user to specify location of workbook
+                case "Pw Protected Excel File":
+                    promptPath();
                     break;
             }
 
@@ -75,7 +75,7 @@ namespace BioPass
         /*
         * Parses exe path for specified app in the automation script
         */
-        private void parsePath(String path, String script)
+        public void parsePath(String path, String script)
         {
             var lines = File.ReadAllLines(script);
             lines[8] = "run, " + path;
@@ -91,6 +91,17 @@ namespace BioPass
             text = text.Replace("User=" + User0, "User=" + User1);
             text = text.Replace("pw=" + pw0, "pw=" + pw1);
             File.WriteAllText(script, text);
+        }
+
+        /*
+         * For excel password protected document, user will be prompted to select path of file. Then this path
+         * is input to automation script.
+         */
+        private void promptPath()
+        {
+            pathPrompt excelPath = new pathPrompt();
+            excelPath.ShowDialog();
+                
         }
 
     }

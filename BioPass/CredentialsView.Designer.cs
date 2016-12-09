@@ -45,6 +45,7 @@
             this.credentialsGridView.Name = "credentialsGridView";
             this.credentialsGridView.Size = new System.Drawing.Size(643, 405);
             this.credentialsGridView.TabIndex = 0;
+            this.credentialsGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.credentialsGridView_CellContentClick);
             // 
             // application
             // 

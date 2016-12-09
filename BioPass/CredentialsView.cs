@@ -13,5 +13,10 @@ namespace BioPass {
         public CredentialsView() {
             InitializeComponent();
         }
+
+        private void credentialsGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 }

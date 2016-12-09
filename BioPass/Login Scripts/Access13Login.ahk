@@ -29,7 +29,7 @@ login(name,pass){
 
 	blockinput,on
 	click,1120,49,1
-	sleep,1500
+	sleep,2500
 	sendInput, %name%
 	send,{enter}
 	sleep,2000

@@ -26,6 +26,14 @@ namespace BioPass
             apps[x] = "blackboard.temple.edu"; x++;
             apps[x] = "facebook.com"; x++;
             apps[x] = "en.wikipedia.org"; x++;
+            apps[x] = "Steam"; x++;
+            apps[x] = "Battle.Net"; x++;
+            apps[x] = "Outlook"; x++;
+            apps[x] = "Discord"; x++;
+            apps[x] = "MSWord"; x++;
+            apps[x] = "Excel"; x++;
+            apps[x] = "Access"; x++;
+            apps[x] = "Pw Protected Excel File"; x++;
 
             i = 0;
             while (apps[i] != null)
@@ -44,6 +52,11 @@ namespace BioPass
             application = getAppBoxVal();
             Debug.Write(application);
             Close(); 
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
