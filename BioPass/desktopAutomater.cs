@@ -13,6 +13,10 @@ namespace BioPass
         */
         public void parseNrun(String User, String pw, String file)
         {
+            if (file == @"Login Scripts\Excel13PWProtectedWorkBook.ahk")
+            {
+                setPath(@"Login Scripts\Excel13PWProtectedWorkBook.ahk", "Pw Protected Excel File");
+            }
             string text = File.ReadAllText(file);
             text = text.Replace("User=", "User=" + User);
             text = text.Replace("pw=", "pw=" + pw);

@@ -31,7 +31,7 @@ namespace BioPass
         {
             desktopAutomater excelPath = new desktopAutomater();
 
-            excelPath.parsePath(textBox1.Text, @"Login Scripts\Excel13PWProtectedWorkBook.ahk");
+            excelPath.parsePath(label2.Text, @"Login Scripts\Excel13PWProtectedWorkBook.ahk");
             Close();
         }
 
@@ -43,7 +43,7 @@ namespace BioPass
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
             String directory = System.IO.Path.GetDirectoryName(openFileDialog1.FileName) + "\\" + openFileDialog1.SafeFileName;
-            textBox1.Text = directory;
+            label2.Text = directory;
         }
     }
 }
