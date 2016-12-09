@@ -124,8 +124,7 @@ namespace BioPass
             }
         }
 
-        public void OnImageCaptured(Touchless.Vision.Contracts.IFrameSource frameSource, Touchless.Vision.Contracts.Frame frame, double fps)
-        {
+        public void OnImageCaptured(Touchless.Vision.Contracts.IFrameSource frameSource, Touchless.Vision.Contracts.Frame frame, double fps) {
             _latestFrame = frame.Image;
             _latestFrame.RotateFlip(RotateFlipType.RotateNoneFlipX);
             pictureBoxDisplay.Invalidate();
@@ -226,9 +225,12 @@ namespace BioPass
             newReg nameDialog = new newReg(); 
             if(nameDialog.ShowDialog() == DialogResult.OK) {
                 Reset();
+            } else {
+                Reset();
             }
         }
         private void Reset() {
+            pictureBoxDisplay.Focus();
             Program.appmode = 0;
             appmodeLabel.Visible = false;
             Program.target = 0;
@@ -236,9 +238,12 @@ namespace BioPass
         public void postAuth(long _target)
         {
             Login LoginWin = new Login(_target);
-            DialogResult login_res = LoginWin.ShowDialog();
+            if (LoginWin.ShowDialog() == DialogResult.OK) {
+                automateWeb web = new automateWeb(LoginWin.application, ""+_target, true);
+            } else {
+                automateWeb web = new automateWeb(LoginWin.application, ""+_target, true);
+            }
             //Debug.Write(LoginWin.application);
-            automateWeb web = new automateWeb(LoginWin.application, _target);
         }
     }
 }

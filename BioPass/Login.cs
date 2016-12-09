@@ -59,5 +59,10 @@ namespace BioPass
             fingerprintView fpView = new BioPass.fingerprintView(target);
             fpView.Show();
         }
+
+        private void credsBtn_Click(object sender, EventArgs e) {
+            CredentialsView credsView = new CredentialsView(target);
+            credsView.Show();
+        }
     }
 }

@@ -21,6 +21,7 @@ namespace BioPass {
         public static Object lastFingerprint;
         public static FaceForm mainForm;
         public static fingerprintView fingerprintForm;
+        public static CredentialsView credentialForm;
 
         // For Fingerprint enrollment
         public static String targetFingerprintName;
