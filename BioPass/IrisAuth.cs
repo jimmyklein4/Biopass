@@ -62,7 +62,7 @@ namespace BioPass
             while (reader.Read())
             {
                 int[] template1 = Base64ToTemplate(reader.GetString(reader.GetOrdinal("iris_data")));
-                return (HammingDistance(template2, template1, null, null) < .3);
+                return (HammingDistance(template2, template1, null, null) < .45);
             }
             return false;
         }
@@ -264,8 +264,8 @@ namespace BioPass
 
         private Double[] GetFilter(Double sigma, int length, Double wavelength)
         {
-            if (length % 2 == 0) length = length - 1;
             double[] radius = new double[length];
+            if (length % 2 == 0) length = length - 1;
             for (int i = 0; i < radius.Length / 2 + 2; i++)
             {
                 radius[i] = i * (0.5 / (length / 2 + 1));
@@ -276,7 +276,7 @@ namespace BioPass
                 radius[i] = Math.Exp((-1 * Math.Pow(Math.Log(radius[i] / freq), 2)) /
                     (2 * Math.Pow(Math.Log(sigma), 2)));
             }
-            radius[0] = 1;
+            radius[0] = 0;
             return radius;
         }
 
