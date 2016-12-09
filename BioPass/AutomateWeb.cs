@@ -6,11 +6,12 @@ using System.Diagnostics;
 using System.IO;
 namespace BioPass
 {
-    public class automateWeb
-    { 
+    public class automateWeb { 
         public ChromeDriverService service = null;
-        public automateWeb(String website, long person_id)
-        {
+        public automateWeb(String website, String account_id, Boolean accountIDAsUserId = false) {
+            if(accountIDAsUserId) {
+                account_id = Program.db.getAppFromUID(website, account_id);
+            }
             Debug.WriteLine(website);
             if(website == null || website.Length == 0) return;
             service = ChromeDriverService.CreateDefaultService(AppDomain.CurrentDomain.BaseDirectory);
@@ -19,13 +20,12 @@ namespace BioPass
             ChromeOptions options = new ChromeOptions();
             options.LeaveBrowserRunning = true;
 
-
             var driver = new ChromeDriver(service, options);
-            if (website == "tumail")
+            if (website == "tumail.temple.edu")
             {
                 driver.Navigate().GoToUrl("http://tumail.temple.edu");
-                string u = "test"; //Program.db.getUsername("tumail", person_id);
-                string p = "blah"; //Program.db.getPassword("tumail", person_id);
+                string u = Program.db.getUsername(account_id);
+                string p = Program.db.getPassword(account_id);
 
                 Debug.WriteLine(u + " " + p);
 
@@ -44,11 +44,11 @@ namespace BioPass
                     Console.Out.WriteLine(E);
                 }
             }
-            else if (website == "blackboard.temple.edu")
+            else if (website == "learn.temple.edu")
             {
-                driver.Navigate().GoToUrl("http://blackboard.temple.edu");
-                string u = "test"; // Program.db.getUsername("blackboard.temple.edu", person_id);
-                string p = "test"; // Program.db.getPassword("blackboard.temple.edu", person_id);
+                driver.Navigate().GoToUrl("http://learn.temple.edu");
+                string u = Program.db.getUsername(account_id);
+                string p = Program.db.getPassword(account_id);
 
                 Debug.WriteLine(u + " " + p);
 
@@ -70,14 +70,14 @@ namespace BioPass
             else if (website == "facebook.com")
             {
                 driver.Navigate().GoToUrl("http://facebook.com");
-                string u = "test"; //Program.db.getUsername("facebook.com", person_id);
-                string p = "test"; //Program.db.getPassword("facebook.com", person_id);
+                string u = Program.db.getUsername(account_id);
+                string p = Program.db.getPassword(account_id);
 
                 Debug.WriteLine(u + " " + p);
 
                 var userNameField = driver.FindElementById("email");
                 var userPasswordField = driver.FindElementById("pass");
-                var loginButton = driver.FindElementById("u_0_y");
+                var loginButton = driver.FindElementById("u_0_n");
                 try
                 {
                     userNameField.SendKeys(u);
@@ -90,29 +90,7 @@ namespace BioPass
                     Console.Out.WriteLine(E);
                 }
             }
-            else if (website == "en.wikipedia.org")
-            {
-                driver.Navigate().GoToUrl("http://en.wikipedia.org/w/index.php?title=Special:UserLogin");
-                string u = "test"; //Program.db.getUsername("en.wikipedia.org", person_id);
-                string p = "test"; //Program.db.getPassword("en.wikipedia.org", person_id);
 
-                Debug.WriteLine(u + " " + p);
-
-                var userNameField = driver.FindElementById("wpName1");
-                var userPasswordField = driver.FindElementById("wpPassword1");
-                var loginButton = driver.FindElementById("wpLoginAttempt");
-                try
-                {
-                    userNameField.SendKeys(u);
-                    userPasswordField.SendKeys(p);
-                    loginButton.Click();
-                    //service.Dispose();
-                }
-                catch (Exception E)
-                {
-                    Console.Out.WriteLine(E);
-                }
-            }
             else
             {
                 int j = 0, k;
@@ -150,7 +128,7 @@ namespace BioPass
                             var username = driver.FindElementById(uid);
                             if (isInput(source, i))
                             {
-                                username.SendKeys("test"); //DBhandler
+                                username.SendKeys(Program.db.getUsername(account_id)); //DBhandler
                                 foundUsername = true;
                             }
                         }
@@ -159,7 +137,7 @@ namespace BioPass
                             var username = driver.FindElementByName(uid);
                             if (isInput(source, i))
                             {
-                                username.SendKeys("test"); //DBhandler.getUsername(uid, aid);
+                                username.SendKeys(Program.db.getUsername(account_id)); //DBhandler.getUsername(uid, aid);
                                 foundUsername = true;
                             }
                         }
@@ -214,7 +192,7 @@ namespace BioPass
                                 var username = driver.FindElementById(pid);
                                 if (isInput(source, i))
                                 {
-                                    username.SendKeys("test"); //DBhandler
+                                    username.SendKeys(Program.db.getPassword(account_id)); //DBhandler
                                     foundPassword = true;
                                 }
                             }
@@ -223,7 +201,7 @@ namespace BioPass
                                 var username = driver.FindElementByName(pid);
                                 if (isInput(source, i))
                                 {
-                                    username.SendKeys("test"); //DBhandler.getUsername(uid, aid);
+                                    username.SendKeys(Program.db.getPassword(account_id)); //DBhandler.getUsername(uid, aid);
                                     foundPassword = true;
                                 }
                             }

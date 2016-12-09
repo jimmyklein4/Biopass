@@ -28,7 +28,6 @@ namespace BioPass {
             {
                  item.Enabled = toggle;
             }
-            faceModBtn.Enabled = false;
         }
         private void toggleNamePanel(Boolean toggle) {
             foreach (Control item in namePanel.Controls)
@@ -46,7 +45,7 @@ namespace BioPass {
         }
 
         private void fpBtn_Click(object sender, EventArgs e) {
-            fingerprintView fpView = new BioPass.fingerprintView(target);
+            fingerprintView fpView = new fingerprintView(target);
             fpView.Show();
         }
 
@@ -65,13 +64,21 @@ namespace BioPass {
             } catch (InvalidOperationException exeception) {
                 Console.Write(exeception.ToString());
             }
-            faceModBtn.Text = ""+Program.mainForm._faces.Count + "/10";
+            /*
             if(Program.mainForm._faces.Count >= 10) {
-                faceModBtn.Text = ""+Program.mainForm._faces.Count + "/10; Build model";
-                faceModBtn.Enabled = true;
-            }
-        }
+                faceBtn.Text = ""+Program.mainForm._faces.Count + "";
+                faceBtn.Enabled = true;
+            }*/
 
+            //actually add the user now
+            if (Program.mainForm.rec == null) {
+                Program.mainForm.rec = new FacialRecognition("facereq.xml");
+            }
+            Program.mainForm.rec.AddNewUser(Program.mainForm._faces.ToArray(), (int)target);
+            Program.mainForm._faces = null;
+            faceBtn.Text = "Facial model built";
+        }
+/*
         private void faceModBtn_Click(object sender, EventArgs e) {
             //actually add the user now
             if (Program.mainForm.rec == null) {
@@ -79,7 +86,7 @@ namespace BioPass {
             }
             Program.mainForm.rec.AddNewUser(Program.mainForm._faces.ToArray(), (int) target);
             Program.mainForm._faces = null;
-        }
+        }*/
 
         private void IrisBtn_Click(object sender, EventArgs e) {
             try {
@@ -93,6 +100,11 @@ namespace BioPass {
             } catch (InvalidOperationException exeception) {
                 Console.Write(exeception.ToString());
             }
+        }
+
+        private void credsBtn_Click(object sender, EventArgs e) {
+            CredentialsView credsView = new CredentialsView(target);
+            credsView.Show();
         }
     }
 }

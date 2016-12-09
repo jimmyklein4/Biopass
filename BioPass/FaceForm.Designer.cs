@@ -48,6 +48,9 @@
             // 
             // pictureBoxDisplay
             // 
+            this.pictureBoxDisplay.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBoxDisplay.Location = new System.Drawing.Point(10, 10);
             this.pictureBoxDisplay.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBoxDisplay.Name = "pictureBoxDisplay";
@@ -58,6 +61,7 @@
             // 
             // comboBoxCameras
             // 
+            this.comboBoxCameras.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.comboBoxCameras.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxCameras.FormattingEnabled = true;
             this.comboBoxCameras.Location = new System.Drawing.Point(12, 528);
@@ -68,6 +72,7 @@
             // 
             // btnStop
             // 
+            this.btnStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnStop.Location = new System.Drawing.Point(171, 528);
             this.btnStop.Name = "btnStop";
             this.btnStop.Size = new System.Drawing.Size(37, 21);
@@ -91,6 +96,7 @@
             // 
             // appmodeLabel
             // 
+            this.appmodeLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.appmodeLabel.Location = new System.Drawing.Point(12, 502);
             this.appmodeLabel.Name = "appmodeLabel";
             this.appmodeLabel.Size = new System.Drawing.Size(100, 23);
@@ -122,6 +128,7 @@
             // 
             // pinLabel
             // 
+            this.pinLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.pinLabel.Font = new System.Drawing.Font("Consolas", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.pinLabel.Location = new System.Drawing.Point(285, 503);
             this.pinLabel.Name = "pinLabel";
@@ -130,6 +137,7 @@
             // 
             // registerBtn
             // 
+            this.registerBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.registerBtn.Location = new System.Drawing.Point(551, 527);
             this.registerBtn.Name = "registerBtn";
             this.registerBtn.Size = new System.Drawing.Size(63, 23);
@@ -140,6 +148,7 @@
             // 
             // fpPicture
             // 
+            this.fpPicture.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.fpPicture.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.fpPicture.Location = new System.Drawing.Point(10, 342);
             this.fpPicture.Name = "fpPicture";

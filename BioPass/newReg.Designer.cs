@@ -27,16 +27,16 @@
             this.acceptReg = new System.Windows.Forms.Button();
             this.bioPanel = new System.Windows.Forms.Panel();
             this.IrisBtn = new System.Windows.Forms.Button();
-            this.faceModBtn = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.faceBtn = new System.Windows.Forms.Button();
             this.fpBtn = new System.Windows.Forms.Button();
             this.namePanel = new System.Windows.Forms.Panel();
+            this.label3 = new System.Windows.Forms.Label();
+            this.pinBox = new System.Windows.Forms.TextBox();
             this.createBtn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.nameBox = new System.Windows.Forms.TextBox();
-            this.pinBox = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
+            this.credsBtn = new System.Windows.Forms.Button();
             this.bioPanel.SuspendLayout();
             this.namePanel.SuspendLayout();
             this.SuspendLayout();
@@ -63,8 +63,8 @@
             // 
             // bioPanel
             // 
+            this.bioPanel.Controls.Add(this.credsBtn);
             this.bioPanel.Controls.Add(this.IrisBtn);
-            this.bioPanel.Controls.Add(this.faceModBtn);
             this.bioPanel.Controls.Add(this.label2);
             this.bioPanel.Controls.Add(this.faceBtn);
             this.bioPanel.Controls.Add(this.fpBtn);
@@ -77,22 +77,11 @@
             // 
             this.IrisBtn.Location = new System.Drawing.Point(232, 29);
             this.IrisBtn.Name = "IrisBtn";
-            this.IrisBtn.Size = new System.Drawing.Size(91, 67);
+            this.IrisBtn.Size = new System.Drawing.Size(91, 33);
             this.IrisBtn.TabIndex = 13;
             this.IrisBtn.Text = "Iris";
             this.IrisBtn.UseVisualStyleBackColor = true;
             this.IrisBtn.Click += new System.EventHandler(this.IrisBtn_Click);
-            // 
-            // faceModBtn
-            // 
-            this.faceModBtn.Enabled = false;
-            this.faceModBtn.Location = new System.Drawing.Point(120, 63);
-            this.faceModBtn.Name = "faceModBtn";
-            this.faceModBtn.Size = new System.Drawing.Size(91, 33);
-            this.faceModBtn.TabIndex = 12;
-            this.faceModBtn.Text = "Facial Model";
-            this.faceModBtn.UseVisualStyleBackColor = true;
-            this.faceModBtn.Click += new System.EventHandler(this.faceModBtn_Click);
             // 
             // label2
             // 
@@ -105,9 +94,9 @@
             // 
             // faceBtn
             // 
-            this.faceBtn.Location = new System.Drawing.Point(120, 29);
+            this.faceBtn.Location = new System.Drawing.Point(105, 29);
             this.faceBtn.Name = "faceBtn";
-            this.faceBtn.Size = new System.Drawing.Size(91, 33);
+            this.faceBtn.Size = new System.Drawing.Size(121, 33);
             this.faceBtn.TabIndex = 9;
             this.faceBtn.Text = "Take Photo";
             this.faceBtn.UseVisualStyleBackColor = true;
@@ -117,7 +106,7 @@
             // 
             this.fpBtn.Location = new System.Drawing.Point(8, 29);
             this.fpBtn.Name = "fpBtn";
-            this.fpBtn.Size = new System.Drawing.Size(91, 67);
+            this.fpBtn.Size = new System.Drawing.Size(91, 33);
             this.fpBtn.TabIndex = 8;
             this.fpBtn.Text = "Fingerprints";
             this.fpBtn.UseVisualStyleBackColor = true;
@@ -135,12 +124,28 @@
             this.namePanel.Size = new System.Drawing.Size(331, 50);
             this.namePanel.TabIndex = 10;
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(157, 7);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(98, 13);
+            this.label3.TabIndex = 13;
+            this.label3.Text = "Please enter a pin: ";
+            // 
+            // pinBox
+            // 
+            this.pinBox.Location = new System.Drawing.Point(160, 23);
+            this.pinBox.Name = "pinBox";
+            this.pinBox.Size = new System.Drawing.Size(76, 20);
+            this.pinBox.TabIndex = 2;
+            // 
             // createBtn
             // 
             this.createBtn.Location = new System.Drawing.Point(242, 20);
             this.createBtn.Name = "createBtn";
             this.createBtn.Size = new System.Drawing.Size(75, 23);
-            this.createBtn.TabIndex = 11;
+            this.createBtn.TabIndex = 3;
             this.createBtn.Text = "Create";
             this.createBtn.UseVisualStyleBackColor = true;
             this.createBtn.Click += new System.EventHandler(this.createBtn_Click);
@@ -159,23 +164,17 @@
             this.nameBox.Location = new System.Drawing.Point(33, 23);
             this.nameBox.Name = "nameBox";
             this.nameBox.Size = new System.Drawing.Size(109, 20);
-            this.nameBox.TabIndex = 9;
+            this.nameBox.TabIndex = 1;
             // 
-            // pinBox
+            // credsBtn
             // 
-            this.pinBox.Location = new System.Drawing.Point(160, 23);
-            this.pinBox.Name = "pinBox";
-            this.pinBox.Size = new System.Drawing.Size(76, 20);
-            this.pinBox.TabIndex = 12;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(157, 7);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(98, 13);
-            this.label3.TabIndex = 13;
-            this.label3.Text = "Please enter a pin: ";
+            this.credsBtn.Location = new System.Drawing.Point(113, 68);
+            this.credsBtn.Name = "credsBtn";
+            this.credsBtn.Size = new System.Drawing.Size(104, 28);
+            this.credsBtn.TabIndex = 11;
+            this.credsBtn.Text = "Credentials";
+            this.credsBtn.UseVisualStyleBackColor = true;
+            this.credsBtn.Click += new System.EventHandler(this.credsBtn_Click);
             // 
             // newReg
             // 
@@ -214,9 +213,9 @@
         private System.Windows.Forms.Button createBtn;
         private System.Windows.Forms.Label label1;
         public System.Windows.Forms.TextBox nameBox;
-        private System.Windows.Forms.Button faceModBtn;
         private System.Windows.Forms.Button IrisBtn;
         private System.Windows.Forms.Label label3;
         public System.Windows.Forms.TextBox pinBox;
+        private System.Windows.Forms.Button credsBtn;
     }
 }
