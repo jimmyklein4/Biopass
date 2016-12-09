@@ -126,7 +126,7 @@ namespace BioPass
 
                 //Username
                 int i = source.IndexOf("email");
-                Debug.WriteLine("i = " + i + " length" + source.Length+ " arr[i] = "+ source[i]);
+                //Debug.WriteLine("i = " + i + " length" + source.Length+ " arr[i] = "+ source[i]);
                 if (i == -1)
                 {
                     i = source.IndexOf("username");
@@ -134,6 +134,7 @@ namespace BioPass
                 if (i != -1)
                 {
                     while (!foundUsername) {
+                        //check if the element is an input
                         for (; source[i] != '"'; i--)
                         {
                             Debug.WriteLine("i = " + i + " char at i = " + source[i]);
@@ -145,35 +146,42 @@ namespace BioPass
                         String idtype = source.Substring(k + 1, (i - k) - 2);
                         Debug.WriteLine("k = " + k + " elemtype = " + idtype);
 
-
                         if (idtype.Equals("id"))
                         {
                             Debug.WriteLine("here");
                             var username = driver.FindElementById(uid);
-                            username.SendKeys("test"); //DBhandler
-                            foundUsername = true;
+                            if (isInput(source, i))
+                            {
+                                username.SendKeys("test"); //DBhandler
+                                foundUsername = true;
+                            }
                         }
                         else if (idtype.Equals("name"))
                         {
                             var username = driver.FindElementByName(uid);
-                            username.SendKeys("test"); //DBhandler.getUsername(uid, aid);
-                            foundUsername = true;
+                            if (isInput(source, i))
+                            {
+                                username.SendKeys("test"); //DBhandler.getUsername(uid, aid);
+                                foundUsername = true;
+                            }
                         }
                         else if (idtype.Equals("class"))
                         {
                             var username = driver.FindElementByName(uid);
-                            username.SendKeys("test");
-                            foundUsername = true;
-
-                        }
-                        else
-                        {
-                            i = source.IndexOf("email", j);
-                            if (i == -1)
+                            if (isInput(source, i))
                             {
-                                i = source.IndexOf("username", j);
+                                username.SendKeys("test");
+                                foundUsername = true;
                             }
-                            if(i == -1) { foundUsername = true; founddata = false; }
+                        }
+                        i = source.IndexOf("email", j);
+                        if (i == -1)
+                        {
+                            i = source.IndexOf("username", j);
+                        }
+                        if (i == -1)
+                        {
+                            foundUsername = true; founddata = false;
                         }
                     }
                 }
@@ -184,19 +192,17 @@ namespace BioPass
                 //password
                 if (foundUsername == true && founddata == true)
                 {
-                    i = source.IndexOf("pass", j);
+                    i = source.IndexOf("pass");
                     if(i == -1)
                     {
-                        i = source.IndexOf("pw", j);
+                        i = source.IndexOf("pw");
                     }
                     if (i != -1)
                     {
                         while (!foundPassword)
                         {
-                            for (; source[i] != '"'; i--)
-                            {
-                                Debug.WriteLine("i = " + i + " char at i = " + source[i]);
-                            }
+                            Debug.WriteLine(i);
+                            for (; source[i] != '"'; i--) { Debug.WriteLine(i); } ;
                             for (j = i + 1; source[j] != '"'; j++) ;
                             String pid = source.Substring(i + 1, j - (i + 1));
                             Debug.WriteLine(pid);
@@ -207,32 +213,39 @@ namespace BioPass
 
                             if (idtype.Equals("id"))
                             {
-                                Debug.WriteLine("here");
                                 var username = driver.FindElementById(pid);
-                                username.SendKeys("test"); //DBhandler
-                                foundPassword = true;
+                                if (isInput(source, i))
+                                {
+                                    username.SendKeys("test"); //DBhandler
+                                    foundPassword = true;
+                                }
                             }
                             else if (idtype.Equals("name"))
                             {
                                 var username = driver.FindElementByName(pid);
-                                username.SendKeys("test"); //DBhandler.getUsername(uid, aid);
-                                foundPassword = true;
+                                if (isInput(source, i))
+                                {
+                                    username.SendKeys("test"); //DBhandler.getUsername(uid, aid);
+                                    foundPassword = true;
+                                }
                             }
                             else if (idtype.Equals("class"))
                             {
                                 var username = driver.FindElementByName(pid);
-                                username.SendKeys("test");
-                                foundPassword = true;
-
-                            }
-                            else
-                            {
-                                i = source.IndexOf("pass", j);
-                                if (i == -1)
+                                if (isInput(source, i))
                                 {
-                                    i = source.IndexOf("pw", j);
+                                    username.SendKeys("test");
+                                    foundUsername = true;
                                 }
-                                if (i == -1) { foundPassword = true; founddata = false; }
+                            }
+                            i = source.IndexOf("pass", j);
+                            if (i == -1)
+                            {
+                                i = source.IndexOf("pw", j);
+                            }
+                            if (i == -1)
+                            {
+                                foundPassword = true; founddata = false;
                             }
                         }
                     }
@@ -244,6 +257,13 @@ namespace BioPass
 
             }
             service.Dispose();
+        }
+        private Boolean isInput(String source, int i)
+        {
+            int tagindex = i;
+            for (tagindex = i; source[tagindex-1] != '<'; tagindex--) ;
+            Debug.WriteLine("isInput: " +source.Substring(tagindex, 5));
+            return (source.Substring(tagindex, 5).Equals("input"));
         }
     }
 }
