@@ -127,10 +127,8 @@ namespace BioPass
                 //Username
                 int i = source.IndexOf("email");
                 //Debug.WriteLine("i = " + i + " length" + source.Length+ " arr[i] = "+ source[i]);
-                if (i == -1)
-                {
-                    i = source.IndexOf("username");
-                }
+                int u = source.IndexOf("username");
+                if (i == -1) { i = u; }
                 if (i != -1)
                 {
                     while (!foundUsername) {
@@ -165,15 +163,15 @@ namespace BioPass
                                 foundUsername = true;
                             }
                         }
-                        else if (idtype.Equals("class"))
+                        /*else if (idtype.Equals("class"))
                         {
-                            var username = driver.FindElementByName(uid);
+                            var username = driver.FindElementByClassName(uid);
                             if (isInput(source, i))
                             {
                                 username.SendKeys("test");
                                 foundUsername = true;
                             }
-                        }
+                        }*/
                         i = source.IndexOf("email", j);
                         if (i == -1)
                         {
@@ -229,7 +227,7 @@ namespace BioPass
                                     foundPassword = true;
                                 }
                             }
-                            else if (idtype.Equals("class"))
+                            /*else if (idtype.Equals("class"))
                             {
                                 var username = driver.FindElementByName(pid);
                                 if (isInput(source, i))
@@ -237,7 +235,7 @@ namespace BioPass
                                     username.SendKeys("test");
                                     foundUsername = true;
                                 }
-                            }
+                            }*/
                             i = source.IndexOf("pass", j);
                             if (i == -1)
                             {
