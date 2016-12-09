@@ -15,6 +15,8 @@ namespace BioPass
         public pathPrompt()
         {
             InitializeComponent();
+            openFileDialog1.Filter = "Excel Files|*.xls;*.xlsx;*.xlsm";
+            openFileDialog1.ShowDialog();
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -36,6 +38,12 @@ namespace BioPass
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             
+        }
+
+        private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
+        {
+            String directory = System.IO.Path.GetDirectoryName(openFileDialog1.FileName) + "\\" + openFileDialog1.SafeFileName;
+            textBox1.Text = directory;
         }
     }
 }
