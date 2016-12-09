@@ -38,7 +38,15 @@ namespace BioPass
         }
         private string getAppBoxVal()
         {
-            return (comboBox1.SelectedItem!=null?comboBox1.SelectedItem.ToString() : "");
+            if (comboBox1.SelectedItem != null)
+            {
+                return (comboBox1.SelectedItem != null ? comboBox1.SelectedItem.ToString() : "");
+            }
+            else
+            {
+                //maybe get user info for new app here.
+                return (urlNew.Text);
+            }
         }
 
         private void go_Click(object sender, EventArgs e)
