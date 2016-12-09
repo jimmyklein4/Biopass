@@ -252,6 +252,11 @@ namespace BioPass
                 {
                     Debug.WriteLine("could not find username");
                 }
+                if(foundPassword == true && foundUsername == true && founddata == true)
+                {
+ //                   Program.db.addApp(website, )
+ //                   Program.db.addAccount()
+                }
 
             }
             service.Dispose();
