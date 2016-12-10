@@ -47,7 +47,7 @@ type INTEGER NOT NULL,
 username_field varchar(255),
 password_field varchar(255),
 submit_btn varchar(255),
-login_page varchar(255)
+login_page varchar(255))
 ;" +
                 @"
 CREATE TABLE user(
@@ -411,6 +411,22 @@ user_id INTEGER NOT NULL);";
 
                 transaction.Commit();
             }
+        }
+        public String getAppUsernameData(String website)
+        {
+            String sql = "SELECT username_field FROM application WHERE name ='" + website + "'";
+            SQLiteCommand command = new SQLiteCommand(sql, dbConn);
+            SQLiteDataReader reader = command.ExecuteReader();
+            String appUsernameField = (String)(reader["username_field"] != System.DBNull.Value ? reader["username_field"] : "");
+            return appUsernameField;
+        }
+        public String getAppPasswordData(String website)
+        {
+            String sql = "SELECT password_field FROM application WHERE name ='" + website + "'";
+            SQLiteCommand command = new SQLiteCommand(sql, dbConn);
+            SQLiteDataReader reader = command.ExecuteReader();
+            String appPasswordField = (String)(reader["password_field"] != System.DBNull.Value ? reader["password_field"] : "");
+            return appPasswordField;
         }
         public String getAppID(String app)
         {
