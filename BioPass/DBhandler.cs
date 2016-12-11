@@ -105,12 +105,15 @@ user_id INTEGER NOT NULL);";
             cmd.CommandText = "SELECT username FROM userAccount WHERE account_id=@aid;";
             cmd.Parameters.Add(new SQLiteParameter("@aid", aid));
             cmd.Prepare();
-
-            SQLiteDataReader reader = cmd.ExecuteReader();
-            reader.Read();
-
             String username = "";
-            username = (String)(reader["username"] != System.DBNull.Value ? reader["username"] : "");
+
+            using (SQLiteDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    username = (String)(reader["username"] != System.DBNull.Value ? reader["username"] : "");
+                }
+            }
             return username;
         }
 
@@ -121,11 +124,15 @@ user_id INTEGER NOT NULL);";
 
             cmd.Parameters.Add(new SQLiteParameter("@aid", aid));
             cmd.Prepare();
+            String password = "";
 
-            SQLiteDataReader reader = cmd.ExecuteReader();
-            reader.Read();
-
-            String password = (String)(reader["password"] != System.DBNull.Value ? reader["password"] : "");
+            using (SQLiteDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    password = (String)(reader["password"] != System.DBNull.Value ? reader["password"] : "");
+                }
+            }
 
             return password;
         }
@@ -174,9 +181,16 @@ user_id INTEGER NOT NULL);";
         {
             String sql = "SELECT application_id FROM userAccount WHERE application_id='" + aid + "'";
             SQLiteCommand command = new SQLiteCommand(sql, dbConn);
-            SQLiteDataReader reader = command.ExecuteReader();
-            String act = (String)(reader["application_id"] != System.DBNull.Value ? reader["application_id"] : "");
-            return (act.Length > 0);
+            Boolean exists = false;
+            using (SQLiteDataReader reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    String act = (String)(reader["application_id"] != System.DBNull.Value ? reader["application_id"] : "");
+                    if(act.Length > 0) { exists = true; }
+                }
+            }
+            return exists;
         }
 
         // User table

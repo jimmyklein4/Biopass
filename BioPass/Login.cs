@@ -53,6 +53,8 @@ namespace BioPass
         {
             application = getAppBoxVal();
             Debug.Write(application);
+            //if(application is website)
+            //automateWeb go = new automateWeb(application, )
             Close(); 
         }
         private void fpBtn_Click(object sender, EventArgs e) {

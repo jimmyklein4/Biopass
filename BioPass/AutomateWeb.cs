@@ -20,6 +20,8 @@ namespace BioPass
             ChromeOptions options = new ChromeOptions();
             options.LeaveBrowserRunning = true;
 
+            String uid = null, pid = null, buttonId = null;
+
             var driver = new ChromeDriver(service, options);
             if (website == "tumail.temple.edu")
             {
@@ -100,6 +102,7 @@ namespace BioPass
                     String passwordFieldName = Program.db.getAppPasswordData(website);
                     var usernameField = driver.FindElementById(usernameFieldName);
                     var passwordField = driver.FindElementById(passwordFieldName);
+
                 }
                 else
                 {
@@ -127,7 +130,7 @@ namespace BioPass
                                 Debug.WriteLine("i = " + i + " char at i = " + source[i]);
                             }
                             for (j = i + 1; source[j] != '"'; j++) ;
-                            String uid = source.Substring(i + 1, j - (i + 1));
+                            uid = source.Substring(i + 1, j - (i + 1));
                             Debug.WriteLine(uid);
                             for (k = i; source[k] != ' '; k--) ;
                             String idtype = source.Substring(k + 1, (i - k) - 2);
@@ -139,7 +142,7 @@ namespace BioPass
                                 var username = driver.FindElementById(uid);
                                 if (isInput(source, i))
                                 {
-                                    username.SendKeys(Program.db.getUsername(account_id)); //DBhandler
+                                    username.SendKeys(Program.db.getUsername(account_id)); 
                                     foundUsername = true;
                                 }
                             }
@@ -148,11 +151,11 @@ namespace BioPass
                                 var username = driver.FindElementByName(uid);
                                 if (isInput(source, i))
                                 {
-                                    username.SendKeys(Program.db.getUsername(account_id)); //DBhandler.getUsername(uid, aid);
+                                    username.SendKeys(Program.db.getUsername(account_id)); 
                                     foundUsername = true;
                                 }
                             }
-                            else if (idtype.Equals("class"))
+                            /*else if (idtype.Equals("class"))
                             {
                                 var username = driver.FindElementByClassName(uid);
                                 if (isInput(source, i))
@@ -160,7 +163,7 @@ namespace BioPass
                                     username.SendKeys("test");
                                     foundUsername = true;
                                 }
-                            }
+                            }*/
                             i = source.IndexOf("email", j);
                             if (i == -1)
                             {
@@ -191,7 +194,7 @@ namespace BioPass
                                 Debug.WriteLine(i);
                                 for (; source[i] != '"'; i--) { Debug.WriteLine(i); };
                                 for (j = i + 1; source[j] != '"'; j++) ;
-                                String pid = source.Substring(i + 1, j - (i + 1));
+                                pid = source.Substring(i + 1, j - (i + 1));
                                 Debug.WriteLine(pid);
                                 for (k = i; source[k] != ' '; k--) ;
                                 String idtype = source.Substring(k + 1, (i - k) - 2);
@@ -203,7 +206,7 @@ namespace BioPass
                                     var username = driver.FindElementById(pid);
                                     if (isInput(source, i))
                                     {
-                                        username.SendKeys(Program.db.getPassword(account_id)); //DBhandler
+                                        username.SendKeys(Program.db.getPassword(account_id)); 
                                         foundPassword = true;
                                     }
                                 }
@@ -212,7 +215,7 @@ namespace BioPass
                                     var username = driver.FindElementByName(pid);
                                     if (isInput(source, i))
                                     {
-                                        username.SendKeys(Program.db.getPassword(account_id)); //DBhandler.getUsername(uid, aid);
+                                        username.SendKeys(Program.db.getPassword(account_id)); 
                                         foundPassword = true;
                                     }
                                 }
@@ -243,8 +246,8 @@ namespace BioPass
                     }
                     if (foundPassword == true && foundUsername == true && founddata == true)
                     {
-                        //Program.db.addApp(website, )
-                        //Program.db.addAccount()
+                        Program.db.addApp(website, 0, uid, pid, buttonId);
+                        //Program.db.addAccount();
                     }
                 }
             }

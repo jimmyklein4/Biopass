@@ -239,9 +239,9 @@ namespace BioPass
         {
             Login LoginWin = new Login(_target);
             if (LoginWin.ShowDialog() == DialogResult.OK) {
-                automateWeb web = new automateWeb(LoginWin.application, ""+_target, true);
+                automateWeb web = new automateWeb(LoginWin.application, ""+_target, false);
             } else {
-                automateWeb web = new automateWeb(LoginWin.application, ""+_target, true);
+                automateWeb web = new automateWeb(LoginWin.application, ""+_target, false);
             }
             //Debug.Write(LoginWin.application);
         }
