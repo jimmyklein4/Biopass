@@ -193,18 +193,9 @@ namespace BioPass
 
         // Get the current webcam image
         private Bitmap getWebcamImage() {
-            Bitmap current = null;
-            try
-            {
-                current = (Bitmap)_latestFrame.Clone(
-                    new Rectangle(0, 0, _latestFrame.Width,
-                    _latestFrame.Height), _latestFrame.PixelFormat);
-            } catch (Exception ex)
-            {
-                thrashOldCamera();
-                startCapturing();
-                Debug.WriteLine(ex);
-            }
+            Bitmap current = (Bitmap)_latestFrame.Clone(
+                new Rectangle(0, 0, _latestFrame.Width, 
+                _latestFrame.Height), _latestFrame.PixelFormat);
             return current;
         }
 
