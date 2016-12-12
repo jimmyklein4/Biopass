@@ -46,7 +46,7 @@ namespace BioPass
                     Console.Out.WriteLine(E);
                 }
             }
-            else if (website == "learn.temple.edu")
+            /*else if (website == "learn.temple.edu")
             {
                 driver.Navigate().GoToUrl("http://learn.temple.edu");
                 string u = Program.db.getUsername(account_id);
@@ -68,7 +68,7 @@ namespace BioPass
                 {
                     Console.Out.WriteLine(E);
                 }
-            }
+            }*/
             else if (website == "facebook.com")
             {
                 driver.Navigate().GoToUrl("http://facebook.com");
@@ -116,10 +116,16 @@ namespace BioPass
                     String source = driver.PageSource;
 
                     //Username
-                    int i = source.IndexOf("email");
+                    String[] labels= { "email", "username", "login", "user" };
+                    String label = "email";
+                    int labelIndex = 1;
+                    int i = source.IndexOf(label);
                     //Debug.WriteLine("i = " + i + " length" + source.Length+ " arr[i] = "+ source[i]);
-                    int u = source.IndexOf("username");
-                    if (i == -1) { i = u; }
+                    if (i == -1)
+                    {
+                        label = "username";
+                        i = source.IndexOf(label);
+                    }
                     if (i != -1)
                     {
                         while (!foundUsername)
@@ -127,7 +133,7 @@ namespace BioPass
                             //check if the element is an input
                             for (; source[i] != '"'; i--)
                             {
-                                Debug.WriteLine("i = " + i + " char at i = " + source[i]);
+                                //Debug.WriteLine("i = " + i + " char at i = " + source[i]);
                             }
                             for (j = i + 1; source[j] != '"'; j++) ;
                             uid = source.Substring(i + 1, j - (i + 1));
@@ -142,7 +148,7 @@ namespace BioPass
                                 var username = driver.FindElementById(uid);
                                 if (isInput(source, i))
                                 {
-                                    username.SendKeys(Program.db.getUsername(account_id)); 
+                                    username.SendKeys("test");// Program.db.getUsername(account_id)); 
                                     foundUsername = true;
                                 }
                             }
@@ -164,10 +170,12 @@ namespace BioPass
                                     foundUsername = true;
                                 }
                             }*/
-                            i = source.IndexOf("email", j);
+                            i = source.IndexOf(label, j);
                             if (i == -1)
                             {
-                                i = source.IndexOf("username", j);
+                                label = labels[labelIndex];
+                                j = 0; labelIndex++;
+                                i = source.IndexOf(label);
                             }
                             if (i == -1)
                             {
@@ -206,7 +214,7 @@ namespace BioPass
                                     var username = driver.FindElementById(pid);
                                     if (isInput(source, i))
                                     {
-                                        username.SendKeys(Program.db.getPassword(account_id)); 
+                                        username.SendKeys("test"); // Program.db.getPassword(account_id)); 
                                         foundPassword = true;
                                     }
                                 }
@@ -247,7 +255,6 @@ namespace BioPass
                     if (foundPassword == true && foundUsername == true && founddata == true)
                     {
                         Program.db.addApp(website, 0, uid, pid, buttonId);
-                        //Program.db.addAccount();
                     }
                 }
             }
