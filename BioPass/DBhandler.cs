@@ -167,6 +167,20 @@ user_id INTEGER NOT NULL);";
 
             return dt;
         }
+        public string getAppType(string aid) {
+            String sql = "SELECT application.type FROM application,userAccount WHERE userAccount.account_id=@aid AND application.application_id==userAccount.application_id;";
+            SQLiteCommand cmd = new SQLiteCommand(sql, dbConn);
+            cmd.Parameters.Add(new SQLiteParameter("@aid", aid));
+            cmd.Prepare();
+
+            String app_type = "";
+
+            SQLiteDataReader reader = cmd.ExecuteReader();
+            while (reader.Read()) {
+                app_type = (String)(reader["type"] != System.DBNull.Value ? reader["type"] : "");
+            }
+            return app_type;
+        }
         public long getAppFromUID(String aid, String uid) {
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
             cmd.CommandText = "SELECT userAccount.account_id FROM application, userAccount WHERE userAccount.user_id=@uid AND application.name=@aid AND userAccount.application_id=application.application_id";

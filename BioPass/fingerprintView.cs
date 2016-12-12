@@ -38,6 +38,9 @@ namespace BioPass {
             PopulateDataGridView();
         }
         private void fingerprintList_CellClick(object sender, DataGridViewCellEventArgs e) {
+            //Debug.WriteLine("Fingerprint stuff " + fingerprintList[fingerprintList.Columns["Finger"].Index, e.RowIndex].Value);
+            if (fingerprintList[fingerprintList.Columns["Finger"].Index, e.RowIndex].Value == null) return;
+
             if (e.ColumnIndex == fingerprintList.Columns["Fingerprint"].Index && e.RowIndex >= 0) {
                 Program.targetFingerprintName = fingerprintList[fingerprintList.Columns["Finger"].Index, e.RowIndex].Value.ToString();
                 Program.targetFingerUserID = target;
