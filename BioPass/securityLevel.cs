@@ -18,12 +18,12 @@ Finger + Pin
 Face + Pin",
 @"Level 1 requires two forms of biometric recognition.
 Finger + Pin",
-@"Level 2 requires two form of biometric recognition and a pin. 
+@"Level 2 requires two forms of biometric recognition and a pin. 
 Face + Finger + Pin",
 @"Level 3 requires three forms of biometric recognition. 
 Face + Finger + Iris",
-@"Level 4 requires three form of biometric recognition and a pin. 
-Face + Finger + Pin"
+@"Level 4 requires three forms of biometric recognition and a pin. 
+Face + Finger + Iris + Pin "
         };
         public securityLevel(long _target) {
             InitializeComponent();
@@ -31,7 +31,7 @@ Face + Finger + Pin"
         }
 
         private void doneBtn_Click(object sender, EventArgs e) {
-
+            Program.db.updateSecurityLevel(target, trackBar.Value);
             this.Close();
         }
 

@@ -12,7 +12,7 @@ namespace BioPass
 {
     public class DBhandler
     {
-        SQLiteConnection dbConn;
+        public SQLiteConnection dbConn;
         // Creates an empty database file
         public void createNewDatabase()
         {
@@ -52,9 +52,8 @@ login_page varchar(255));" +
 CREATE TABLE user(
 user_id INTEGER PRIMARY KEY,
 name varchar(255) NOT NULL,
-pin varchar(255)),
-securityLevel INTEGER,
-;" +
+pin varchar(255),
+security_level INTEGER);" +
                 @"
 CREATE TABLE fingerprint(
 fp_id INTEGER PRIMARY KEY,
@@ -177,10 +176,10 @@ user_id INTEGER NOT NULL);";
             cmd.Prepare();
 
             SQLiteDataReader reader = cmd.ExecuteReader();
-            reader.Read();
-
-            String password = (String)(reader["account_id"] != System.DBNull.Value ? reader["account_id"] : "");
-
+            String password = "";
+            if(reader.Read()) { 
+                password = ""+(reader["account_id"] != System.DBNull.Value ? reader["account_id"] : "");
+            }
             return password;
         }
         public String appExists(String website) {
@@ -235,7 +234,6 @@ user_id INTEGER NOT NULL);";
 
             return row;
         }
-
         public String getUserName(long uid) {
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
             cmd.CommandText = "SELECT name FROM user WHERE user_id='" + uid + "';";
@@ -246,7 +244,6 @@ user_id INTEGER NOT NULL);";
             String name = (String)(reader["name"] != System.DBNull.Value ? reader["name"] : "");
             return name;
         }
-
         public String compareIdToPin(long uid, String pin) {
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
             cmd.CommandText = "SELECT name, user_id FROM user WHERE user_id=@uid AND pin=@pin;";
@@ -261,7 +258,30 @@ user_id INTEGER NOT NULL);";
             }
             return user_id;
         }
+        public int getUserSecurityLevel(long uid) {
+            SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
+            cmd.CommandText = "SELECT security_level FROM user WHERE user_id=@uid;";
+            cmd.Parameters.Add(new SQLiteParameter("@uid", uid));
 
+            cmd.Prepare();
+            SQLiteDataReader reader = cmd.ExecuteReader();
+            int security_level = -1;
+            while(reader.Read()) { 
+               security_level = (int)(long)(reader["security_level"] != System.DBNull.Value ? reader["security_level"] : "");
+            }
+            return security_level;
+        }
+        public void updateSecurityLevel(long uid, int security_level) {
+
+            SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
+            cmd.CommandText = "UPDATE user SET security_level=@sl WHERE user_id=@uid;";
+
+            cmd.Parameters.Add(new SQLiteParameter("@uid", uid));
+            cmd.Parameters.Add(new SQLiteParameter("@sl", security_level));
+
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
+        }
         public long registerUserFP(long uid, string fp, string fpName) {
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
             cmd.CommandText = "INSERT INTO fingerprint(fingerprint, user_id, finger) VALUES (@fp, @uid, @fpName);";
@@ -497,22 +517,6 @@ user_id INTEGER NOT NULL);";
             dt.Load(reader);
 
             return dt;
-        }
-        /*
-         * Will check if the specified user credentials for the selected app stored in database
-         * @Mike Hoffman 10/19/2016
-         * */
-        public Boolean appExistsForUser(String app, String person_id)
-        {
-            Boolean state = false;
-            String sql = "SELECT application.name FROM userAccount,application WHERE application.name = '" + app + "' AND userAccount.user_id='" + person_id + "'";
-
-            SQLiteCommand command = new SQLiteCommand(sql, dbConn);
-            SQLiteDataReader reader = command.ExecuteReader();
-            String appExist4User = (String)(reader["name"] != System.DBNull.Value ? reader["name"] : "");
-
-            if (appExist4User.Length > 0) { state = true; }
-            return state;
         }
     }
 }

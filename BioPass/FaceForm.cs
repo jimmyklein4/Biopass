@@ -238,12 +238,14 @@ namespace BioPass
         public void postAuth(long _target)
         {
             Login LoginWin = new Login(_target);
-            if (LoginWin.ShowDialog() == DialogResult.OK) {
-                automateWeb web = new automateWeb(LoginWin.application, ""+_target, false);
-            } else {
-                automateWeb web = new automateWeb(LoginWin.application, ""+_target, false);
+            long account_id = -1;
+            if (LoginWin.ShowDialog() != DialogResult.None) {
+                if((account_id = long.Parse(Program.db.getAppFromUID(LoginWin.application, ""+_target))) > -1) {
+                    automateWeb web = new automateWeb(LoginWin.application, ""+account_id);
+                } else {
+                    automateWeb web = new automateWeb(LoginWin.application, ""+_target, true);
+                }
             }
-            //Debug.Write(LoginWin.application);
         }
     }
 }

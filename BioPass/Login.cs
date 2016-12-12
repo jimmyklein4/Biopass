@@ -22,18 +22,13 @@ namespace BioPass
         }
         private void Login_Load(object sender, EventArgs e)
         {
-            int x = 0; int i = 0;
-            string[] apps = new string[100];
-            apps[x] = "tumail"; x++;
-            apps[x] = "blackboard.temple.edu"; x++;
-            apps[x] = "facebook.com"; x++;
-            apps[x] = "en.wikipedia.org"; x++;
-
-            i = 0;
-            while (apps[i] != null)
-            {
-                comboBox1.Items.Add(apps[i]);
-                i++;
+            DataTable credentials = Program.db.getUserCredentials(target);
+             if (credentials != null) {
+                foreach (DataRow dr in credentials.Rows) {
+                    if (!dr.IsNull("username")) {
+                        comboBox1.Items.Add(dr["name"].ToString());
+                    }
+                }
             }
         }
         private string getAppBoxVal()
@@ -44,7 +39,6 @@ namespace BioPass
             }
             else
             {
-                //maybe get user info for new app here.
                 return (urlNew.Text);
             }
         }
@@ -52,10 +46,7 @@ namespace BioPass
         private void go_Click(object sender, EventArgs e)
         {
             application = getAppBoxVal();
-            Debug.Write(application);
-            //if(application is website)
-            //automateWeb go = new automateWeb(application, )
-            Close(); 
+            this.Close(); 
         }
         private void fpBtn_Click(object sender, EventArgs e) {
             fingerprintView fpView = new BioPass.fingerprintView(target);

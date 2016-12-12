@@ -55,6 +55,8 @@ namespace BioPass {
             //Debug.WriteLine("Identifed from Face " + mainForm.rec.IdentifyUser(face));
             mainForm.blankPin();
             Boolean compareToFP = false;
+            long authenticatedAs = -1;
+            int fitSecurityLevel = -1;
             if(finger_uid != -1) {
                 compareToFP = true;
             }
@@ -63,28 +65,67 @@ namespace BioPass {
 
             if (!compareToFP && (pin == null || pin.Length != 4)) {
                 MessageBox.Show("Bad or No pin provided. Face is not enough to verify user.");
+            } else if(compareToFP && faceIdentity == -1 && (pin != null && pin.Length == 4) ) {
+                //LEVEL 0
+                String match = db.compareIdToPin(finger_uid, pin);
+                if (match != null && match.Length > 0) {
+                    MessageBox.Show("(Pin, FP) User identified as: " + match);
+                    authenticatedAs = finger_uid;
+                    fitSecurityLevel = 0;
+                }
             } else if (!compareToFP && (pin != null && pin.Length == 4)) {
+                //LEVEL 0
                 String match = db.compareIdToPin(faceIdentity, pin);
                 if (match != null && match.Length > 0) {
                     MessageBox.Show("(Pin and Face) User identified as: " + match);
-                    mainForm.postAuth(faceIdentity);
+                    authenticatedAs = faceIdentity;
+                    fitSecurityLevel = 0;
                 }
             } else if (compareToFP && (pin != null && pin.Length == 4)) {
+                //LEVEL 2
                 String match = db.compareIdToPin(faceIdentity, pin);
                 if (match != null && match.Length > 0 && finger_uid == faceIdentity) {
                     MessageBox.Show("(Pin, Face, FP) User identified as: " + match);
-                    mainForm.postAuth(faceIdentity);
+                    authenticatedAs = faceIdentity;
+                    fitSecurityLevel = 2;
+
                 }
             } else if (compareToFP) {
-                Debug.WriteLine(finger_uid);
-                Debug.WriteLine(faceIdentity);
+                //LEVEL 1
                 if (faceIdentity == finger_uid) {
                     String match = db.getUserName(finger_uid);
                     MessageBox.Show("(Face, FP) User identified as: " + match);
-                    mainForm.postAuth(faceIdentity);
+                    authenticatedAs = faceIdentity;
+                    fitSecurityLevel = 1;
                 }
             }
-          //finger.Save(tempFingerPath);
+            if(authenticatedAs > -1) {
+                int userSecurityLevel = db.getUserSecurityLevel(authenticatedAs);
+                if(userSecurityLevel <= fitSecurityLevel) { 
+                    mainForm.postAuth(authenticatedAs);
+                } else {
+                    if(fitSecurityLevel > 0 && userSecurityLevel > 2) {
+                        String irisMessage = @"This user requires Iris authentication. 
+Please bring your eye into the viewport's focus 
+and close this box to begin authentication.";
+                        if(MessageBox.Show(irisMessage, "Iris Required", MessageBoxButtons.OK) == DialogResult.OK) {
+                            try {
+                                lock (FaceForm._latestFrame) {
+                                    Bitmap image = (Bitmap)FaceForm._latestFrame.Clone(
+                                        new Rectangle(0, 0, FaceForm._latestFrame.Width, FaceForm._latestFrame.Height),
+                                        FaceForm._latestFrame.PixelFormat);
+                                    IrisAuth iris = new IrisAuth();
+                                    Debug.Write(iris.VerifyUser(image, (int)authenticatedAs));
+                                }
+                            } catch (InvalidOperationException exeception) {
+                                Console.Write(exeception.ToString());
+                            }
+                        }
+
+                    }
+                }
+            }
+
         }
         
     }

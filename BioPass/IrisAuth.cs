@@ -15,9 +15,8 @@ namespace BioPass
 
         public int IdentifyUser(object image)
         {
-            SQLiteConnection conn = new SQLiteConnection("Data Source=biopass.sqlite;Version=3");
             String select = "select iris_data, user_id from iris;";
-            SQLiteCommand cmd = new SQLiteCommand(select, conn);
+            SQLiteCommand cmd = new SQLiteCommand(select, Program.db.dbConn);
             SQLiteDataReader reader = cmd.ExecuteReader();
             int id = -1;
             double min = 1.0;
@@ -38,8 +37,7 @@ namespace BioPass
             String data = templateToBase64(GetTemplate(image));
             String oldData = "";
             String select = "select iris_data from iris where user_id = " + userId + ";";
-            SQLiteConnection conn = new SQLiteConnection("Data Source=biopass.sqlite;Version=3");
-            SQLiteDataReader reader = new SQLiteCommand(select, conn).ExecuteReader();
+            SQLiteDataReader reader = new SQLiteCommand(select, Program.db.dbConn).ExecuteReader();
             while (reader.Read()) //only 1 record should return lul
             {
                 oldData = reader.GetString(reader.GetOrdinal("iris_data")) + ";";
@@ -47,16 +45,15 @@ namespace BioPass
             data = oldData + data;
             String update = "update iris set iris_data = " + data +
                 " where user_id = " + userId + ";";
-            SQLiteCommand cmd = new SQLiteCommand(update, conn);
+            SQLiteCommand cmd = new SQLiteCommand(update, Program.db.dbConn);
             cmd.ExecuteNonQuery();
         }
 
         public Boolean VerifyUser(object image, int userId)
         {
-            SQLiteConnection conn = new SQLiteConnection("Data Source=biopass.sqlite;Version=3");
             String select = "select iris_data from iris where user_id = "
                 + userId + ";";
-            SQLiteCommand cmd = new SQLiteCommand(select, conn);
+            SQLiteCommand cmd = new SQLiteCommand(select, Program.db.dbConn);
             SQLiteDataReader reader = cmd.ExecuteReader();
             int[] template2 = GetTemplate(image);
             while (reader.Read())

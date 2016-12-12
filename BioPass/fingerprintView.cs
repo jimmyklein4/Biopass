@@ -26,7 +26,7 @@ namespace BioPass {
                 foreach (DataRow dr in fingerprints.Rows) {
                     if (!dr.IsNull("fingerprint")) {
                         String[] row = {dr["finger"].ToString(), dr["fp_id"].ToString()};
-                        fingerprintList.Rows.Add(row);
+                        if(fingerprintList != null) fingerprintList.Rows.Add(row);
                     }
                 }
             }

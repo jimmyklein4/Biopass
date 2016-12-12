@@ -37,6 +37,7 @@
             this.credsBtn = new System.Windows.Forms.Button();
             this.cancelBtn = new System.Windows.Forms.Button();
             this.fpBtn = new System.Windows.Forms.Button();
+            this.secLevelBtn = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -71,7 +72,7 @@
             // 
             this.urlNew.HideSelection = false;
             this.urlNew.Location = new System.Drawing.Point(28, 84);
-            this.urlNew.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.urlNew.Margin = new System.Windows.Forms.Padding(2);
             this.urlNew.Name = "urlNew";
             this.urlNew.Size = new System.Drawing.Size(120, 20);
             this.urlNew.TabIndex = 7;
@@ -111,7 +112,7 @@
             // 
             this.cancelBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelBtn.Location = new System.Drawing.Point(74, 143);
+            this.cancelBtn.Location = new System.Drawing.Point(116, 143);
             this.cancelBtn.Name = "cancelBtn";
             this.cancelBtn.Size = new System.Drawing.Size(75, 23);
             this.cancelBtn.TabIndex = 12;
@@ -129,12 +130,22 @@
             this.fpBtn.UseVisualStyleBackColor = true;
             this.fpBtn.Click += new System.EventHandler(this.fpBtn_Click);
             // 
+            // secLevelBtn
+            // 
+            this.secLevelBtn.Location = new System.Drawing.Point(26, 143);
+            this.secLevelBtn.Name = "secLevelBtn";
+            this.secLevelBtn.Size = new System.Drawing.Size(75, 23);
+            this.secLevelBtn.TabIndex = 15;
+            this.secLevelBtn.Text = "Security Level";
+            this.secLevelBtn.UseVisualStyleBackColor = true;
+            // 
             // Login
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(218, 178);
             this.ControlBox = false;
+            this.Controls.Add(this.secLevelBtn);
             this.Controls.Add(this.credsBtn);
             this.Controls.Add(this.cancelBtn);
             this.Controls.Add(this.fpBtn);
@@ -144,7 +155,7 @@
             this.Controls.Add(this.go);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.label1);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Login";
             this.Text = "Login";
             this.Load += new System.EventHandler(this.Login_Load);
@@ -164,5 +175,6 @@
         private System.Windows.Forms.Button credsBtn;
         private System.Windows.Forms.Button cancelBtn;
         private System.Windows.Forms.Button fpBtn;
+        private System.Windows.Forms.Button secLevelBtn;
     }
 }

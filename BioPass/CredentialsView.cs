@@ -101,8 +101,8 @@ namespace BioPass {
                         if(credentialsList[credentialsList.Columns["type"].Index, e.RowIndex].Value.ToString()=="website") { 
                             automateWeb web = new automateWeb(website, application_id);
                         } else {
-                            String username = credentialsList[credentialsList.Columns["username"].Index, e.RowIndex].Value.ToString();
-                            String password = credentialsList[credentialsList.Columns["password"].Index, e.RowIndex].Value.ToString();
+                            String username = Program.db.getUsername(application_id);
+                            String password = Program.db.getPassword(application_id);
                             String loginPage = Program.db.appExists(website);
                             desktopAutomater desktop = new desktopAutomater();
                             desktop.parseNrun(username,password, Directory.GetCurrentDirectory()+"/Login Scripts/"+loginPage);

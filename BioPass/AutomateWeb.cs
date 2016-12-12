@@ -14,7 +14,6 @@ namespace BioPass
                 user_id = account_id;
                 account_id = Program.db.getAppFromUID(website, account_id);
             }
-            Debug.WriteLine(website);
             if(website == null || website.Length == 0) return;
             service = ChromeDriverService.CreateDefaultService(AppDomain.CurrentDomain.BaseDirectory);
             service.HideCommandPromptWindow = true;
@@ -26,8 +25,9 @@ namespace BioPass
             String loginPage = "";
 
             var driver = new ChromeDriver(service, options);
-            //write if statement that checks if the app exists
+
             if ((loginPage = Program.db.appExists(website)).Length > 1) {
+                Debug.WriteLine("Account ID = " + account_id);
                 String actualPath = loginPage;
                 if(actualPath.IndexOf(@"://") == -1) {
                     actualPath = "http://" + actualPath;
