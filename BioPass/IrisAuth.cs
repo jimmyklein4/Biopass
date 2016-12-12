@@ -70,7 +70,7 @@ namespace BioPass
         public void AddUser(object image, long userId) {
             int[] template2 = GetTemplate(image);
             if (template2 == null) return;
-            String data = templateToBase64(GetTemplate(image));
+            String data = templateToBase64(template2);
             long iid = Program.db.addIrisData(data, userId);
         }
 

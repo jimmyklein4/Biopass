@@ -1,0 +1,8 @@
+{
+	name: "learn.temple.edu",
+	type: "website",
+	usernameField: "#username",
+	passwordField: "#password",
+	submitButton: ".btn-login",
+	login_page: "http://learn.temple.edu"
+}

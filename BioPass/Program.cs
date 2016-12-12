@@ -40,11 +40,13 @@ namespace BioPass {
             } else {
                 db.connectToDatabase();
             }
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             mainForm = new FaceForm();
-            mainForm.postAuth(0);
+            //mainForm.postAuth(0);
             Application.Run(mainForm);
+
         } 
         public static void recieveCapture(long finger_uid, Bitmap face, String pin) {
             face.Save(tempFacePath);

@@ -20,7 +20,8 @@ namespace BioPass
             this.connectToDatabase();
             this.createTables();
             this.prepUserDB();
-            this.prepAppDB();
+            appLoad.loadfromJson();
+            //this.prepAppDB();
         }
 
         // Creates a connection with our database file.
@@ -43,12 +44,11 @@ user_id INTEGER NOT NULL);" +
 CREATE TABLE application(
 application_id INTEGER PRIMARY KEY,
 name varchar(255) NOT NULL,
-type INTEGER NOT NULL,
+type varchar(255) NOT NULL,
 username_field varchar(255),
 password_field varchar(255),
 submit_btn varchar(255),
-login_page varchar(255))
-;" +
+login_page varchar(255));" +
                 @"
 CREATE TABLE user(
 user_id INTEGER PRIMARY KEY,
@@ -177,17 +177,18 @@ user_id INTEGER NOT NULL);";
 
             return password;
         }
-        public Boolean appExists(String aid)
-        {
-            String sql = "SELECT application_id FROM userAccount WHERE application_id='" + aid + "'";
-            SQLiteCommand command = new SQLiteCommand(sql, dbConn);
+        public Boolean appExists(String website) {
+            String sql = "SELECT name FROM application WHERE name=@web";
+            SQLiteCommand cmd = new SQLiteCommand(sql, dbConn);
+            cmd.Parameters.Add(new SQLiteParameter("@web", website));
+            cmd.Prepare();
+
             Boolean exists = false;
-            using (SQLiteDataReader reader = command.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    String act = (String)(reader["application_id"] != System.DBNull.Value ? reader["application_id"] : "");
-                    if(act.Length > 0) { exists = true; }
+
+            using (SQLiteDataReader reader = cmd.ExecuteReader()) {
+                while (reader.Read()) {
+                    String act = (String)(reader["name"] != System.DBNull.Value ? reader["name"] : "");
+                    if (act.Length > 0) { exists = true; }
                 }
             }
             return exists;
@@ -250,9 +251,10 @@ user_id INTEGER NOT NULL);";
 
             cmd.Prepare();
             SQLiteDataReader reader = cmd.ExecuteReader();
-            reader.Read();
-
-            String user_id = (string)(reader["name"] != System.DBNull.Value ? reader["name"] : "");
+            String user_id = "";
+            while(reader.Read()) { 
+               user_id = (string)(reader["name"] != System.DBNull.Value ? reader["name"] : "");
+            }
             return user_id;
         }
 
@@ -386,16 +388,17 @@ user_id INTEGER NOT NULL);";
         }
 
         //application table
-        public void addApp(String appname, int type, String usrnameField, String pwField, String submit_btn)
+        public void addApp(String appname, String type, String usrnameField, String pwField, String submit_btn, String loginPage)
         {
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
-            cmd.CommandText = "INSERT INTO application(name,type,username_field,password_field,submit_btn) VALUES(@nm,@tp,@usf,@pwf,@sbtn)";
+            cmd.CommandText = @"INSERT INTO application(name, type, username_field, password_field, login_page, submit_btn) VALUES (@nm,@tp,@usf,@pwf,@lp,@sbtn);";
 
             cmd.Parameters.Add(new SQLiteParameter("@nm", appname));
             cmd.Parameters.Add(new SQLiteParameter("@tp", type));
             cmd.Parameters.Add(new SQLiteParameter("@usf", usrnameField));
             cmd.Parameters.Add(new SQLiteParameter("@pwf", pwField));
             cmd.Parameters.Add(new SQLiteParameter("@sbtn", submit_btn));
+            cmd.Parameters.Add(new SQLiteParameter("@lp", loginPage));
 
             cmd.Prepare();
             cmd.ExecuteNonQuery();
@@ -411,13 +414,13 @@ user_id INTEGER NOT NULL);";
                 string[] loginpage = { "", "", ""};
 
                 for (var i = 0; i < names.Length; i++) {
-                    cmd.CommandText = @"INSERT INTO application(name,type,username_field,password_field, login_page, submit_btn) VALUES (@nm,@tp,@usf,@pwf,@lp,@sbtn);";
+                    cmd.CommandText = @"INSERT INTO application(name, type, username_field, password_field, login_page, submit_btn) VALUES (@nm,@tp,@usf,@pwf,@lp,@sbtn);";
                     cmd.Parameters.Add(new SQLiteParameter("@nm", names[i]));
                     cmd.Parameters.Add(new SQLiteParameter("@tp", types[i]));
                     cmd.Parameters.Add(new SQLiteParameter("@usf", ufield[i]));
                     cmd.Parameters.Add(new SQLiteParameter("@pwf", pfield[i]));
-                    cmd.Parameters.Add(new SQLiteParameter("@lp", loginpage[i]));
                     cmd.Parameters.Add(new SQLiteParameter("@sbtn", sbtn[i]));
+                    cmd.Parameters.Add(new SQLiteParameter("@lp", loginpage[i]));
 
                     cmd.Prepare();
                     cmd.ExecuteNonQuery();
@@ -426,20 +429,31 @@ user_id INTEGER NOT NULL);";
                 transaction.Commit();
             }
         }
-        public String getAppUsernameData(String website)
-        {
-            String sql = "SELECT username_field FROM application WHERE name ='" + website + "'";
-            SQLiteCommand command = new SQLiteCommand(sql, dbConn);
-            SQLiteDataReader reader = command.ExecuteReader();
-            String appUsernameField = (String)(reader["username_field"] != System.DBNull.Value ? reader["username_field"] : "");
+        public String getUsernameFieldByWebsite(String website) {
+            String sql = "SELECT username_field FROM application WHERE name=@name";
+            SQLiteCommand cmd = new SQLiteCommand(sql, dbConn);
+            cmd.Parameters.Add(new SQLiteParameter("@name", website));
+            cmd.Prepare();
+
+            SQLiteDataReader reader = cmd.ExecuteReader();
+            String appUsernameField = "";
+            if(reader.Read()) { 
+                appUsernameField = (String)(reader["username_field"] != System.DBNull.Value ? reader["username_field"] : "");
+            }
             return appUsernameField;
         }
-        public String getAppPasswordData(String website)
+        public String getPasswordFieldByWebsite(String website)
         {
-            String sql = "SELECT password_field FROM application WHERE name ='" + website + "'";
-            SQLiteCommand command = new SQLiteCommand(sql, dbConn);
-            SQLiteDataReader reader = command.ExecuteReader();
-            String appPasswordField = (String)(reader["password_field"] != System.DBNull.Value ? reader["password_field"] : "");
+            String sql = "SELECT password_field FROM application WHERE name=@name";
+            SQLiteCommand cmd = new SQLiteCommand(sql, dbConn);
+            cmd.Parameters.Add(new SQLiteParameter("@name", website));
+            cmd.Prepare();
+
+            SQLiteDataReader reader = cmd.ExecuteReader();
+            String appPasswordField = "";
+            if(reader.Read()) { 
+              appPasswordField = (String)(reader["password_field"] != System.DBNull.Value ? reader["password_field"] : "");
+            }
             return appPasswordField;
         }
         public String getAppID(String app)
@@ -451,7 +465,7 @@ user_id INTEGER NOT NULL);";
             return appID;
         }
 
-        public String getUsernameField(String aid)
+        public String getUsernameFieldById(String aid)
         {
             String sql = "SELECT username_field FROM application WHERE application_id='" + aid + "'";
             SQLiteCommand command = new SQLiteCommand(sql, dbConn);
@@ -460,7 +474,7 @@ user_id INTEGER NOT NULL);";
             return usrField;
         }
 
-        public String getPasswordField(String aid)
+        public String getPasswordFieldById(String aid)
         {
             String sql = "SELECT password_field FROM application WHERE application_id='" + aid + "'";
             SQLiteCommand command = new SQLiteCommand(sql, dbConn);

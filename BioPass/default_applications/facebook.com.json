@@ -1,0 +1,8 @@
+{
+	name: "facebook.com",
+	type: "website",
+	usernameField: "#email",
+	passwordField: "#pass",
+	submitButton: "#u_0_n",
+	login_page: "http://facebook.com"
+}

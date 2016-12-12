@@ -113,8 +113,17 @@ namespace BioPass {
             
         }
         private void credentialsList_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e) {
-            if ((credentialsList.CurrentCell.ColumnIndex == credentialsList.Columns["password"].Index) && credentialsList.CurrentRow.Tag != null) { 
-                e.Control.Text = credentialsList.CurrentRow.Tag.ToString();
+            Debug.WriteLine("Current Column: " + credentialsList.CurrentCell.ColumnIndex + "; Password Column:" + credentialsList.Columns["password"].Index);
+            if ((credentialsList.CurrentCell.ColumnIndex == credentialsList.Columns["password"].Index)) { 
+                TextBox textBox = e.Control as TextBox;
+                if (textBox != null) {
+                        textBox.UseSystemPasswordChar = true;
+                }                
+            } else {
+                TextBox textBox = e.Control as TextBox;
+                if (textBox != null) {
+                        textBox.UseSystemPasswordChar = false;
+                }  
             }
         }
     }
