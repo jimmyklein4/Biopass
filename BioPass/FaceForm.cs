@@ -240,7 +240,7 @@ namespace BioPass
             Login LoginWin = new Login(_target);
             long account_id = -1;
             if (LoginWin.ShowDialog() != DialogResult.None) {
-                if((account_id = long.Parse(Program.db.getAppFromUID(LoginWin.application, ""+_target))) > -1) {
+                if((account_id = Program.db.getAppFromUID(LoginWin.application, ""+_target)) > -1) {
                     automateWeb web = new automateWeb(LoginWin.application, ""+account_id);
                 } else {
                     automateWeb web = new automateWeb(LoginWin.application, ""+_target, true);

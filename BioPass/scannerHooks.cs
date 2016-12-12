@@ -121,11 +121,11 @@ namespace BioPass {
         }
         
         private void axZKFPEngX1_OnImageReceived(object sender, AxZKFPEngXControl.IZKFPEngXEvents_OnImageReceivedEvent e) {
+            fpPicture.Visible = true;
             Graphics g = fpPicture.CreateGraphics();
             int dc = g.GetHdc().ToInt32();
-           //axZKFPEngX1.PrintImageAt(dc, 0, 0, axZKFPEngX1.ImageWidth, axZKFPEngX1.ImageHeight);
             axZKFPEngX1.PrintImageAt(dc, 0, 0, fpPicture.Width, fpPicture.Height);
-            fpPicture.Visible = true;
+
         }
 
         private void axZKFPEngX1_OnFeatureInfo(object sender, AxZKFPEngXControl.IZKFPEngXEvents_OnFeatureInfoEvent e)

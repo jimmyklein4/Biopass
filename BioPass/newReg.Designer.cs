@@ -26,6 +26,7 @@
             this.cancelReg = new System.Windows.Forms.Button();
             this.acceptReg = new System.Windows.Forms.Button();
             this.bioPanel = new System.Windows.Forms.Panel();
+            this.secLevelBtn = new System.Windows.Forms.Button();
             this.credsBtn = new System.Windows.Forms.Button();
             this.IrisBtn = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
@@ -37,7 +38,6 @@
             this.createBtn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.nameBox = new System.Windows.Forms.TextBox();
-            this.secLevelBtn = new System.Windows.Forms.Button();
             this.bioPanel.SuspendLayout();
             this.namePanel.SuspendLayout();
             this.SuspendLayout();
@@ -74,6 +74,16 @@
             this.bioPanel.Name = "bioPanel";
             this.bioPanel.Size = new System.Drawing.Size(331, 108);
             this.bioPanel.TabIndex = 9;
+            // 
+            // secLevelBtn
+            // 
+            this.secLevelBtn.Location = new System.Drawing.Point(54, 68);
+            this.secLevelBtn.Name = "secLevelBtn";
+            this.secLevelBtn.Size = new System.Drawing.Size(104, 28);
+            this.secLevelBtn.TabIndex = 14;
+            this.secLevelBtn.Text = "Security Level";
+            this.secLevelBtn.UseVisualStyleBackColor = true;
+            this.secLevelBtn.Click += new System.EventHandler(this.secLevelBtn_Click);
             // 
             // credsBtn
             // 
@@ -148,6 +158,7 @@
             // pinBox
             // 
             this.pinBox.Location = new System.Drawing.Point(160, 23);
+            this.pinBox.MaxLength = 4;
             this.pinBox.Name = "pinBox";
             this.pinBox.Size = new System.Drawing.Size(76, 20);
             this.pinBox.TabIndex = 2;
@@ -177,16 +188,6 @@
             this.nameBox.Name = "nameBox";
             this.nameBox.Size = new System.Drawing.Size(109, 20);
             this.nameBox.TabIndex = 1;
-            // 
-            // secLevelBtn
-            // 
-            this.secLevelBtn.Location = new System.Drawing.Point(54, 68);
-            this.secLevelBtn.Name = "secLevelBtn";
-            this.secLevelBtn.Size = new System.Drawing.Size(104, 28);
-            this.secLevelBtn.TabIndex = 14;
-            this.secLevelBtn.Text = "Security Level";
-            this.secLevelBtn.UseVisualStyleBackColor = true;
-            this.secLevelBtn.Click += new System.EventHandler(this.secLevelBtn_Click);
             // 
             // newReg
             // 

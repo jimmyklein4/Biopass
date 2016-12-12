@@ -12,7 +12,7 @@ namespace BioPass
             String user_id = "";
             if(accountIDAsUserId) {
                 user_id = account_id;
-                account_id = Program.db.getAppFromUID(website, account_id);
+                account_id = ""+Program.db.getAppFromUID(website, account_id);
             }
             if(website == null || website.Length == 0) return;
             service = ChromeDriverService.CreateDefaultService(AppDomain.CurrentDomain.BaseDirectory);

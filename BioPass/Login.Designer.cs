@@ -138,6 +138,7 @@
             this.secLevelBtn.TabIndex = 15;
             this.secLevelBtn.Text = "Security Level";
             this.secLevelBtn.UseVisualStyleBackColor = true;
+            this.secLevelBtn.Click += new System.EventHandler(this.secLevelBtn_Click);
             // 
             // Login
             // 
