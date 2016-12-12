@@ -102,6 +102,7 @@
             // 
             this.type.HeaderText = "type";
             this.type.Name = "type";
+            this.type.Visible = false;
             // 
             // save
             // 

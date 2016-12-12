@@ -36,7 +36,7 @@ namespace BioPass
 CREATE TABLE userAccount(
 account_id INTEGER PRIMARY KEY,
 username varchar(255) NOT NULL,
-password varchar(255) NOT NULL,
+password BLOB NOT NULL,
 application_id varchar(255) NOT NULL,
 user_id INTEGER NOT NULL);" +
                 @"
@@ -52,7 +52,9 @@ login_page varchar(255));" +
 CREATE TABLE user(
 user_id INTEGER PRIMARY KEY,
 name varchar(255) NOT NULL,
-pin varchar(255));" +
+pin varchar(255)),
+securityLevel INTEGER,
+;" +
                 @"
 CREATE TABLE fingerprint(
 fp_id INTEGER PRIMARY KEY,
@@ -87,11 +89,12 @@ user_id INTEGER NOT NULL);";
         // userAccount table
         public void addAccount(String usr, String pw, String aid, String uid)
         {
+            byte[] passwordBlob = DPAPI.protect(pw);
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
             cmd.CommandText = "INSERT INTO userAccount(username,password,application_id,user_id) VALUES(@usr,@pw,@aid,@uid);";
 
             cmd.Parameters.Add(new SQLiteParameter("@usr", usr));
-            cmd.Parameters.Add(new SQLiteParameter("@pw", pw));
+            cmd.Parameters.Add(new SQLiteParameter("@pw", passwordBlob));
             cmd.Parameters.Add(new SQLiteParameter("@aid", aid));
             cmd.Parameters.Add(new SQLiteParameter("@uid", uid));
 
@@ -123,24 +126,28 @@ user_id INTEGER NOT NULL);";
 
             cmd.Parameters.Add(new SQLiteParameter("@aid", aid));
             cmd.Prepare();
+            byte[] passwordBlob;
             String password = "";
 
             using (SQLiteDataReader reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
                 {
-                    password = (String)(reader["password"] != System.DBNull.Value ? reader["password"] : "");
+                    passwordBlob = (byte[])(reader["password"] != System.DBNull.Value ? reader["password"] : "");
+                    password = DPAPI.unprotect(passwordBlob);
                 }
             }
 
             return password;
         }
         public void updateUserCreds(String aid, String username, String password) {
+            byte[] passwordBlob = DPAPI.protect(password);
+
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
             cmd.CommandText = "UPDATE userAccount SET username=@un, password=@pw WHERE account_id=@aid;";
 
             cmd.Parameters.Add(new SQLiteParameter("@un", username));
-            cmd.Parameters.Add(new SQLiteParameter("@pw", password));
+            cmd.Parameters.Add(new SQLiteParameter("@pw", passwordBlob));
             cmd.Parameters.Add(new SQLiteParameter("@aid", aid));
 
             cmd.Prepare();

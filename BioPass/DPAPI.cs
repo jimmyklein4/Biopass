@@ -8,9 +8,9 @@ using System.Security.Cryptography;
 
 namespace BioPass {
     class DPAPI {
-        private byte[] entropy = { 0, 8, 1, 6, 1, 9, 9, 4 };
+        private static byte[] entropy = { 0, 8, 1, 6, 1, 9, 9, 4 };
 
-        public byte[] protect(String data) {
+        public static byte[] protect(String data) {
             try { 
                 byte[] plainTextBytes = Encoding.Unicode.GetBytes( data );
                 byte[] encrypted = ProtectedData.Protect(
@@ -23,7 +23,7 @@ namespace BioPass {
             }
         }
         
-        public String unprotect(byte[] data) {
+        public static String unprotect(byte[] data) {
             try { 
                 byte[] decrypted = ProtectedData.Unprotect(
                      data, entropy, DataProtectionScope.CurrentUser

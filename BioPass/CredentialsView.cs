@@ -49,7 +49,7 @@ namespace BioPass {
                             dr["application_id"].ToString(),
                             dr["account_id"].ToString(),
                             dr["username"].ToString(),
-                            dr["password"].ToString(),
+                            DPAPI.unprotect((byte[])dr["password"]),
                             dr["type"].ToString()
                         });
                     }

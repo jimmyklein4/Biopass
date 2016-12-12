@@ -37,7 +37,7 @@
             this.createBtn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.nameBox = new System.Windows.Forms.TextBox();
-            this.secLevel_Btn = new System.Windows.Forms.Button();
+            this.secLevelBtn = new System.Windows.Forms.Button();
             this.bioPanel.SuspendLayout();
             this.namePanel.SuspendLayout();
             this.SuspendLayout();
@@ -64,7 +64,7 @@
             // 
             // bioPanel
             // 
-            this.bioPanel.Controls.Add(this.secLevel_Btn);
+            this.bioPanel.Controls.Add(this.secLevelBtn);
             this.bioPanel.Controls.Add(this.credsBtn);
             this.bioPanel.Controls.Add(this.IrisBtn);
             this.bioPanel.Controls.Add(this.label2);
@@ -178,14 +178,15 @@
             this.nameBox.Size = new System.Drawing.Size(109, 20);
             this.nameBox.TabIndex = 1;
             // 
-            // secLevel_Btn
+            // secLevelBtn
             // 
-            this.secLevel_Btn.Location = new System.Drawing.Point(54, 68);
-            this.secLevel_Btn.Name = "secLevel_Btn";
-            this.secLevel_Btn.Size = new System.Drawing.Size(104, 28);
-            this.secLevel_Btn.TabIndex = 14;
-            this.secLevel_Btn.Text = "Security Level";
-            this.secLevel_Btn.UseVisualStyleBackColor = true;
+            this.secLevelBtn.Location = new System.Drawing.Point(54, 68);
+            this.secLevelBtn.Name = "secLevelBtn";
+            this.secLevelBtn.Size = new System.Drawing.Size(104, 28);
+            this.secLevelBtn.TabIndex = 14;
+            this.secLevelBtn.Text = "Security Level";
+            this.secLevelBtn.UseVisualStyleBackColor = true;
+            this.secLevelBtn.Click += new System.EventHandler(this.secLevelBtn_Click);
             // 
             // newReg
             // 
@@ -228,6 +229,6 @@
         private System.Windows.Forms.Label label3;
         public System.Windows.Forms.TextBox pinBox;
         private System.Windows.Forms.Button credsBtn;
-        private System.Windows.Forms.Button secLevel_Btn;
+        private System.Windows.Forms.Button secLevelBtn;
     }
 }

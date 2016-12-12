@@ -106,5 +106,10 @@ namespace BioPass {
             CredentialsView credsView = new CredentialsView(target);
             credsView.Show();
         }
+
+        private void secLevelBtn_Click(object sender, EventArgs e) {
+            securityLevel securityLevel = new securityLevel(target);
+            securityLevel.Show();
+        }
     }
 }
