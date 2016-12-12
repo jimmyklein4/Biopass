@@ -14,7 +14,12 @@ namespace BioPass {
             for(int i = 0; i < dirs.Length; i++) {
                 string text = File.ReadAllText(dirs[i]);
                 JObject o = JObject.Parse(text);
-                Program.db.addApp((string)o["name"],(string)o["type"],(string)o["usernameField"],(string)o["passwordField"],(string)o["submitButton"],(string)o["loginPage"]);
+                if(Program.db.appExists((string)o["name"]).Length == 0) {
+                    Debug.WriteLine("Adding " + dirs[i]);
+                    Program.db.addApp((string)o["name"],(string)o["type"],
+                        (string)o["usernameField"],(string)o["passwordField"],
+                        (string)o["submitButton"],(string)o["loginPage"]);
+                }
             }
         }
     }

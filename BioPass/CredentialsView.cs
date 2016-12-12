@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,7 +49,8 @@ namespace BioPass {
                             dr["application_id"].ToString(),
                             dr["account_id"].ToString(),
                             dr["username"].ToString(),
-                            dr["password"].ToString()
+                            dr["password"].ToString(),
+                            dr["type"].ToString()
                         });
                     }
                 }
@@ -95,14 +97,19 @@ namespace BioPass {
 
                         String application_id = credentialsList[credentialsList.Columns["account_id"].Index, e.RowIndex].Value.ToString();
                         String website = credentialsList[credentialsList.Columns["application"].Index, e.RowIndex].FormattedValue.ToString();
-                        Debug.Write(application_id + " " + website);
 
-                        automateWeb web = new automateWeb(website, application_id);
+                        if(credentialsList[credentialsList.Columns["type"].Index, e.RowIndex].Value.ToString()=="website") { 
+                            automateWeb web = new automateWeb(website, application_id);
+                        } else {
+                            String username = credentialsList[credentialsList.Columns["username"].Index, e.RowIndex].Value.ToString();
+                            String password = credentialsList[credentialsList.Columns["password"].Index, e.RowIndex].Value.ToString();
+                            String loginPage = Program.db.appExists(website);
+                            desktopAutomater desktop = new desktopAutomater();
+                            desktop.parseNrun(username,password, Directory.GetCurrentDirectory()+"/Login Scripts/"+loginPage);
+                        }
                     }
                 }
-
             }
-
         }
         private void credentialsList_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e) {
             if (credentialsList.Columns[e.ColumnIndex].Name == "password" && e.Value != null) {

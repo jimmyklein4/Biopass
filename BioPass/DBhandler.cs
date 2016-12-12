@@ -20,7 +20,6 @@ namespace BioPass
             this.connectToDatabase();
             this.createTables();
             this.prepUserDB();
-            appLoad.loadfromJson();
             //this.prepAppDB();
         }
 
@@ -149,7 +148,7 @@ user_id INTEGER NOT NULL);";
         }
         public DataTable getUserCredentials(long uid) {
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
-            cmd.CommandText = "SELECT userAccount.account_id, application.application_id, application.name, userAccount.username, userAccount.password FROM userAccount,application " + 
+            cmd.CommandText = "SELECT userAccount.account_id, application.application_id, application.name, application.type, userAccount.username, userAccount.password FROM userAccount,application " + 
                 @"WHERE user_id=@uid AND userAccount.application_id=application.application_id;";
 
             cmd.Parameters.Add(new SQLiteParameter("@uid", uid));
@@ -177,21 +176,19 @@ user_id INTEGER NOT NULL);";
 
             return password;
         }
-        public Boolean appExists(String website) {
-            String sql = "SELECT name FROM application WHERE name=@web";
+        public String appExists(String website) {
+            String sql = "SELECT login_page FROM application WHERE name=@web;";
             SQLiteCommand cmd = new SQLiteCommand(sql, dbConn);
             cmd.Parameters.Add(new SQLiteParameter("@web", website));
             cmd.Prepare();
 
-            Boolean exists = false;
+            String login_page = "";
 
-            using (SQLiteDataReader reader = cmd.ExecuteReader()) {
-                while (reader.Read()) {
-                    String act = (String)(reader["name"] != System.DBNull.Value ? reader["name"] : "");
-                    if (act.Length > 0) { exists = true; }
-                }
+            SQLiteDataReader reader = cmd.ExecuteReader();
+            while (reader.Read()) {
+                login_page = (String)(reader["login_page"] != System.DBNull.Value ? reader["login_page"] : "");
             }
-            return exists;
+            return login_page;
         }
 
         // User table
@@ -397,8 +394,8 @@ user_id INTEGER NOT NULL);";
             cmd.Parameters.Add(new SQLiteParameter("@tp", type));
             cmd.Parameters.Add(new SQLiteParameter("@usf", usrnameField));
             cmd.Parameters.Add(new SQLiteParameter("@pwf", pwField));
-            cmd.Parameters.Add(new SQLiteParameter("@sbtn", submit_btn));
             cmd.Parameters.Add(new SQLiteParameter("@lp", loginPage));
+            cmd.Parameters.Add(new SQLiteParameter("@sbtn", submit_btn));
 
             cmd.Prepare();
             cmd.ExecuteNonQuery();

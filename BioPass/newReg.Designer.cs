@@ -26,6 +26,7 @@
             this.cancelReg = new System.Windows.Forms.Button();
             this.acceptReg = new System.Windows.Forms.Button();
             this.bioPanel = new System.Windows.Forms.Panel();
+            this.credsBtn = new System.Windows.Forms.Button();
             this.IrisBtn = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.faceBtn = new System.Windows.Forms.Button();
@@ -36,7 +37,7 @@
             this.createBtn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.nameBox = new System.Windows.Forms.TextBox();
-            this.credsBtn = new System.Windows.Forms.Button();
+            this.secLevel_Btn = new System.Windows.Forms.Button();
             this.bioPanel.SuspendLayout();
             this.namePanel.SuspendLayout();
             this.SuspendLayout();
@@ -63,6 +64,7 @@
             // 
             // bioPanel
             // 
+            this.bioPanel.Controls.Add(this.secLevel_Btn);
             this.bioPanel.Controls.Add(this.credsBtn);
             this.bioPanel.Controls.Add(this.IrisBtn);
             this.bioPanel.Controls.Add(this.label2);
@@ -72,6 +74,16 @@
             this.bioPanel.Name = "bioPanel";
             this.bioPanel.Size = new System.Drawing.Size(331, 108);
             this.bioPanel.TabIndex = 9;
+            // 
+            // credsBtn
+            // 
+            this.credsBtn.Location = new System.Drawing.Point(178, 66);
+            this.credsBtn.Name = "credsBtn";
+            this.credsBtn.Size = new System.Drawing.Size(104, 28);
+            this.credsBtn.TabIndex = 11;
+            this.credsBtn.Text = "Credentials";
+            this.credsBtn.UseVisualStyleBackColor = true;
+            this.credsBtn.Click += new System.EventHandler(this.credsBtn_Click);
             // 
             // IrisBtn
             // 
@@ -166,15 +178,14 @@
             this.nameBox.Size = new System.Drawing.Size(109, 20);
             this.nameBox.TabIndex = 1;
             // 
-            // credsBtn
+            // secLevel_Btn
             // 
-            this.credsBtn.Location = new System.Drawing.Point(113, 68);
-            this.credsBtn.Name = "credsBtn";
-            this.credsBtn.Size = new System.Drawing.Size(104, 28);
-            this.credsBtn.TabIndex = 11;
-            this.credsBtn.Text = "Credentials";
-            this.credsBtn.UseVisualStyleBackColor = true;
-            this.credsBtn.Click += new System.EventHandler(this.credsBtn_Click);
+            this.secLevel_Btn.Location = new System.Drawing.Point(54, 68);
+            this.secLevel_Btn.Name = "secLevel_Btn";
+            this.secLevel_Btn.Size = new System.Drawing.Size(104, 28);
+            this.secLevel_Btn.TabIndex = 14;
+            this.secLevel_Btn.Text = "Security Level";
+            this.secLevel_Btn.UseVisualStyleBackColor = true;
             // 
             // newReg
             // 
@@ -217,5 +228,6 @@
         private System.Windows.Forms.Label label3;
         public System.Windows.Forms.TextBox pinBox;
         private System.Windows.Forms.Button credsBtn;
+        private System.Windows.Forms.Button secLevel_Btn;
     }
 }

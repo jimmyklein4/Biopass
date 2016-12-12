@@ -40,6 +40,7 @@ namespace BioPass {
             } else {
                 db.connectToDatabase();
             }
+            appLoad.loadfromJson();
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

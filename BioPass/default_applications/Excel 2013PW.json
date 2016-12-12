@@ -1,0 +1,8 @@
+{
+	name: "Excel 2013 PWProtectedWorkBook",
+	type: "desktop",
+	usernameField: "",
+	passwordField: "",
+	submitButton: "",
+	loginPage: "Excel13PWProtectedWorkBook.ahk"
+}

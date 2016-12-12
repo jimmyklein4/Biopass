@@ -6,7 +6,7 @@ pw=
 	sleep,2000
 
 
-	run, C:\Users\Michael\AppData\Local\Discord\Update.exe --processStart Discord.exe
+	run, %LOCALAPPDATA%\Discord\Update.exe --processStart Discord.exe
 	winwaitactive,Discord,,5
 
 	ifwinexist,Discord

@@ -4,5 +4,5 @@
 	usernameField: "#email",
 	passwordField: "#pass",
 	submitButton: "#u_0_n",
-	login_page: "http://facebook.com"
+	loginPage: "http://facebook.com"
 }

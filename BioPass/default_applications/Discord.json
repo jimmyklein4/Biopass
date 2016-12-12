@@ -1,0 +1,8 @@
+{
+	name: "Discord",
+	type: "desktop",
+	usernameField: "",
+	passwordField: "",
+	submitButton: "",
+	loginPage: "DiscordLogin.ahk"
+}

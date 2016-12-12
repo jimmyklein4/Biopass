@@ -30,6 +30,7 @@
             this.account_id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Username = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.password = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.type = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.save = new System.Windows.Forms.DataGridViewButtonColumn();
             this.launch = new System.Windows.Forms.DataGridViewButtonColumn();
             ((System.ComponentModel.ISupportInitialize)(this.credentialsList)).BeginInit();
@@ -44,6 +45,7 @@
             this.account_id,
             this.Username,
             this.password,
+            this.type,
             this.save,
             this.launch});
             this.credentialsList.Location = new System.Drawing.Point(12, 12);
@@ -96,6 +98,11 @@
             this.password.HeaderText = "Password";
             this.password.Name = "password";
             // 
+            // type
+            // 
+            this.type.HeaderText = "type";
+            this.type.Name = "type";
+            // 
             // save
             // 
             this.save.FlatStyle = System.Windows.Forms.FlatStyle.System;
@@ -135,6 +142,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn account_id;
         private System.Windows.Forms.DataGridViewTextBoxColumn Username;
         private System.Windows.Forms.DataGridViewTextBoxColumn password;
+        private System.Windows.Forms.DataGridViewTextBoxColumn type;
         private System.Windows.Forms.DataGridViewButtonColumn save;
         private System.Windows.Forms.DataGridViewButtonColumn launch;
     }

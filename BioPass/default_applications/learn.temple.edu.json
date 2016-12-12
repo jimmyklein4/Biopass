@@ -4,5 +4,5 @@
 	usernameField: "#username",
 	passwordField: "#password",
 	submitButton: ".btn-login",
-	login_page: "http://learn.temple.edu"
+	loginPage: "http://learn.temple.edu"
 }

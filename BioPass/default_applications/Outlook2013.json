@@ -1,0 +1,8 @@
+{
+	name: "Microsoft Outlook 2013",
+	type: "desktop",
+	usernameField: "",
+	passwordField: "",
+	submitButton: "",
+	loginPage: "Outlook13Login.ahk"
+}
