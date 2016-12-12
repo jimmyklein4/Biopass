@@ -241,7 +241,15 @@ namespace BioPass
             long account_id = -1;
             if (LoginWin.ShowDialog() != DialogResult.None) {
                 if((account_id = Program.db.getAppFromUID(LoginWin.application, ""+_target)) > -1) {
-                    automateWeb web = new automateWeb(LoginWin.application, ""+account_id);
+                    if (Program.db.getAppType(""+account_id)=="website") {
+                        automateWeb web = new automateWeb(LoginWin.application, "" + account_id);
+                    } else {
+                        String username = Program.db.getUsername(""+account_id);
+                        String password = Program.db.getPassword(""+account_id);
+                        String loginPage = Program.db.appExists(LoginWin.application);
+                        desktopAutomater desktop = new desktopAutomater();
+                        desktop.parseNrun(username, password, Directory.GetCurrentDirectory() + "/Login Scripts/" + loginPage);
+                    }
                 } else {
                     automateWeb web = new automateWeb(LoginWin.application, ""+_target, true);
                 }

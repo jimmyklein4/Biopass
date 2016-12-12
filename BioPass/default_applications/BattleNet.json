@@ -4,5 +4,5 @@
 	usernameField: "",
 	passwordField: "",
 	submitButton: "",
-	loginPage: "Bnet.ahk"
+	loginPage: "BnetLogin.ahk"
 }
