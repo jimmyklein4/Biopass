@@ -408,5 +408,13 @@ namespace BioPass
             }
             return images;
         }
+
+        private Gray SigmaThreshold(Image<Gray, byte> image, double sigma)
+        {
+            MCvScalar std;
+            Gray avg;
+            image.AvgSdv(out avg, out std);
+            return new Gray(avg.Intensity+std.V0*sigma);
+        }
     }
 }
