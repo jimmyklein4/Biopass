@@ -62,10 +62,10 @@ namespace BioPass {
             }
 
             int faceIdentity = mainForm.rec.IdentifyUser(face);
-
+            Debug.Write(faceIdentity);
             if (!compareToFP && (pin == null || pin.Length != 4)) {
                 MessageBox.Show("Bad or No pin provided. Face is not enough to verify user.");
-            } else if(compareToFP && faceIdentity == -1 && (pin != null && pin.Length == 4) ) {
+            } else if(compareToFP && (faceIdentity == -1 || faceIdentity < 41) && (pin != null && pin.Length == 4) ) {
                 //LEVEL 0
                 String match = db.compareIdToPin(finger_uid, pin);
                 if (match != null && match.Length > 0) {
@@ -104,10 +104,11 @@ namespace BioPass {
                 if(userSecurityLevel <= fitSecurityLevel) { 
                     mainForm.postAuth(authenticatedAs);
                 } else {
-                    if(fitSecurityLevel > 0 && userSecurityLevel > 2) {
+                    if(fitSecurityLevel > 0 && userSecurityLevel == 2) {
                         String irisMessage = @"This user requires Iris authentication. 
 Please bring your eye into the viewport's focus 
-and close this box to begin authentication.";
+and close this box to begin authentication. 
+If Iris does not work, please attempt pin authentication.";
                         if(MessageBox.Show(irisMessage, "Iris Required", MessageBoxButtons.OK) == DialogResult.OK) {
                             try {
                                 lock (FaceForm._latestFrame) {
@@ -115,7 +116,13 @@ and close this box to begin authentication.";
                                         new Rectangle(0, 0, FaceForm._latestFrame.Width, FaceForm._latestFrame.Height),
                                         FaceForm._latestFrame.PixelFormat);
                                     IrisAuth iris = new IrisAuth();
-                                    Debug.Write(iris.VerifyUser(image, (int)authenticatedAs));
+                                    Boolean IrisMatch = iris.VerifyUser(image, (int)authenticatedAs);
+                                    if(IrisMatch) {
+                                        MessageBox.Show("Iris authenticated.");
+                                        mainForm.postAuth(authenticatedAs);
+                                    } else {
+                                        MessageBox.Show("Iris authenticated failed.");
+                                    }
                                 }
                             } catch (InvalidOperationException exeception) {
                                 Console.Write(exeception.ToString());

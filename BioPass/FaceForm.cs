@@ -240,12 +240,30 @@ namespace BioPass
             Login LoginWin = new Login(_target);
             long account_id = -1;
             if (LoginWin.ShowDialog() != DialogResult.None) {
-                if((account_id = long.Parse(Program.db.getAppFromUID(LoginWin.application, ""+_target))) > -1) {
-                    automateWeb web = new automateWeb(LoginWin.application, ""+account_id);
+                if((account_id = Program.db.getAppFromUID(LoginWin.application, ""+_target)) > -1) {
+                    if (Program.db.getAppType(""+account_id)=="website") {
+                        automateWeb web = new automateWeb(LoginWin.application, "" + account_id);
+                    } else {
+                        String username = Program.db.getUsername(""+account_id);
+                        String password = Program.db.getPassword(""+account_id);
+                        String loginPage = Program.db.appExists(LoginWin.application);
+                        desktopAutomater desktop = new desktopAutomater();
+                        desktop.parseNrun(username, password, Directory.GetCurrentDirectory() + "/Login Scripts/" + loginPage);
+                    }
                 } else {
                     automateWeb web = new automateWeb(LoginWin.application, ""+_target, true);
                 }
             }
+        }
+
+        private void helpBtn_Click(object sender, EventArgs e) {
+            MessageBox.Show(@"
+If you are a new user, please close out this prompt and click the 'Register' button.
+If you have already registered your biometrics, please provide a pin or a combination of biometrics.
+* Your pin will start to appear below the videoport. Press Enter after typing to attempt a facial recognition scan.
+* Without a pin, put your finger on the scanner to attempt a Finger + Facial scan.
+* You may enter a pin as well as provide two forms of biometrics.
+");
         }
     }
 }

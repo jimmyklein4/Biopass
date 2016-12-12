@@ -12,7 +12,7 @@ namespace BioPass
             String user_id = "";
             if(accountIDAsUserId) {
                 user_id = account_id;
-                account_id = Program.db.getAppFromUID(website, account_id);
+                account_id = ""+Program.db.getAppFromUID(website, account_id);
             }
             if(website == null || website.Length == 0) return;
             service = ChromeDriverService.CreateDefaultService(AppDomain.CurrentDomain.BaseDirectory);
@@ -109,7 +109,13 @@ namespace BioPass
                             var username = driver.FindElementByName(uid);
                             if (isInput(source, i))
                             {
-                                username.SendKeys("Finding information...");
+                                try{
+                                    username.SendKeys("Finding information...");
+                                }
+                                catch(Exception E)
+                                {
+                                    Console.Out.WriteLine(E);
+                                }
                                 foundUsername = true;
                             }
                         }
@@ -205,7 +211,10 @@ namespace BioPass
                 }
                 if (foundPassword == true && foundUsername == true && founddata == true) {
                     String cleanPath = website.Substring(website.IndexOf("://")+3);
-                    cleanPath = cleanPath.Substring(0,cleanPath.IndexOf("/"));
+                    if (cleanPath.IndexOf("/")!= -1)
+                    {
+                        cleanPath = cleanPath.Substring(0, cleanPath.IndexOf("/"));
+                    }
                     Program.db.addApp(cleanPath, "website", "#"+uid, "#"+pid, buttonId, website);
                     
                     CredentialsView credsView = new CredentialsView(long.Parse(account_id));

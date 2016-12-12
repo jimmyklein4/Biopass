@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -18,12 +19,12 @@ Finger + Pin
 Face + Pin",
 @"Level 1 requires two forms of biometric recognition.
 Finger + Pin",
-@"Level 2 requires two forms of biometric recognition and a pin. 
-Face + Finger + Pin",
-@"Level 3 requires three forms of biometric recognition. 
-Face + Finger + Iris",
-@"Level 4 requires three forms of biometric recognition and a pin. 
-Face + Finger + Iris + Pin "
+@"Level 2 requires two forms of biometric recognition and a pin OR an iris scan. 
+Any of the combinations work:
+Face + Finger + Pin
+Face + Finger + Iris
+",
+
         };
         public securityLevel(long _target) {
             InitializeComponent();
@@ -39,13 +40,14 @@ Face + Finger + Iris + Pin "
             sliderLabel.Text = levels[trackBar.Value];
             //0 = Face + Pin OR Finger + Pin
             //1 = Face + Finger
-            //2 = Face + Finger + Pin
-            //3 = Face + Finger + Iris
-            //4 = Face + Finger + Pin + Iris
+            //2 = Face + Finger + Pin OR  Face + Finger + Iris
         }
 
         private void securityLevel_Load(object sender, EventArgs e) {
-            sliderLabel.Text = levels[trackBar.Value];
+            Debug.WriteLine("User security level: " + Program.db.getUserSecurityLevel(target));
+            int securityLevel = Program.db.getUserSecurityLevel(target);
+            trackBar.Value = securityLevel;
+            sliderLabel.Text = levels[securityLevel];
         }
     }
 }

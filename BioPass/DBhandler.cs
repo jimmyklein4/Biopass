@@ -167,7 +167,21 @@ user_id INTEGER NOT NULL);";
 
             return dt;
         }
-        public String getAppFromUID(String aid, String uid) {
+        public string getAppType(string aid) {
+            String sql = "SELECT application.type FROM application,userAccount WHERE userAccount.account_id=@aid AND application.application_id==userAccount.application_id;";
+            SQLiteCommand cmd = new SQLiteCommand(sql, dbConn);
+            cmd.Parameters.Add(new SQLiteParameter("@aid", aid));
+            cmd.Prepare();
+
+            String app_type = "";
+
+            SQLiteDataReader reader = cmd.ExecuteReader();
+            while (reader.Read()) {
+                app_type = (String)(reader["type"] != System.DBNull.Value ? reader["type"] : "");
+            }
+            return app_type;
+        }
+        public long getAppFromUID(String aid, String uid) {
             SQLiteCommand cmd = new SQLiteCommand(null, dbConn);
             cmd.CommandText = "SELECT userAccount.account_id FROM application, userAccount WHERE userAccount.user_id=@uid AND application.name=@aid AND userAccount.application_id=application.application_id";
 
@@ -176,11 +190,11 @@ user_id INTEGER NOT NULL);";
             cmd.Prepare();
 
             SQLiteDataReader reader = cmd.ExecuteReader();
-            String password = "";
-            if(reader.Read()) { 
-                password = ""+(reader["account_id"] != System.DBNull.Value ? reader["account_id"] : "");
+            long account_id = -1;
+            if(reader.Read()) {
+                account_id = (long)(reader["account_id"] != System.DBNull.Value ? reader["account_id"] : 0);
             }
-            return password;
+            return account_id;
         }
         public String appExists(String website) {
             String sql = "SELECT login_page FROM application WHERE name=@web;";
@@ -266,8 +280,10 @@ user_id INTEGER NOT NULL);";
             cmd.Prepare();
             SQLiteDataReader reader = cmd.ExecuteReader();
             int security_level = -1;
-            while(reader.Read()) { 
-               security_level = (int)(long)(reader["security_level"] != System.DBNull.Value ? reader["security_level"] : "");
+            if(reader.Read()) { 
+               security_level = (reader["security_level"] != System.DBNull.Value ? ((int)(long) reader["security_level"]) : 0);
+            } else {
+                security_level = 0;
             }
             return security_level;
         }
