@@ -247,5 +247,15 @@ namespace BioPass
                 }
             }
         }
+
+        private void helpBtn_Click(object sender, EventArgs e) {
+            MessageBox.Show(@"
+If you are a new user, please close out this prompt and click the 'Register' button.
+If you have already registered your biometrics, please provide a pin or a combination of biometrics.
+* Your pin will start to appear below the videoport. Press Enter after typing to attempt a facial recognition scan.
+* Without a pin, put your finger on the scanner to attempt a Finger + Facial scan.
+* You may enter a pin as well as provide two forms of biometrics.
+");
+        }
     }
 }
