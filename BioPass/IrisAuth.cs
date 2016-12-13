@@ -87,7 +87,7 @@ namespace BioPass
             image = image.Copy();
 
             image = RemoveThresholdNoise(image);
-            image = image.ThresholdBinary(new Gray(25), new Gray(255));
+            image = image.ThresholdBinary(SigmaThreshold(image, -2), new Gray(255));
 
             CvInvoke.Imshow("Detected Eye", baseImage);
             CvInvoke.WaitKey(0);
