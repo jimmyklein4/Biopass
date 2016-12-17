@@ -14,49 +14,53 @@ namespace BioPass
     public partial class Login : Form
     {
         public string application { get; set; }
-        public Login()
+        public long target;
+        public Login(long _target)
         {
             InitializeComponent();
+             target = _target;
         }
         private void Login_Load(object sender, EventArgs e)
         {
-            int x = 0; int i = 0;
-            string[] apps = new string[100];
-            apps[x] = "tumail"; x++;
-            apps[x] = "blackboard.temple.edu"; x++;
-            apps[x] = "facebook.com"; x++;
-            apps[x] = "en.wikipedia.org"; x++;
-            apps[x] = "Steam"; x++;
-            apps[x] = "Battle.Net"; x++;
-            apps[x] = "Outlook"; x++;
-            apps[x] = "Discord"; x++;
-            apps[x] = "MSWord"; x++;
-            apps[x] = "Excel"; x++;
-            apps[x] = "Access"; x++;
-            apps[x] = "Pw Protected Excel File"; x++;
-
-            i = 0;
-            while (apps[i] != null)
-            {
-                comboBox1.Items.Add(apps[i]);
-                i++;
+            DataTable credentials = Program.db.getUserCredentials(target);
+             if (credentials != null) {
+                foreach (DataRow dr in credentials.Rows) {
+                    if (!dr.IsNull("username")) {
+                        comboBox1.Items.Add(dr["name"].ToString());
+                    }
+                }
             }
         }
         private string getAppBoxVal()
         {
-            return (comboBox1.SelectedItem!=null?comboBox1.SelectedItem.ToString() : "");
+            if (comboBox1.SelectedItem != null)
+            {
+                return (comboBox1.SelectedItem != null ? comboBox1.SelectedItem.ToString() : "");
+            }
+            else
+            {
+                return (urlNew.Text);
+            }
         }
 
         private void go_Click(object sender, EventArgs e)
         {
             application = getAppBoxVal();
-            Debug.Write(application);
-            Close(); 
+            this.Close(); 
+        }
+        private void fpBtn_Click(object sender, EventArgs e) {
+            fingerprintView fpView = new BioPass.fingerprintView(target);
+            fpView.Show();
         }
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
+        private void credsBtn_Click(object sender, EventArgs e) {
+            CredentialsView credsView = new CredentialsView(target);
+            credsView.Show();
+        }
 
+        private void secLevelBtn_Click(object sender, EventArgs e) {
+            securityLevel securityLevel = new securityLevel(target);
+            securityLevel.Show();
         }
     }
 }

@@ -1,0 +1,8 @@
+{
+	name: "Microsoft Access 2013",
+	type: "desktop",
+	usernameField: "",
+	passwordField: "",
+	submitButton: "",
+	loginPage: "Access13Login.ahk"
+}

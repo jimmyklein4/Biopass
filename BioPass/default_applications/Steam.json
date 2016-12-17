@@ -1,0 +1,8 @@
+{
+	name: "Steam",
+	type: "desktop",
+	usernameField: "",
+	passwordField: "",
+	submitButton: "",
+	loginPage: "SteamLogin.ahk"
+}

@@ -1,0 +1,8 @@
+{
+	name: "BattleNet",
+	type: "desktop",
+	usernameField: "",
+	passwordField: "",
+	submitButton: "",
+	loginPage: "BnetLogin.ahk"
+}

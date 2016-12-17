@@ -9,9 +9,10 @@ using System.Drawing;
 using System.ComponentModel;
 using System.Threading;
 
+//TODO: Take photos automatically. Check newReg.cs
 
 namespace BioPass {
-    class FacialRecognition : authMethod {
+    public class FacialRecognition : authMethod {
         private LBPHFaceRecognizer rec;
         private BackgroundWorker _recTrainerWorker;
         private BackgroundWorker _detectFaceWorker;
@@ -37,7 +38,7 @@ namespace BioPass {
             _detectedFaces = new List<Image<Gray, Byte>>();
             rec = new LBPHFaceRecognizer();
             //Imports default training set from AT faces. Faces were trained using LBPH with default values
-            rec.Load(@"Support\default_training_set");
+            rec.Load(@"Support\default_training_set.xml");
         }
         /**
          * Reads images and labels in from a CSV file 
@@ -137,6 +138,7 @@ namespace BioPass {
             }
             rec.Update(facesArray, labels.ToArray());
             Console.WriteLine("Rec is updated");
+            SaveRecognizer("facereq.xml");
             _detectedFaces.Clear();
         }
 
@@ -176,9 +178,8 @@ namespace BioPass {
             }
             return -1;
         }
-        //TODO: Implement
         public Boolean VerifyUser(object A, int user_id) {
-            return false;
+            return (user_id == (rec.Predict(new Image<Gray, Byte>((Bitmap)A)).Label));
         }
     }
 }

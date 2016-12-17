@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,22 +28,22 @@ namespace BioPass {
                             //Debug.WriteLine(int.Parse(dr["user_id"].ToString()));
                             String fp = System.Text.Encoding.UTF8.GetString((byte[])dr["fingerprint"]);
                             //Debug.WriteLine(fp);
-                            axZKFPEngX1.AddRegTemplateStrToFPCacheDB(fpcHandle, int.Parse(dr["user_id"].ToString()), fp);
+                            axZKFPEngX1.AddRegTemplateStrToFPCacheDB(fpcHandle, int.Parse(dr["fp_id"].ToString()), fp);
                         }
                     }
                 }
                 statusBar.Text = "Sensor Connected!";
-                Debug.Write("FP init success!", "Information");                
+                Debug.WriteLine("FP init success!", "Information");                
             }
             else
             {
                 axZKFPEngX1.EndEngine();
-                Debug.Write("FP init failed!", "Error"); 
+                Debug.WriteLine("FP init failed!", "Error"); 
             }
             FMatchType = 2;
         }
 
-        private void beginFPRegistration() {
+        public void beginFPRegistration() {
             if (axZKFPEngX1.IsRegister)
             {
                 axZKFPEngX1.CancelEnroll();
@@ -53,7 +54,7 @@ namespace BioPass {
         }
  
         private void axZKFPEngX1_OnCapture(object sender, AxZKFPEngXControl.IZKFPEngXEvents_OnCaptureEvent e) {
-            // In the future, call FaceForm.recieveCapture() with array of data for Identification method below                                     
+            //TODO, call FaceForm.recieveCapture() with array of data for Identification method below                                     
             if (FMatchType == 2) {
                 int score = 8;
                 int processedNum = 1;
@@ -61,9 +62,15 @@ namespace BioPass {
                 if (ID == -1) { 
                     statusBar.Text = "Identify Failed";
                 } else { 
-                    MessageBox.Show("User identified as: "+ Program.db.getUserName(ID));
-                    statusBar.Text = string.Format("Identify Succeed ID = {0} Score = {1}  Processed Number = {2}", ID, score, processedNum);
-                    postAuth();
+                    string[] array = Program.db.getUserArrayByFinger(ID);
+                    string user_name = array[0];
+                    if (user_name != null && user_name.Length > 0) {
+                        long user_id = Int64.Parse(array[1]);
+                        MessageBox.Show("User identified as: " + user_name + ". Checking other biometrics...");
+                        compileUserData(user_id);
+                        statusBar.Text = string.Format("Identify Succeed ID = {0} Score = {1}  Processed Number = {2}", user_id, score, processedNum);
+                        //postAuth(user_id);
+                    }
                 }
             }
         }
@@ -79,7 +86,7 @@ namespace BioPass {
                 int processedNum = 1;
                 int ID = axZKFPEngX1.IdentificationInFPCacheDB(fpcHandle, e.aTemplate, ref score, ref processedNum);
                 if (ID != -1) {
-                    MessageBox.Show("You're already registered as: " + Program.db.getUserName(ID));
+                    MessageBox.Show("You're already registered this fingerprint as: " + Program.db.getUserNameByFinger(ID));
                     Reset();
                     return;
                 }
@@ -87,31 +94,38 @@ namespace BioPass {
 		        if(sRegTemplate.Length > 0) {
 
                     if (sRegTemplate10.Length > 0) { 
-                        Debug.WriteLine("Adding FP to DB");
-                        axZKFPEngX1.AddRegTemplateStrToFPCacheDBEx(fpcHandle, (int) Program.target, sRegTemplate, sRegTemplate10);
+                        Debug.WriteLine("Adding FP " + Program.targetFingerprintID + " to FPCacheDB");
+
+                        object pTemplate;
+                        pTemplate = axZKFPEngX1.DecodeTemplate1(sRegTemplate10);
+
+                        // Note: 10.0Template can not be compressed (±»Ñ¹Ëõ)
+                        axZKFPEngX1.SetTemplateLen(ref pTemplate, 602);
+                        String encodedTemplate = axZKFPEngX1.EncodeTemplate1(pTemplate);
+                        long fpid = Program.db.registerUserFP(Program.targetFingerUserID, encodedTemplate, Program.targetFingerprintName);
+
+                        axZKFPEngX1.AddRegTemplateStrToFPCacheDBEx(fpcHandle, (int)fpid, sRegTemplate, sRegTemplate10);
+
+                        //axZKFPEngX1.SaveTemplate("fingerprint.tpl", pTemplate);
+                        MessageBox.Show("Register Succeed", "Information!");
+                        Program.fingerprintForm.PopulateDataGridView();
+
+
                     } else { 
                         MessageBox.Show("Register 10.0 failed, template length is zero", "error!");
                     }
-
-                    object pTemplate;
-				    pTemplate = axZKFPEngX1.DecodeTemplate1(sRegTemplate10);
-
-			        // Note: 10.0Template can not be compressed (±»Ñ¹Ëõ)
-			        axZKFPEngX1.SetTemplateLen(ref pTemplate, 602);
-                    String encodedTemplate = axZKFPEngX1.EncodeTemplate1(pTemplate);
-                    Program.db.registerUserFP(Program.target, encodedTemplate);
-                  
-                    //axZKFPEngX1.SaveTemplate("fingerprint.tpl", pTemplate);
-			        MessageBox.Show("Register Succeed", "Information!");
-                    Reset();
                 } else {
                     MessageBox.Show("Register Failed, template length is zero", "error!");
 		        };
             }            
         }
         
-        private void axZKFPEngX1_OnImageReceived(object sender, AxZKFPEngXControl.IZKFPEngXEvents_OnImageReceivedEvent e)
-        {
+        private void axZKFPEngX1_OnImageReceived(object sender, AxZKFPEngXControl.IZKFPEngXEvents_OnImageReceivedEvent e) {
+            fpPicture.Visible = true;
+            Graphics g = fpPicture.CreateGraphics();
+            int dc = g.GetHdc().ToInt32();
+            axZKFPEngX1.PrintImageAt(dc, 0, 0, fpPicture.Width, fpPicture.Height);
+
         }
 
         private void axZKFPEngX1_OnFeatureInfo(object sender, AxZKFPEngXControl.IZKFPEngXEvents_OnFeatureInfoEvent e)

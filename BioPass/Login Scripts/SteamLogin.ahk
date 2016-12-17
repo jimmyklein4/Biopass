@@ -6,7 +6,7 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 User=
 pw=
 
-	run, C:\Program Files\Steam\Steam.exe
+	run, C:\Program Files (x86)\Steam\Steam.exe
 winwaitactive,Steam,,5
 
 	ifwinexist,Steam Login

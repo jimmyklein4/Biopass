@@ -1,0 +1,8 @@
+{
+	name: "tumail.temple.edu",
+	type: "website",
+	usernameField: "#ctl00_ContentPlaceHolder1_txtUserName",
+	passwordField: "#ctl00_ContentPlaceHolder1_txtPassword",
+	submitButton: "#ctl00_ContentPlaceHolder1_btnLogin",
+	loginPage: "http://tumail.temple.edu"
+}

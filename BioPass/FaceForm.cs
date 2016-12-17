@@ -9,34 +9,41 @@ using System.Windows.Forms;
 using Touchless.Vision.Camera;
 using System.Drawing.Imaging;
 using System.Diagnostics;
+using System.IO;
 
 namespace BioPass
 {
     public partial class FaceForm : Form
     {
-        Boolean verified = false;
-        String user = "";
         public FaceForm()
         {
             InitializeComponent();
-            rec = new FacialRecognition("test.xml");
-            //rec = new FacialRecognition();
+            if (File.Exists(Directory.GetCurrentDirectory() + "/facereq.xml")) {
+                rec = new FacialRecognition("facereq.xml");
+            } else {
+                rec = new FacialRecognition();
+            }
         }
 
         private void FaceForm_Load(object sender, EventArgs e)
         {
-            if (!DesignMode)
-            {
+            if (!DesignMode) {
                 // Refresh the list of available cameras
                 comboBoxCameras.Items.Clear();
-                foreach (Camera cam in CameraService.AvailableCameras)
+                foreach (Camera cam in CameraService.AvailableCameras) { 
                     comboBoxCameras.Items.Add(cam);
-
-                if( comboBoxCameras.Items.Count > 0 )
+                }
+                //Debug.WriteLine(comboBoxCameras.Items.Count);
+                if (comboBoxCameras.Items.Count > 0) {
                     comboBoxCameras.SelectedIndex = 0;
+                    thrashOldCamera();
+                    startCapturing();
+                }
 
-                thrashOldCamera();
-                startCapturing();
+                foreach(Control item in this.Controls) {
+                    item.TabStop = false;
+                }
+
                 init_fingerprint();
             }
 
@@ -53,18 +60,21 @@ namespace BioPass
         }
 
         private CameraFrameSource _frameSource;
-        private static Bitmap _latestFrame;
-        private Boolean detectFaces = false;
-        private List<Image> _faces;
-        private FacialRecognition rec;
-        private List<int> labels;
-        BackgroundWorker bw;
-        private Camera CurrentCamera
-        {
+        public static Bitmap _latestFrame;
+        public List<Image> _faces;
+        public FacialRecognition rec;
+        private Camera CurrentCamera {
            get
            {
               return comboBoxCameras.SelectedItem as Camera;
            }
+        }
+
+        private void comboBoxCameras_DropDownClose(object sender, EventArgs e) {
+            if (_frameSource != null && _frameSource.Camera == comboBoxCameras.SelectedItem)
+                return;
+            thrashOldCamera();
+            startCapturing();
         }
 
         private void btnStart_Click(object sender, EventArgs e)
@@ -82,10 +92,11 @@ namespace BioPass
             try
             {
                 Camera c = (Camera)comboBoxCameras.SelectedItem;
+                Debug.WriteLine("Changing camera to: " + c);
                 setFrameSource(new CameraFrameSource(c));
                 _frameSource.Camera.CaptureWidth = 640;
                 _frameSource.Camera.CaptureHeight = 480;
-                _frameSource.Camera.Fps = 50;
+                _frameSource.Camera.Fps = 20;
                 _frameSource.NewFrame += OnImageCaptured;
 
                 pictureBoxDisplay.Paint += new PaintEventHandler(drawLatestImage);
@@ -98,17 +109,22 @@ namespace BioPass
             }
         }
 
-        private void drawLatestImage(object sender, PaintEventArgs e)
-        {
-            if (_latestFrame != null)
-            {
-                // Draw the latest image from the active camera
-                    e.Graphics.DrawImage(_latestFrame, 0, 0, _latestFrame.Width, _latestFrame.Height);
+        private void drawLatestImage(object sender, PaintEventArgs e) {
+            try { 
+                if (_latestFrame != null) {
+                    // Draw the latest image from the active camera
+                        int Width = _latestFrame.Width;
+                        int Height = _latestFrame.Height;
+                        e.Graphics.DrawImage(_latestFrame, 0, 0, Width, Height);
+                }
+            } catch (Exception ex) { 
+                thrashOldCamera();
+                startCapturing();
+                Debug.WriteLine(ex);
             }
         }
 
-        public void OnImageCaptured(Touchless.Vision.Contracts.IFrameSource frameSource, Touchless.Vision.Contracts.Frame frame, double fps)
-        {
+        public void OnImageCaptured(Touchless.Vision.Contracts.IFrameSource frameSource, Touchless.Vision.Contracts.Frame frame, double fps) {
             _latestFrame = frame.Image;
             _latestFrame.RotateFlip(RotateFlipType.RotateNoneFlipX);
             pictureBoxDisplay.Invalidate();
@@ -121,8 +137,6 @@ namespace BioPass
 
             _frameSource = cameraFrameSource;
         }
-
-        //
 
         private void thrashOldCamera()
         {
@@ -149,7 +163,11 @@ namespace BioPass
         }
 
         String last4Ints;
+        public void blankPin() {
+            last4Ints = pinLabel.Text = "";
+        }
         void FaceForm_KeyUp(object sender, KeyEventArgs e) {
+            this.Focus();
             int keyValue = e.KeyValue;
             if ((keyValue >= 0x30 && keyValue <= 0x39) || (keyValue >= 0x41 && keyValue <= 0x5A)) {
                char keyChar = char.ToLower(Convert.ToChar(e.KeyCode));
@@ -157,14 +175,14 @@ namespace BioPass
                     last4Ints = "";
                 }
                 if(last4Ints.Length == 4) {
-                    last4Ints = last4Ints.Substring(1, last4Ints.Length - 1);
+                    last4Ints = "";
                 }
            
                 if(char.IsLetterOrDigit(keyChar)) {
                     last4Ints += keyChar;
-                    Debug.WriteLine(last4Ints);
+                    pinLabel.Text = last4Ints;
+                    //Debug.WriteLine(last4Ints);
                 }
-
             }
 
             if(e.KeyCode==Keys.Enter) {
@@ -175,7 +193,9 @@ namespace BioPass
 
         // Get the current webcam image
         private Bitmap getWebcamImage() {
-            Bitmap current = (Bitmap)_latestFrame.Clone();
+            Bitmap current = (Bitmap)_latestFrame.Clone(
+                new Rectangle(0, 0, _latestFrame.Width, 
+                _latestFrame.Height), _latestFrame.PixelFormat);
             return current;
         }
 
@@ -188,179 +208,62 @@ namespace BioPass
             return last4Ints;
         }
  
-        void compileUserData() {
+        public void compileUserData(long fpid = -1) {
             Bitmap face = getWebcamImage();
-            Bitmap finger = getFingerprint();
             String pin = collectPin();
 
-            Program.recieveCapture(finger,face, pin);
-        }
-        // Detects face and stores it in a list for later rec
-        private void detect_Click(object sender, EventArgs e) {
-            if(_faces == null) { _faces = new List<Image>(); }
-            try {
-                lock (_latestFrame) {
-                    _faces.Add((Image)_latestFrame.Clone());
-                }
-            } catch (InvalidOperationException exeception) {
-                Console.Write(exeception.ToString());
-            }
-        }
-        // Starts the recognition process
-        private void create_rec_Click(object sender, EventArgs e) {
-            if (rec == null) {
-                rec = new FacialRecognition();
-            }
-            //The number is where you'd put the id
-            rec.AddNewUser(_faces.ToArray(), 41);
-            _faces = null;
-        }
-        // Checks the face it detects against the recognizer 
-        private void check_Click(object sender, EventArgs e) {
-            Console.WriteLine(rec.IdentifyUser(_faces.First()));
-            _faces = null;
+            Program.recieveCapture(fpid, face, pin);
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            if (label1.Visible == true)
-            {
-                label1.Visible = false; textBox1.Visible = false; checkedListBox1.Visible = false;// button3.Visible = false;
-            }
-            else
-            {
-                textBox1.Visible = true; checkedListBox1.Visible = true; label1.Visible = true;//button3.Visible = true; 
-            }
-        }
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void checkedListBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            String[] selections = new string[2]; //Stores checklist Selections
-            for (int i = 0; i < checkedListBox1.CheckedItems.Count; i++)
-            {
-                selections[i] = checkedListBox1.CheckedItems[i].ToString();
-            }
-            if (checkedListBox1.CheckedItems.Count == 2)
-            {
-                textBox1.Visible = false;
-                label1.Visible = false;
-                checkedListBox1.Visible = false;
-                checkedListBox1.SetItemChecked(0, false); //reset checkbox
-                checkedListBox1.SetItemChecked(1, false); //reset checkbox
-                checkedListBox1.SetItemChecked(2, false); //reset checkbox
-                checkedListBox1.SetItemChecked(3, false); //reset checkbox
-
-
-                Boolean bioSuccess = false;
-                int[] verfiTest = new int[2];
-                //Launch BioMetrics
-                //user=BioMetrics(selections[0],selections[1]); //if anyone is identified set the user
-                //if (BioMetrics(selections[0])==true){veritest[0]=1; } else {veritest[0]=0; } //1=pass, 0=fail
-                //if (BioMetrics(selections[1])==true){veritest[1]=1 } else {veritest[1]=0; } //1=pass, 0=fail
-                //if ((veritest[0] == 1)  && (veritest[1] == 1)) { bioSuccess = true; } else { bioSuccess = false; user="";}
-                if (bioSuccess == true) { verified = true; appList.Visible = true; }
-                else { verified = false; appList.Visible = false; }
-            }
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            //db class not on this repo yet
-             String user = "";
-             int i = 0;
-             int k = 0;
-             string[] app = new string[] { "tumail", "blackboard", "facebook.com", "wikipedia.org" };
-             string[] appCata = new string[4];
-             string[] appUn = new string[4];
-             String cata = "";
-             String uncata = "";
-             DBhandler db = new DBhandler();
-             db.connectToDatabase();
-
-             for (int j = 0; j < app.Length; j++)
-             {
-                //Boolean isCatlgd = false; //remove once db class back in repo
-                 Boolean isCatlgd = db.appExistsForUser(app[j], user);
-                 if (isCatlgd == true) { appCata[i] = app[j]; i++; }
-                 else { appUn[k] = app[j]; k++; }
-             }
-             //  test filler
-             appCata[0] = "test";
-             appCata[1] = "test1";
-             appCata[2] = " test2";
-             //appUn[0] = "test2";
-             //appUn[1] = "test3";
-             // */
-             for (i = 0; i < appCata.Length; i++) { cata = cata + appCata[i] + Environment.NewLine; }
-             for (i = 0; i < appUn.Length; i++) { uncata = uncata + appUn[i] + Environment.NewLine; }
-
-             label4.Text = cata;
-             label2.Text = uncata;
-
-
-
-            //Will load list of all applications
-
-
-
-
-            Button clickedButton = (Button)sender;
-            toggleList(clickedButton, e);
-        }
-
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        /*
-        * Toggles view of the sorted app list
-        */
-        private void toggleList(Button clickedButton, EventArgs e)
-        {
-
-            if (clickedButton.Text == "Show Apps")
-            {
-                clickedButton.Text = "Hide Apps"; label4.Visible = true;   //load list
-                label2.Visible = true; label6.Visible = true; label5.Visible = true; listBox1.Visible = true;
-            }
-            else
-            {
-                clickedButton.Text = "Show Apps";
-                listBox1.Visible = false; label4.Visible = false; label5.Visible = false; //hide list 
-                label2.Visible = false; label6.Visible = false;
-            }
-        }
-
+        // Detects face and stores it in a list for later re
+        
         private void registerBtn_Click(object sender, EventArgs e) {
-            String name = "";
             Program.appmode = 1;
+            appmodeLabel.Visible = true;
+            appmodeLabel.Text = "Registering";
+
             newReg nameDialog = new newReg(); 
             if(nameDialog.ShowDialog() == DialogResult.OK) {
-                name = nameDialog.textBox1.Text;
-                long user_id = Program.db.addUser(name);
-                appmodeLabel.Visible = true;
-                Program.target = user_id;
-                beginFPRegistration();
+                Reset();
+            } else {
+                Reset();
             }
         }
         private void Reset() {
+            pictureBoxDisplay.Focus();
             Program.appmode = 0;
             appmodeLabel.Visible = false;
             Program.target = 0;
         }
-        private void postAuth()
+        public void postAuth(long _target)
         {
-            Login LoginWin = new Login();
-            DialogResult login_res = LoginWin.ShowDialog();
-            Debug.Write(LoginWin.application);
-            automateWeb web = new automateWeb(LoginWin.application, "1");
+            Login LoginWin = new Login(_target);
+            long account_id = -1;
+            if (LoginWin.ShowDialog() != DialogResult.None) {
+                if((account_id = Program.db.getAppFromUID(LoginWin.application, ""+_target)) > -1) {
+                    if (Program.db.getAppType(""+account_id)=="website") {
+                        automateWeb web = new automateWeb(LoginWin.application, "" + account_id);
+                    } else {
+                        String username = Program.db.getUsername(""+account_id);
+                        String password = Program.db.getPassword(""+account_id);
+                        String loginPage = Program.db.appExists(LoginWin.application);
+                        desktopAutomater desktop = new desktopAutomater();
+                        desktop.parseNrun(username, password, Directory.GetCurrentDirectory() + "/Login Scripts/" + loginPage);
+                    }
+                } else {
+                    automateWeb web = new automateWeb(LoginWin.application, ""+_target, true);
+                }
+            }
+        }
 
+        private void helpBtn_Click(object sender, EventArgs e) {
+            MessageBox.Show(@"
+If you are a new user, please close out this prompt and click the 'Register' button.
+If you have already registered your biometrics, please provide a pin or a combination of biometrics.
+* Your pin will start to appear below the videoport. Press Enter after typing to attempt a facial recognition scan.
+* Without a pin, put your finger on the scanner to attempt a Finger + Facial scan.
+* You may enter a pin as well as provide two forms of biometrics.
+");
         }
 
         private void FaceForm_Load_1(object sender, EventArgs e)

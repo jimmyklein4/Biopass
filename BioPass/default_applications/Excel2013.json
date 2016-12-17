@@ -1,0 +1,8 @@
+{
+	name: "Microsoft Excel 2013",
+	type: "desktop",
+	usernameField: "",
+	passwordField: "",
+	submitButton: "",
+	loginPage: "Excel13Login.ahk"
+}
