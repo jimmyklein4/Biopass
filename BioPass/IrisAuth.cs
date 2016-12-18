@@ -87,7 +87,7 @@ namespace BioPass
             image = image.Copy();
 
             image = RemoveThresholdNoise(image);
-            image = image.ThresholdBinary(SigmaThreshold(image, -2), new Gray(255));
+            image = image.ThresholdBinary(SigmaThreshold(image, -1), new Gray(255));
 
             CvInvoke.Imshow("Detected Eye", baseImage);
             CvInvoke.WaitKey(0);
@@ -133,41 +133,39 @@ namespace BioPass
 
         private CircleF GetIrisFromPupilImage(Image<Gray, byte> image, CircleF pupil)
         {
+            Image<Gray, byte> startImage = image.Copy();
             image = image.Copy();
-            int beg = (int) (pupil.Center.X + (pupil.Radius * 1.2));
+            image._EqualizeHist();
+            int beg_right = (int)(pupil.Center.X + (pupil.Radius * 1.5));
+            int beg_left = (int)(pupil.Center.X - (pupil.Radius * 1.5));
             CvInvoke.Circle(image, Point.Round(pupil.Center), (int)pupil.Radius, new Rgb(178, 0, 0).MCvScalar);
             int end = image.Width;
             int height = (int)pupil.Center.Y;
             int hits = 0;
             int start = 0;
-            int currGray = 220;
-            for (; currGray >= 0; currGray-=5)
+            int currGray = 200;
+            for (; currGray >= 100; currGray -= 5)
             {
-                Image<Gray, byte> processImage = image.Copy();
-                processImage = processImage.ThresholdBinary(new Gray(currGray), new Gray(255));
-                byte[,,] data = processImage.Data;
-                for (int i = beg; i < end; i++)
+                image = image.ThresholdBinary(new Gray(currGray), new Gray(255));
+                byte[,,] data = image.Data;
+                byte[,,] data2 = startImage.Data;
+                for (int i = beg_right; i < end; i++)
                 {
-                    if (data[height, i, 0] >= 245 && hits == 0) { hits++; start = i; }
-                    else if (data[height, i, 0] >= 245) hits++;
+                    if ((data[height, i, 0] >= 245 || data2[height, i, 0] == 0) && hits == 0) { hits++; start = i; }
+                    else if (data[height, i, 0] >= 245 || data2[height, i, 0] == 0) hits++;
                     else { hits = 0; start = 0; }
                     if (hits > 20) return new CircleF(pupil.Center, start - pupil.Center.X);
                 }
-            }
-            currGray = 220;
-            beg = (int)(pupil.Center.X - (pupil.Radius * 1.2));
-            for (; currGray >= 0; currGray -= 5)
-            {
-                Image<Gray, byte> processImage = image.Copy();
-                processImage = image.ThresholdBinary(new Gray(currGray), new Gray(255));
-                byte[,,] data = image.Data;
-                for (int i = beg; i > 0; i--)
+                hits = 0;
+                start = 0;
+                for (int i = beg_left; i > 0; i--)
                 {
-                    if (data[height, i, 0] >= 245 && hits == 0) { hits++; start = i; }
-                    else if (data[height, i, 0] >= 245) hits++;
+                    if ((data[height, i, 0] >= 245 || data2[height, i, 0] == 0) && hits == 0) { hits++; start = i; }
+                    else if (data[height, i, 0] >= 245 || data2[height, i, 0] == 0) hits++;
                     else { hits = 0; start = 0; }
-                    if (hits > 20) return new CircleF(pupil.Center, -1*(start - pupil.Center.X));
+                    if (hits > 20) return new CircleF(pupil.Center, (start - pupil.Center.X) * -1);
                 }
+                image = startImage;
             }
             return new CircleF();
         }
