@@ -98,6 +98,8 @@ namespace BioPass {
                     authenticatedAs = faceIdentity;
                     fitSecurityLevel = 1;
                 }
+            } else {
+                MessageBox.Show("Cannot identify user.");
             }
             if(authenticatedAs > -1) {
                 int userSecurityLevel = db.getUserSecurityLevel(authenticatedAs);

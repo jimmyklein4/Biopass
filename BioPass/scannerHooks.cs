@@ -60,7 +60,7 @@ namespace BioPass {
                 int processedNum = 1;
                 int ID = axZKFPEngX1.IdentificationInFPCacheDB(fpcHandle, e.aTemplate, ref score, ref processedNum);
                 if (ID == -1) { 
-                    statusBar.Text = "Identify Failed";
+                    MessageBox.Show("Failed to identify user by fingerprint.");
                 } else { 
                     string[] array = Program.db.getUserArrayByFinger(ID);
                     string user_name = array[0];
